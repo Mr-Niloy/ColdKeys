@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColdKeys - Macro Keyboard Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dark-theme">
+    <header>
+        <div class="profile-selector">
+            <select id="profile-dropdown">
+                <option value="default">Default Profile</option>
+                <option value="gaming">Gaming</option>
+                <option value="productivity">Productivity</option>
+                <option value="custom">+ New Profile</option>
+            </select>
+        </div>
+        <div class="app-title">
+            <h1>ColdKeys</h1>
+        </div>
+        <div class="header-controls">
+            <button id="theme-toggle" class="icon-button">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button id="settings-button" class="icon-button">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside>
+            <div class="sidebar-section">
+                <h3>Macro Keyboard</h3>
+                <select id="device-selector">
+                    <option value="" disabled selected>Select a keyboard</option>
+                    <option value="loading">Loading devices...</option>
+                </select>
+                <div class="device-status">
+                    <span class="status-dot disconnected"></span>
+                    <span class="status-text">Disconnected</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Modes</h3>
+                <nav class="nav-links">
+                    <a href="#" class="active" data-mode="assign">
+                        <i class="fas fa-keyboard"></i> Assign Macros
+                    </a>
+                    <a href="#" data-mode="view">
+                        <i class="fas fa-list"></i> View Actions
+                    </a>
+                    <a href="#" data-mode="settings">
+                        <i class="fas fa-sliders-h"></i> Global Settings
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <main>
+            <div class="top-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search shortcuts...">
+                </div>
+                <button id="save-profile" class="primary-button">
+                    <i class="fas fa-save"></i> Save Profile
+                </button>
+            </div>
+
+            <section class="shortcut-list">
+                <div class="shortcut-header">
+                    <span class="key-column">Key Combination</span>
+                    <span class="action-column">Action</span>
+                    <span class="controls-column">Controls</span>
+                </div>
+                
+                <div class="shortcuts-container">
+                    <!-- Shortcut items will be added here dynamically -->
+                    <div class="empty-state">
+                        <i class="fas fa-keyboard empty-icon"></i>
+                        <p>No shortcuts assigned yet</p>
+                        <p class="empty-subtitle">Start by selecting a keyboard and adding shortcuts</p>
+                    </div>
+                </div>
+            </section>
+
+            <button id="add-shortcut" class="floating-button">
+                <i class="fas fa-plus"></i>
+            </button>
+        </main>
+    </div>
+
+    <!-- Key Listening Modal -->
+    <div id="key-listen-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Listening for Key Press</h2>
+                <button class="close-button"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body listening-mode">
+                <div class="key-visualization">
+                    <div class="key-placeholder">Press a key on your macro keyboard</div>
+                </div>
+                <p class="listening-instruction">Press the key or key combination you want to assign</p>
+                <div class="detected-keys hidden">
+                    <h3>Detected Key:</h3>
+                    <div class="key-badge-container"></div>
+                </div>
+                <div class="modal-actions">
+                    <button class="secondary-button cancel-listen">Cancel</button>
+                    <button class="primary-button confirm-key disabled">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Action Modal -->
+    <div id="assign-action-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Assign Action</h2>
+                <button class="close-button"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="selected-key">
+                    <span>For key: </span>
+                    <div class="key-badge"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="action-type">Action Type</label>
+                    <select id="action-type">
+                        <option value="launch">Launch Application</option>
+                        <option value="hotkey">Simulate Hotkey</option>
+                        <option value="volume">Control Volume</option>
+                        <option value="media">Media Control</option>
+                        <option value="script">Custom Script</option>
+                    </select>
+                </div>
+
+                <div class="dynamic-form-container">
+                    <!-- Dynamic content based on selected action -->
+                    <div class="form-group launch-fields">
+                        <label for="app-path">Application Path</label>
+                        <div class="input-with-button">
+                            <input type="text" id="app-path" placeholder="C:\Path\To\Application.exe">
+                            <button class="browse-button"><i class="fas fa-folder-open"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="secondary-button cancel-action">Cancel</button>
+                    <button class="primary-button save-action">Save Action</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
