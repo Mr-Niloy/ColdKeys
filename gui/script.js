@@ -21,6 +21,19 @@ const themeToggle = document.getElementById('theme-toggle');
 const actionTypeSelect = document.getElementById('action-type');
 const dynamicFormContainer = document.querySelector('.dynamic-form-container');
 const navLinks = document.querySelectorAll('.nav-links a');
+const viewActionsPanel = document.getElementById('view-actions-panel');
+const assignMacrosPanel = document.getElementById('assign-macros-panel');
+const filterButtons = document.querySelectorAll('.filter-button');
+const actionCards = document.querySelectorAll('.action-card');
+const globalSettingsPanel = document.getElementById('global-settings-panel');
+const holdDurationSlider = document.getElementById('key-hold-duration');
+const holdDurationValue = document.getElementById('hold-duration-value');
+const repeatRateSlider = document.getElementById('repeat-rate');
+const repeatRateValue = document.getElementById('repeat-rate-value');
+const debounceSlider = document.getElementById('key-debounce');
+const debounceValue = document.getElementById('debounce-value');
+const resetSettingsBtn = document.getElementById('reset-settings');
+const saveSettingsBtn = document.getElementById('save-settings');
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -28,17 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
 });
 
-// Initialize the application
-function initializeApp() {
-    // Fetch available devices
-    fetchDevices();
-    
-    // Load default profile
-    loadProfile(currentProfile);
-    
-    // Update theme
-    updateTheme();
-}
 
 // Set up all event listeners
 function setupEventListeners() {
@@ -753,47 +755,300 @@ function showToast(message) {
         }, 300);
     }, 3000);
 }
+// Function to handle showing View Actions panel
+function showViewActions() {
+    // Show View Actions panel
+    viewActionsPanel.classList.remove('hidden');
+}
 
-// Add toast styles
-const style = document.createElement('style');
-style.textContent = `
-    .toast-container {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 9999;
-    }
-    
-    .toast {
-        background-color: var(--bg-secondary);
-        color: var(--text-primary);
-        border-left: 4px solid var(--accent-color);
-        padding: 12px 20px;
-        border-radius: 4px;
-        box-shadow: 0 4px 12px var(--shadow-color);
-        margin-top: 10px;
-        transform: translateX(120%);
-        transition: transform 0.3s ease-out;
-        display: flex;
-        align-items: center;
-        min-width: 280px;
-        max-width: 350px;
-    }
-    
-    .toast.show {
-        transform: translateX(0);
-    }
-    
-    .toast-content {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    
-    .toast-icon {
-        color: var(--accent-color);
-        font-size: 1.2rem;
-    }
-`;
+// Function to hide View Actions panel
+function hideViewActions() {
+    // Hide View Actions panel
+    viewActionsPanel.classList.add('hidden');
+}
 
-document.head.appendChild(style);
+// Function to handle showing View assign Macros panel
+function showAssignMacros() {
+    // Show View Actions panel
+    assignMacrosPanel.classList.remove('hidden');
+}
+
+// Function to hide View Actions panel
+function hideAssignMacros() { 
+    // Hide View Actions panel
+    assignMacrosPanel.classList.add('hidden');
+}
+
+// Function to filter action cards
+function filterActions(category) {
+    actionCards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// Set up filter button event listeners
+filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        // Update active filter button
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Filter cards
+        const category = button.getAttribute('data-filter');
+        filterActions(category);
+    });
+});
+
+// Make action cards clickable (to use as template)
+actionCards.forEach(card => {
+    card.addEventListener('click', () => {
+        // Open assign action modal with pre-selected action type
+        const actionTitle = card.querySelector('.action-card-title').textContent;
+        showToast(`Selected action type: ${actionTitle}`, 'success');
+        
+        // If needed, you can open the key listen modal here
+        // openKeyListenModal();
+    });
+});
+
+// Toast notification system
+function showToast(message, type = 'success') {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container';
+        document.body.appendChild(toastContainer);
+    }
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    
+    // Toast content
+    const icon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+    toast.innerHTML = `
+        <div class="toast-content">
+            <i class="toast-icon ${icon}"></i>
+            <span class="toast-message">${message}</span>
+        </div>
+        <button class="toast-dismiss">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    // Add to container
+    toastContainer.appendChild(toast);
+    
+    // Add dismiss functionality
+    toast.querySelector('.toast-dismiss').addEventListener('click', () => {
+        removeToast(toast);
+    });
+    
+    // Auto dismiss after 4 seconds
+    setTimeout(() => {
+        removeToast(toast);
+    }, 4000);
+}
+
+// Remove toast with animation
+function removeToast(toast) {
+    toast.style.animation = 'slideOut 0.3s forwards';
+    setTimeout(() => {
+        toast.remove();
+    }, 300);
+}
+
+// Update navigation link handler
+function setActiveNavLink(activeLink) {
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+    });
+    activeLink.classList.add('active');
+    
+    // Handle mode switching logic
+    const mode = activeLink.getAttribute('data-mode');
+    console.log(`Switched to ${mode} mode`);
+    
+    // Handle different views
+    if (mode === 'view') {
+        showViewActions();
+    } else {
+        hideViewActions();
+    } 
+    if (mode === 'settings') {
+        showGlobalSettingsPanel();
+    } else {
+        hideGlobalSettingsPanel();
+    }
+    if (mode === 'assign') {
+        showAssignMacros();
+    } else {
+        hideAssignMacros();
+    }
+}
+
+// Global settings variables
+const globalSettings = {
+    unusedKeys: 'disable',
+    keyHoldDuration: 300,
+    repeatRate: 150,
+    autoConnect: true,
+    exclusiveMode: true,
+    devicePolling: 8,
+    keyDebounce: 10,
+    debugMode: false
+};
+
+// Initialize settings controls
+function initializeSettingsControls() {
+    // Set initial values from globalSettings
+    document.getElementById('unused-keys').value = globalSettings.unusedKeys;
+    holdDurationSlider.value = globalSettings.keyHoldDuration;
+    holdDurationValue.textContent = globalSettings.keyHoldDuration;
+    repeatRateSlider.value = globalSettings.repeatRate;
+    repeatRateValue.textContent = globalSettings.repeatRate;
+    document.getElementById('auto-connect').checked = globalSettings.autoConnect;
+    document.getElementById('exclusive-mode').checked = globalSettings.exclusiveMode;
+    document.getElementById('device-polling').value = globalSettings.devicePolling;
+    debounceSlider.value = globalSettings.keyDebounce;
+    debounceValue.textContent = globalSettings.keyDebounce;
+    document.getElementById('debug-mode').checked = globalSettings.debugMode;
+    
+    // Add event listeners for range sliders
+    holdDurationSlider.addEventListener('input', () => {
+        holdDurationValue.textContent = holdDurationSlider.value;
+    });
+    
+    repeatRateSlider.addEventListener('input', () => {
+        repeatRateValue.textContent = repeatRateSlider.value;
+    });
+    
+    debounceSlider.addEventListener('input', () => {
+        debounceValue.textContent = debounceSlider.value;
+    });
+    
+    // Add event listeners for buttons
+    resetSettingsBtn.addEventListener('click', resetSettings);
+    saveSettingsBtn.addEventListener('click', saveSettings);
+}
+
+// Reset settings to default values
+function resetSettings() {
+    const defaultSettings = {
+        unusedKeys: 'disable',
+        keyHoldDuration: 300,
+        repeatRate: 150,
+        autoConnect: true,
+        exclusiveMode: true,
+        devicePolling: 8,
+        keyDebounce: 10,
+        debugMode: false
+    };
+    
+    // Update globalSettings
+    Object.assign(globalSettings, defaultSettings);
+    
+    // Update UI
+    document.getElementById('unused-keys').value = defaultSettings.unusedKeys;
+    holdDurationSlider.value = defaultSettings.keyHoldDuration;
+    holdDurationValue.textContent = defaultSettings.keyHoldDuration;
+    repeatRateSlider.value = defaultSettings.repeatRate;
+    repeatRateValue.textContent = defaultSettings.repeatRate;
+    document.getElementById('auto-connect').checked = defaultSettings.autoConnect;
+    document.getElementById('exclusive-mode').checked = defaultSettings.exclusiveMode;
+    document.getElementById('device-polling').value = defaultSettings.devicePolling;
+    debounceSlider.value = defaultSettings.keyDebounce;
+    debounceValue.textContent = defaultSettings.keyDebounce;
+    document.getElementById('debug-mode').checked = defaultSettings.debugMode;
+    
+    showToast('Settings reset to defaults');
+}
+
+// Save current settings
+function saveSettings() {
+    // Update globalSettings from UI
+    globalSettings.unusedKeys = document.getElementById('unused-keys').value;
+    globalSettings.keyHoldDuration = parseInt(holdDurationSlider.value);
+    globalSettings.repeatRate = parseInt(repeatRateSlider.value);
+    globalSettings.autoConnect = document.getElementById('auto-connect').checked;
+    globalSettings.exclusiveMode = document.getElementById('exclusive-mode').checked;
+    globalSettings.devicePolling = parseInt(document.getElementById('device-polling').value);
+    globalSettings.keyDebounce = parseInt(debounceSlider.value);
+    globalSettings.debugMode = document.getElementById('debug-mode').checked;
+    
+    // Save to localStorage (would be server in real app)
+    localStorage.setItem('coldkeys_settings', JSON.stringify(globalSettings));
+    
+    // Apply settings to application
+    applySettings();
+    
+    showToast('Settings saved successfully');
+}
+
+// Apply settings to application
+function applySettings() {
+    // Here you would implement the actual application of settings
+    // For example, updating device manager with new polling rate
+    console.log('Applied settings:', globalSettings);
+    
+    // Toggle debug mode
+    if (globalSettings.debugMode) {
+        console.log('Debug mode enabled');
+    }
+}
+
+
+// Load settings from storage
+function loadSettings() {
+    const savedSettings = localStorage.getItem('coldkeys_settings');
+    if (savedSettings) {
+        try {
+            const parsedSettings = JSON.parse(savedSettings);
+            Object.assign(globalSettings, parsedSettings);
+        } catch (error) {
+            console.error('Error loading settings:', error);
+        }
+    }
+}
+
+// Update to show global settings panel when settings mode is selected
+function showGlobalSettingsPanel() {
+    // Hide other panels
+    document.querySelector('.shortcut-list').classList.add('hidden');
+    document.getElementById('add-shortcut').classList.add('hidden');
+    
+    // Show settings panel
+    globalSettingsPanel.classList.remove('hidden');
+}
+
+function hideGlobalSettingsPanel() {
+    // Show other panels
+    document.querySelector('.shortcut-list').classList.remove('hidden');
+    document.getElementById('add-shortcut').classList.remove('hidden');
+    
+    // Hide settings panel
+    globalSettingsPanel.classList.add('hidden');
+}
+
+
+// Add these lines to the initializeApp function
+function initializeApp() {
+    // Fetch available devices
+    fetchDevices();
+    
+    // Load default profile
+    loadProfile(currentProfile);
+    
+    // Update theme
+    updateTheme();
+    
+    // Load and initialize settings
+    loadSettings();
+    initializeSettingsControls();
+    
+}

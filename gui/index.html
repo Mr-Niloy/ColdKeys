@@ -1,166 +1,510 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ColdKeys - Macro Keyboard Manager</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="dark-theme">
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="dark-theme">
     <header>
-        <div class="profile-selector">
-            <select id="profile-dropdown">
-                <option value="default">Default Profile</option>
-                <option value="gaming">Gaming</option>
-                <option value="productivity">Productivity</option>
-                <option value="custom">+ New Profile</option>
-            </select>
-        </div>
-        <div class="app-title">
-            <h1>ColdKeys</h1>
-        </div>
-        <div class="header-controls">
-            <button id="theme-toggle" class="icon-button">
-                <i class="fas fa-moon"></i>
-            </button>
-            <button id="settings-button" class="icon-button">
-                <i class="fas fa-cog"></i>
-            </button>
-        </div>
+      <div class="profile-selector">
+        <select id="profile-dropdown">
+          <option value="default">Default Profile</option>
+          <option value="gaming">Gaming</option>
+          <option value="productivity">Productivity</option>
+          <option value="custom">+ New Profile</option>
+        </select>
+      </div>
+      <div class="app-title">
+        <h1>ColdKeys</h1>
+      </div>
+      <div class="header-controls">
+        <button id="theme-toggle" class="icon-button">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button id="settings-button" class="icon-button">
+          <i class="fas fa-cog"></i>
+        </button>
+      </div>
     </header>
 
     <div class="layout">
-        <aside>
-            <div class="sidebar-section">
-                <h3>Macro Keyboard</h3>
-                <select id="device-selector">
-                    <option value="" disabled selected>Select a keyboard</option>
-                    <option value="loading">Loading devices...</option>
-                </select>
-                <div class="device-status">
-                    <span class="status-dot disconnected"></span>
-                    <span class="status-text">Disconnected</span>
+      <aside>
+        <div class="sidebar-section">
+          <h3>Macro Keyboard</h3>
+          <select id="device-selector">
+            <option value="" disabled selected>Select a keyboard</option>
+            <option value="loading">Loading devices...</option>
+          </select>
+          <div class="device-status">
+            <span class="status-dot disconnected"></span>
+            <span class="status-text">Disconnected</span>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h3>Modes</h3>
+          <nav class="nav-links">
+            <a href="#assign-macros-panel" class="active" data-mode="assign">
+              <i class="fas fa-keyboard"></i> Assign Macros
+            </a>
+            <a href="#view-actions-panel" data-mode="view">
+              <i class="fas fa-list"></i> View Actions
+            </a>
+            <a href="#global-settings-panel" data-mode="settings">
+              <i class="fas fa-sliders-h"></i> Global Settings
+            </a>
+          </nav>
+        </div>
+      </aside>
+
+      <main>
+        <div class="top-actions">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search shortcuts..." />
+          </div>
+          <button id="save-profile" class="primary-button">
+            <i class="fas fa-save"></i> Save Profile
+          </button>
+        </div>
+
+        <section id="assign-macros-panel" class="shortcut-list">
+          <div class="shortcut-header">
+            <span class="key-column">Key Combination</span>
+            <span class="action-column">Action</span>
+            <span class="controls-column">Controls</span>
+          </div>
+
+          <div class="shortcuts-container">
+            <!-- Shortcut items will be added here dynamically -->
+            <div class="empty-state">
+              <i class="fas fa-keyboard empty-icon"></i>
+              <p>No shortcuts assigned yet</p>
+              <p class="empty-subtitle">
+                Start by selecting a keyboard and adding shortcuts
+              </p>
+            </div>
+          </div>
+          <button id="add-shortcut" class="floating-button">
+            <i class="fas fa-plus"></i>
+          </button>
+        </section>
+
+        <!-- Add this to the main section of your HTML to be shown when View Actions is active -->
+        <div id="view-actions-panel" class="panel hidden">
+          <div class="action-filters">
+            <button class="filter-button active" data-filter="all">All</button>
+            <button class="filter-button" data-filter="system">System</button>
+            <button class="filter-button" data-filter="media">Media</button>
+            <button class="filter-button" data-filter="window">Window</button>
+            <button class="filter-button" data-filter="custom">Custom</button>
+          </div>
+
+          <!-- System Controls -->
+          <h2 class="action-category-title">System Controls</h2>
+          <div class="actions-grid">
+            <div class="action-card" data-category="system">
+              <div class="action-card-header">
+                <div class="action-card-icon">
+                  <i class="fas fa-volume-up"></i>
                 </div>
+                <h3 class="action-card-title">Volume Control</h3>
+              </div>
+              <p class="action-card-description">
+                Control system volume levels with precision.
+              </p>
+              <div class="action-examples">
+                <p class="action-examples-title">Examples:</p>
+                <div class="example-list">
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Volume Up</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Volume Down</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Mute Toggle</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div class="sidebar-section">
-                <h3>Modes</h3>
-                <nav class="nav-links">
-                    <a href="#" class="active" data-mode="assign">
-                        <i class="fas fa-keyboard"></i> Assign Macros
-                    </a>
-                    <a href="#" data-mode="view">
-                        <i class="fas fa-list"></i> View Actions
-                    </a>
-                    <a href="#" data-mode="settings">
-                        <i class="fas fa-sliders-h"></i> Global Settings
-                    </a>
-                </nav>
+            <div class="action-card" data-category="system">
+              <div class="action-card-header">
+                <div class="action-card-icon">
+                  <i class="fas fa-power-off"></i>
+                </div>
+                <h3 class="action-card-title">Power Options</h3>
+              </div>
+              <p class="action-card-description">
+                Control system power states and energy settings.
+              </p>
+              <div class="action-examples">
+                <p class="action-examples-title">Examples:</p>
+                <div class="example-list">
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Sleep</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Hibernate</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Lock Computer</span>
+                  </div>
+                </div>
+              </div>
             </div>
-        </aside>
+          </div>
 
-        <main>
-            <div class="top-actions">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search shortcuts...">
+          <!-- Media Controls -->
+          <h2 class="action-category-title">Media Controls</h2>
+          <div class="actions-grid">
+            <div class="action-card" data-category="media">
+              <div class="action-card-header">
+                <div class="action-card-icon">
+                  <i class="fas fa-music"></i>
                 </div>
-                <button id="save-profile" class="primary-button">
-                    <i class="fas fa-save"></i> Save Profile
-                </button>
+                <h3 class="action-card-title">Media Playback</h3>
+              </div>
+              <p class="action-card-description">
+                Control media playback for music and videos.
+              </p>
+              <div class="action-examples">
+                <p class="action-examples-title">Examples:</p>
+                <div class="example-list">
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Play/Pause</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Next Track</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Previous Track</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Window Management -->
+          <h2 class="action-category-title">Window Management</h2>
+          <div class="actions-grid">
+            <div class="action-card" data-category="window">
+              <div class="action-card-header">
+                <div class="action-card-icon">
+                  <i class="fas fa-window-maximize"></i>
+                </div>
+                <h3 class="action-card-title">Window Controls</h3>
+              </div>
+              <p class="action-card-description">
+                Manage application window states and properties.
+              </p>
+              <div class="action-examples">
+                <p class="action-examples-title">Examples:</p>
+                <div class="example-list">
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Always On Top Toggle</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Maximize/Restore</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Move to Monitor</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <section class="shortcut-list">
-                <div class="shortcut-header">
-                    <span class="key-column">Key Combination</span>
-                    <span class="action-column">Action</span>
-                    <span class="controls-column">Controls</span>
+            <div class="action-card" data-category="window">
+              <div class="action-card-header">
+                <div class="action-card-icon">
+                  <i class="fas fa-desktop"></i>
                 </div>
-                
-                <div class="shortcuts-container">
-                    <!-- Shortcut items will be added here dynamically -->
-                    <div class="empty-state">
-                        <i class="fas fa-keyboard empty-icon"></i>
-                        <p>No shortcuts assigned yet</p>
-                        <p class="empty-subtitle">Start by selecting a keyboard and adding shortcuts</p>
-                    </div>
+                <h3 class="action-card-title">Application Launch</h3>
+              </div>
+              <p class="action-card-description">
+                Launch applications or open files with a single keypress.
+              </p>
+              <div class="action-examples">
+                <p class="action-examples-title">Examples:</p>
+                <div class="example-list">
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Open Application</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Open Website</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Run Script</span>
+                  </div>
                 </div>
-            </section>
+              </div>
+            </div>
+          </div>
 
-            <button id="add-shortcut" class="floating-button">
-                <i class="fas fa-plus"></i>
-            </button>
-        </main>
+          <!-- Custom Scripts -->
+          <h2 class="action-category-title">Custom Actions</h2>
+          <div class="actions-grid">
+            <div class="action-card" data-category="custom">
+              <div class="action-card-header">
+                <div class="action-card-icon">
+                  <i class="fas fa-code"></i>
+                </div>
+                <h3 class="action-card-title">Custom Scripts</h3>
+              </div>
+              <p class="action-card-description">
+                Run your own scripts or command sequences.
+              </p>
+              <div class="action-examples">
+                <p class="action-examples-title">Examples:</p>
+                <div class="example-list">
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Python Script</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Shell Command</span>
+                  </div>
+                  <div class="example-item">
+                    <span class="example-dot"></span>
+                    <span>Keyboard Macro</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Global Settings Panel (initially hidden) -->
+<section id="global-settings-panel" class="settings-panel hidden">
+    <div class="panel-header">
+        <h2>Keyboard Settings</h2>
+        <p class="panel-description">Configure how your macro keyboard behaves</p>
     </div>
-
-    <!-- Key Listening Modal -->
-    <div id="key-listen-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Listening for Key Press</h2>
-                <button class="close-button"><i class="fas fa-times"></i></button>
+    
+    <div class="settings-container">
+        <div class="settings-group">
+            <h3>Key Behavior</h3>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <label for="unused-keys">Unused Keys</label>
+                    <span class="setting-description">How unused keys should behave</span>
+                </div>
+                <div class="setting-control">
+                    <select id="unused-keys">
+                        <option value="disable">Disable</option>
+                        <option value="passthrough">Pass Through to System</option>
+                        <option value="block">Block (No Action)</option>
+                    </select>
+                </div>
             </div>
-            <div class="modal-body listening-mode">
-                <div class="key-visualization">
-                    <div class="key-placeholder">Press a key on your macro keyboard</div>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <label for="key-hold-duration">Key Hold Duration</label>
+                    <span class="setting-description">Time in ms to register a key as being held</span>
                 </div>
-                <p class="listening-instruction">Press the key or key combination you want to assign</p>
-                <div class="detected-keys hidden">
-                    <h3>Detected Key:</h3>
-                    <div class="key-badge-container"></div>
+                <div class="setting-control">
+                    <input type="range" id="key-hold-duration" min="100" max="1000" step="50" value="300">
+                    <div class="range-value"><span id="hold-duration-value">300</span> ms</div>
                 </div>
-                <div class="modal-actions">
-                    <button class="secondary-button cancel-listen">Cancel</button>
-                    <button class="primary-button confirm-key disabled">Continue</button>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <label for="repeat-rate">Key Repeat Rate</label>
+                    <span class="setting-description">How quickly a held key repeats its action</span>
+                </div>
+                <div class="setting-control">
+                    <input type="range" id="repeat-rate" min="50" max="500" step="25" value="150">
+                    <div class="range-value"><span id="repeat-rate-value">150</span> ms</div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Assign Action Modal -->
-    <div id="assign-action-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Assign Action</h2>
-                <button class="close-button"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="selected-key">
-                    <span>For key: </span>
-                    <div class="key-badge"></div>
+        
+        <div class="settings-group">
+            <h3>Device Configuration</h3>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <label for="auto-connect">Auto-Connect</label>
+                    <span class="setting-description">Automatically reconnect to last used keyboard</span>
                 </div>
-                
-                <div class="form-group">
-                    <label for="action-type">Action Type</label>
-                    <select id="action-type">
-                        <option value="launch">Launch Application</option>
-                        <option value="hotkey">Simulate Hotkey</option>
-                        <option value="volume">Control Volume</option>
-                        <option value="media">Media Control</option>
-                        <option value="script">Custom Script</option>
+                <div class="setting-control">
+                    <label class="toggle">
+                        <input type="checkbox" id="auto-connect" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <label for="exclusive-mode">Exclusive Mode</label>
+                    <span class="setting-description">Prevent keyboard input from reaching other applications</span>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle">
+                        <input type="checkbox" id="exclusive-mode" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <label for="device-polling">Device Polling Rate</label>
+                    <span class="setting-description">How frequently to check for input (lower is more responsive)</span>
+                </div>
+                <div class="setting-control">
+                    <select id="device-polling">
+                        <option value="1">1ms (1000Hz)</option>
+                        <option value="2">2ms (500Hz)</option>
+                        <option value="4">4ms (250Hz)</option>
+                        <option value="8" selected>8ms (125Hz)</option>
+                        <option value="16">16ms (62.5Hz)</option>
                     </select>
                 </div>
-
-                <div class="dynamic-form-container">
-                    <!-- Dynamic content based on selected action -->
-                    <div class="form-group launch-fields">
-                        <label for="app-path">Application Path</label>
-                        <div class="input-with-button">
-                            <input type="text" id="app-path" placeholder="C:\Path\To\Application.exe">
-                            <button class="browse-button"><i class="fas fa-folder-open"></i></button>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        
+        <div class="settings-group">
+            <h3>Advanced Options</h3>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <label for="key-debounce">Key Debounce Time</label>
+                    <span class="setting-description">Prevents accidental double presses</span>
                 </div>
-
-                <div class="modal-actions">
-                    <button class="secondary-button cancel-action">Cancel</button>
-                    <button class="primary-button save-action">Save Action</button>
+                <div class="setting-control">
+                    <input type="range" id="key-debounce" min="0" max="50" step="5" value="10">
+                    <div class="range-value"><span id="debounce-value">10</span> ms</div>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <label for="debug-mode">Debug Mode</label>
+                    <span class="setting-description">Show detailed logs in console for troubleshooting</span>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle">
+                        <input type="checkbox" id="debug-mode">
+                        <span class="toggle-slider"></span>
+                    </label>
                 </div>
             </div>
         </div>
     </div>
     
+    <div class="settings-actions">
+        <button id="reset-settings" class="secondary-button">Reset to Defaults</button>
+        <button id="save-settings" class="primary-button">Save Settings</button>
+    </div>
+</section>
+      </main>
+    </div>
+
+    <!-- Key Listening Modal -->
+    <div id="key-listen-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Listening for Key Press</h2>
+          <button class="close-button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body listening-mode">
+          <div class="key-visualization">
+            <div class="key-placeholder">
+              Press a key on your macro keyboard
+            </div>
+          </div>
+          <p class="listening-instruction">
+            Press the key or key combination you want to assign
+          </p>
+          <div class="detected-keys hidden">
+            <h3>Detected Key:</h3>
+            <div class="key-badge-container"></div>
+          </div>
+          <div class="modal-actions">
+            <button class="secondary-button cancel-listen">Cancel</button>
+            <button class="primary-button confirm-key disabled">
+              Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assign Action Modal -->
+    <div id="assign-action-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Assign Action</h2>
+          <button class="close-button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="selected-key">
+            <span>For key: </span>
+            <div class="key-badge"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="action-type">Action Type</label>
+            <select id="action-type">
+              <option value="launch">Launch Application</option>
+              <option value="hotkey">Simulate Hotkey</option>
+              <option value="volume">Control Volume</option>
+              <option value="media">Media Control</option>
+              <option value="script">Custom Script</option>
+            </select>
+          </div>
+
+          <div class="dynamic-form-container">
+            <!-- Dynamic content based on selected action -->
+            <div class="form-group launch-fields">
+              <label for="app-path">Application Path</label>
+              <div class="input-with-button">
+                <input
+                  type="text"
+                  id="app-path"
+                  placeholder="C:\Path\To\Application.exe"
+                />
+                <button class="browse-button">
+                  <i class="fas fa-folder-open"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button class="secondary-button cancel-action">Cancel</button>
+            <button class="primary-button save-action">Save Action</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
