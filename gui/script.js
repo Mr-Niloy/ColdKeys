@@ -312,36 +312,36 @@ function loadProfile(profileName) {
 
 // Render shortcuts in the UI
 function renderShortcuts() {
-  // Clear container excluding empty state
-  const existingShortcuts =
-    shortcutsContainer.querySelectorAll(".shortcut-item");
-  existingShortcuts.forEach((item) => item.remove());
+  const shortcutsContainer = document.querySelector(".shortcuts-container");
+  const emptyState = shortcutsContainer.querySelector(".empty-state");
 
-  // Show/hide empty state
+  // Remove all rows except the empty state row
+  shortcutsContainer.querySelectorAll("tr.shortcut-item").forEach((row) => row.remove());
+
   if (shortcuts.length === 0) {
     emptyState.classList.remove("hidden");
   } else {
     emptyState.classList.add("hidden");
 
-    // Render each shortcut
     shortcuts.forEach((shortcut) => {
-      const shortcutItem = createShortcutElement(shortcut);
-      shortcutsContainer.appendChild(shortcutItem);
+      const row = createShortcutElement(shortcut);
+      shortcutsContainer.appendChild(row);
     });
   }
 }
 
+
 // Create a shortcut list item element
 function createShortcutElement(shortcut) {
-  const item = document.createElement("div");
-  item.className = "shortcut-item";
-  item.dataset.id = shortcut.id;
+  const row = document.createElement("tr");
+  row.className = "shortcut-item";
+  row.dataset.id = shortcut.id;
 
-  // Key combination column
+  // === Key Combination ===
+  const keyCell = document.createElement("td");
   const keyCombo = document.createElement("div");
   keyCombo.className = "key-combo";
 
-  // Add modifiers
   shortcut.modifiers.forEach((mod) => {
     const modBadge = document.createElement("span");
     modBadge.className = "key-badge";
@@ -353,74 +353,83 @@ function createShortcutElement(shortcut) {
     keyCombo.appendChild(plus);
   });
 
-  // Add main key
   const keyBadge = document.createElement("span");
   keyBadge.className = "key-badge";
   keyBadge.textContent = shortcut.key;
   keyCombo.appendChild(keyBadge);
+  keyCell.appendChild(keyCombo);
 
-  // Action description column
+  // === Action ===
+  const actionCell = document.createElement("td");
   const actionDesc = document.createElement("div");
   actionDesc.className = "action-description";
 
-  // Icon based on action type
   const actionIcon = document.createElement("i");
   actionIcon.className = "action-icon fas";
 
   switch (shortcut.actionType) {
     case "launch":
-      actionIcon.className += " fa-rocket";
-      actionDesc.innerHTML += `Launch: <strong>${getFileNameFromPath(
-        shortcut.action.path
-      )}</strong>`;
+      actionIcon.classList.add("fa-rocket");
+      actionDesc.innerHTML += `Launch: <strong>${getFileNameFromPath(shortcut.action.path)}</strong>`;
       break;
     case "hotkey":
-      actionIcon.className += " fa-keyboard";
+      actionIcon.classList.add("fa-keyboard");
       actionDesc.innerHTML += `Hotkey: <strong>${shortcut.action.keys}</strong>`;
       break;
     case "volume":
-      actionIcon.className += " fa-volume-up";
+      actionIcon.classList.add("fa-volume-up");
       actionDesc.innerHTML += `Volume: <strong>${shortcut.action.command}</strong>`;
       break;
     case "media":
-      actionIcon.className += " fa-music";
-      actionDesc.innerHTML += `Media: <strong>${formatCommand(
-        shortcut.action.command
-      )}</strong>`;
+      actionIcon.classList.add("fa-music");
+      actionDesc.innerHTML += `Media: <strong>${formatCommand(shortcut.action.command)}</strong>`;
       break;
     case "script":
-      actionIcon.className += " fa-code";
-      actionDesc.innerHTML += `Script: <strong>${getFileNameFromPath(
-        shortcut.action.path
-      )}</strong>`;
+      actionIcon.classList.add("fa-code");
+      actionDesc.innerHTML += `Script: <strong>${getFileNameFromPath(shortcut.action.path)}</strong>`;
       break;
   }
-
   actionDesc.prepend(actionIcon);
+  actionCell.appendChild(actionDesc);
 
-  // Controls column
+  // === Device (optional, placeholder) ===
+  const deviceCell = document.createElement("td");
+  deviceCell.textContent = getDeviceNameById(shortcut.deviceId);
+  
+  // === Controls ===
+  const controlCell = document.createElement("td");
   const controls = document.createElement("div");
   controls.className = "item-controls";
 
   const editButton = document.createElement("button");
   editButton.className = "control-button edit";
   editButton.innerHTML = '<i class="fas fa-edit"></i>';
-  editButton.addEventListener("click", () => editShortcut(shortcut.id));
+  editButton.onclick = () => editShortcut(shortcut.id);
 
   const deleteButton = document.createElement("button");
   deleteButton.className = "control-button delete";
   deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
-  deleteButton.addEventListener("click", () => deleteShortcut(shortcut.id));
+  deleteButton.onclick = () => deleteShortcut(shortcut.id);
 
   controls.appendChild(editButton);
   controls.appendChild(deleteButton);
+  controlCell.appendChild(controls);
 
-  // Append columns to item
-  item.appendChild(keyCombo);
-  item.appendChild(actionDesc);
-  item.appendChild(controls);
+  // Append all cells to the row
+  row.appendChild(keyCell);
+  row.appendChild(actionCell);
+  row.appendChild(deviceCell);
+  row.appendChild(controlCell);
 
-  return item;
+  return row;
+}
+
+// Get device name by ID
+function getDeviceNameById(deviceId) {
+  console.log(deviceId);
+  
+  const device = keyboardDevices.find(dev => dev.id === deviceId);
+  return device ? device.name : "—";
 }
 
 // Helper function to extract filename from path

@@ -52,6 +52,7 @@ header {
   padding: 0.75rem 1.5rem;
   background-color: var(--bg-secondary);
   box-shadow: 0 5px 10px var(--shadow-color);
+  border-bottom: 3px solid var(--border-color);
   position: relative;
   z-index: 10;
   width: 90%;
@@ -286,59 +287,44 @@ main {
 }
 
 /* ===== Shortcut List Styles ===== */
-.shortcut-header {
-  display: grid;
-  grid-template-columns: 1.5fr 1.5fr 3fr 100px; /* Adjusted for 4 columns */
-  padding: 1rem 1.5rem;
+.shortcut-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 1rem;
+  background-color: var(--bg-primary); /* Optional if base needs background */
+}
+
+.shortcut-table thead th {
   background-color: var(--bg-tertiary);
-  border-bottom: 1px solid var(--border-color);
-  font-weight: 500;
   color: var(--text-secondary);
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  text-align: left;
 }
 
-.shortcut-item {
-  display: grid;
-  grid-template-columns: 1.5fr 1.5fr 3fr 100px; /* Same as above */
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  align-items: center;
-  transition: background-color 0.2s;
+.shortcut-table tbody tr {
+  background-color: var(--bg-secondary); /* assuming bg-secondary is row background */
+  transition: background-color 0.2s ease;
 }
 
-
-.shortcuts-container {
-  min-height: 300px;
-}
-
-.shortcut-item {
-  display: grid;
-  grid-template-columns: 1fr 2fr 100px;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  align-items: center;
-  transition: background-color 0.2s;
-}
-
-.shortcut-item:hover {
+.shortcut-table tbody tr:hover {
   background-color: var(--bg-tertiary);
 }
 
-.shortcut-item:last-child {
+.shortcut-table th,
+.shortcut-table td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.shortcut-table tbody tr:last-child td {
   border-bottom: none;
-}
-
-.key-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 0.25rem 0.5rem;
-  font-family: monospace;
-  font-size: 0.9rem;
-  min-width: 30px;
-  margin-right: 0.25rem;
 }
 
 .key-combo {
@@ -346,6 +332,28 @@ main {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.25rem;
+}
+
+.action-description {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.item-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.key-badge {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-family: monospace;
+  font-size: 0.9rem;
+  min-width: 30px;
+  text-align: center;
 }
 
 .action-description {

@@ -74,30 +74,33 @@
           </button>
         </div>
         <!-- assign-macros (initaially visible)-->
-
         <section id="assign-macros-panel" class="panel">
-          <div class="shortcut-header">
-            <span class="key-column">Key Combination</span>
-            <span class="action-column">Action</span>
-            <span class="device-column">Device</span>
-            <span class="controls-column">Controls</span>
-          </div>
+          <table class="shortcut-table">
+            <thead>
+              <tr>
+                <th class="key-column">Key Combination</th>
+                <th class="action-column">Action</th>
+                <th class="device-column">Device</th>
+                <th class="controls-column">Controls</th>
+              </tr>
+            </thead>
+            <tbody class="shortcuts-container">
+              <!-- Shortcut rows will be injected here -->
+              <tr class="empty-state">
+                <td colspan="4" style="text-align: center; padding: 2rem;">
+                  <i class="fas fa-keyboard empty-icon"></i>
+                  <p>No shortcuts assigned yet</p>
+                  <p class="empty-subtitle">Start by selecting a keyboard and adding shortcuts</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-          <div class="shortcuts-container">
-            <!-- Shortcut items will be added here dynamically -->
-            <div class="empty-state">
-              <i class="fas fa-keyboard empty-icon"></i>
-              <p>No shortcuts assigned yet</p>
-              <p class="empty-subtitle">
-                Start by selecting a keyboard and adding shortcuts
-              </p>
-            </div>
-          </div>
-          
           <button id="add-shortcut" class="floating-button">
             <i class="fas fa-plus"></i>
           </button>
         </section>
+
         <!-- View Actions Panel (initially hidden) -->
         <section id="view-actions-panel" class="panel hidden">
           <div class="action-filters">
