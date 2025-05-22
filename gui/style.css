@@ -260,22 +260,25 @@ main {
 }
 
 /* ===== Shortcut List Styles ===== */
-.shortcut-list {
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px var(--shadow-color);
-}
-
 .shortcut-header {
   display: grid;
-  grid-template-columns: 1fr 2fr 100px;
+  grid-template-columns: 1.5fr 1.5fr 3fr 100px; /* Adjusted for 4 columns */
   padding: 1rem 1.5rem;
   background-color: var(--bg-tertiary);
   border-bottom: 1px solid var(--border-color);
   font-weight: 500;
   color: var(--text-secondary);
 }
+
+.shortcut-item {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 3fr 100px; /* Same as above */
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
 
 .shortcuts-container {
   min-height: 300px;
@@ -430,8 +433,8 @@ main {
 .modal-content {
   background-color: var(--bg-secondary);
   border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
+  width: fit-content;
+  min-width: 25%;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
@@ -488,9 +491,10 @@ main {
   border: 1px dashed var(--border-color);
 }
 
-.key-placeholder {
-  color: var(--text-secondary);
-  font-size: 1.1rem;
+.keyboard-svg {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .listening-instruction {
