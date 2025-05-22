@@ -295,7 +295,6 @@ main {
   border-radius: 12px;
   overflow: hidden;
   margin-top: 1rem;
-  background-color: var(--bg-primary); /* Optional if base needs background */
 }
 
 .shortcut-table thead th {
