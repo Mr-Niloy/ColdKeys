@@ -177,6 +177,7 @@ function updateDeviceSelector() {
     option.textContent = device.name;
     deviceSelector.appendChild(option);
   });
+  renderShortcuts();
 }
 
 // Handle device selection change
@@ -242,6 +243,7 @@ function loadProfile(profileName) {
         key: "G",
         modifiers: [],
         deviceId: "keyboard1",
+        status: true,
         actionType: "launch",
         action: { path: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" },
       },
@@ -258,6 +260,7 @@ function loadProfile(profileName) {
         key: "ArrowUp",
         modifiers: ["Shift"],
         deviceId: "keyboard2",
+        status: true,
         actionType: "media",
         action: { command: "play_pause" },
       },
@@ -269,6 +272,7 @@ function loadProfile(profileName) {
         key: "F",
         modifiers: [],
         deviceId: "keyboard1",
+        status: false,
         actionType: "hotkey",
         action: { keys: "Ctrl+F" },
       },
@@ -277,6 +281,7 @@ function loadProfile(profileName) {
         key: "V",
         modifiers: [],
         deviceId: "keyboard1",
+        status: true,
         actionType: "launch",
         action: { path: "C:\\Program Files\\Steam\\steam.exe" },
       },
@@ -288,6 +293,7 @@ function loadProfile(profileName) {
         key: "C",
         modifiers: [],
         deviceId: "keyboard1",
+        status: true,
         actionType: "launch",
         action: {
           path: "C:\\Program Files\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE",
@@ -298,6 +304,7 @@ function loadProfile(profileName) {
         key: "W",
         modifiers: [],
         deviceId: "keyboard1",
+        status: false,
         actionType: "launch",
         action: {
           path: "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
@@ -316,7 +323,9 @@ function renderShortcuts() {
   const emptyState = shortcutsContainer.querySelector(".empty-state");
 
   // Remove all rows except the empty state row
-  shortcutsContainer.querySelectorAll("tr.shortcut-item").forEach((row) => row.remove());
+  shortcutsContainer
+    .querySelectorAll("tr.shortcut-item")
+    .forEach((row) => row.remove());
 
   if (shortcuts.length === 0) {
     emptyState.classList.remove("hidden");
@@ -329,7 +338,6 @@ function renderShortcuts() {
     });
   }
 }
-
 
 // Create a shortcut list item element
 function createShortcutElement(shortcut) {
@@ -370,7 +378,9 @@ function createShortcutElement(shortcut) {
   switch (shortcut.actionType) {
     case "launch":
       actionIcon.classList.add("fa-rocket");
-      actionDesc.innerHTML += `Launch: <strong>${getFileNameFromPath(shortcut.action.path)}</strong>`;
+      actionDesc.innerHTML += `Launch: <strong>${getFileNameFromPath(
+        shortcut.action.path
+      )}</strong>`;
       break;
     case "hotkey":
       actionIcon.classList.add("fa-keyboard");
@@ -382,20 +392,25 @@ function createShortcutElement(shortcut) {
       break;
     case "media":
       actionIcon.classList.add("fa-music");
-      actionDesc.innerHTML += `Media: <strong>${formatCommand(shortcut.action.command)}</strong>`;
+      actionDesc.innerHTML += `Media: <strong>${formatCommand(
+        shortcut.action.command
+      )}</strong>`;
       break;
     case "script":
       actionIcon.classList.add("fa-code");
-      actionDesc.innerHTML += `Script: <strong>${getFileNameFromPath(shortcut.action.path)}</strong>`;
+      actionDesc.innerHTML += `Script: <strong>${getFileNameFromPath(
+        shortcut.action.path
+      )}</strong>`;
       break;
   }
   actionDesc.prepend(actionIcon);
   actionCell.appendChild(actionDesc);
+  console.log(shortcut);
 
   // === Device (optional, placeholder) ===
   const deviceCell = document.createElement("td");
   deviceCell.textContent = getDeviceNameById(shortcut.deviceId);
-  
+
   // === Controls ===
   const controlCell = document.createElement("td");
   const controls = document.createElement("div");
@@ -415,11 +430,36 @@ function createShortcutElement(shortcut) {
   controls.appendChild(deleteButton);
   controlCell.appendChild(controls);
 
+  // === Status Toggle ===
+  const statusCell = document.createElement("td");
+  const toggleWrapper = document.createElement("div");
+  toggleWrapper.className = "setting-control";
+
+  const toggleLabel = document.createElement("label");
+  toggleLabel.className = "toggle";
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = shortcut.status !== false;
+  checkbox.addEventListener("change", () => {
+    shortcut.status = checkbox.checked;
+    // Optional: persist the status change or trigger any effect
+  });
+
+  const slider = document.createElement("span");
+  slider.className = "toggle-slider";
+
+  toggleLabel.appendChild(checkbox);
+  toggleLabel.appendChild(slider);
+  toggleWrapper.appendChild(toggleLabel);
+  statusCell.appendChild(toggleWrapper);
+
   // Append all cells to the row
   row.appendChild(keyCell);
   row.appendChild(actionCell);
   row.appendChild(deviceCell);
   row.appendChild(controlCell);
+  row.appendChild(statusCell); // ✅ NEW
 
   return row;
 }
@@ -427,8 +467,8 @@ function createShortcutElement(shortcut) {
 // Get device name by ID
 function getDeviceNameById(deviceId) {
   console.log(deviceId);
-  
-  const device = keyboardDevices.find(dev => dev.id === deviceId);
+
+  const device = keyboardDevices.find((dev) => dev.id === deviceId);
   return device ? device.name : "—";
 }
 
