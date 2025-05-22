@@ -73,12 +73,13 @@
             <i class="fas fa-save"></i> Save Profile
           </button>
         </div>
+        <!-- assign-macros (initaially visible)-->
 
-        <section id="assign-macros-panel" class="shortcut-list">
+        <section id="assign-macros-panel" class="panel">
           <div class="shortcut-header">
             <span class="key-column">Key Combination</span>
             <span class="action-column">Action</span>
-            <span class="device-column">Device</span> 
+            <span class="device-column">Device</span>
             <span class="controls-column">Controls</span>
           </div>
 
@@ -92,13 +93,13 @@
               </p>
             </div>
           </div>
+          
           <button id="add-shortcut" class="floating-button">
             <i class="fas fa-plus"></i>
           </button>
         </section>
-
-        <!-- Add this to the main section of your HTML to be shown when View Actions is active -->
-        <div id="view-actions-panel" class="panel hidden">
+        <!-- View Actions Panel (initially hidden) -->
+        <section id="view-actions-panel" class="panel hidden">
           <div class="action-filters">
             <button class="filter-button active" data-filter="all">All</button>
             <button class="filter-button" data-filter="system">System</button>
@@ -296,135 +297,186 @@
               </div>
             </div>
           </div>
-        </div>
+        </section>
         <!-- Global Settings Panel (initially hidden) -->
-<section id="global-settings-panel" class="settings-panel hidden">
-    <div class="panel-header">
-        <h2>Keyboard Settings</h2>
-        <p class="panel-description">Configure how your macro keyboard behaves</p>
-    </div>
-    
-    <div class="settings-container">
-        <div class="settings-group">
-            <h3>Key Behavior</h3>
-            
-            <div class="setting-item">
+        <section id="global-settings-panel" class="panel hidden">
+          <div class="panel-header">
+            <h2>Keyboard Settings</h2>
+            <p class="panel-description">
+              Configure how your macro keyboard behaves
+            </p>
+          </div>
+
+          <div class="settings-container">
+            <div class="settings-group">
+              <h3>Key Behavior</h3>
+
+              <div class="setting-item">
                 <div class="setting-info">
-                    <label for="unused-keys">Unused Keys</label>
-                    <span class="setting-description">How unused keys should behave</span>
+                  <label for="unused-keys">Unused Keys</label>
+                  <span class="setting-description"
+                    >How unused keys should behave</span
+                  >
                 </div>
                 <div class="setting-control">
-                    <select id="unused-keys">
-                        <option value="disable">Disable</option>
-                        <option value="passthrough">Pass Through to System</option>
-                        <option value="block">Block (No Action)</option>
-                    </select>
+                  <select id="unused-keys">
+                    <option value="disable">Disable</option>
+                    <option value="passthrough">Pass Through to System</option>
+                    <option value="block">Block (No Action)</option>
+                  </select>
                 </div>
-            </div>
-            
-            <div class="setting-item">
+              </div>
+
+              <div class="setting-item">
                 <div class="setting-info">
-                    <label for="key-hold-duration">Key Hold Duration</label>
-                    <span class="setting-description">Time in ms to register a key as being held</span>
+                  <label for="key-hold-duration">Key Hold Duration</label>
+                  <span class="setting-description"
+                    >Time in ms to register a key as being held</span
+                  >
                 </div>
                 <div class="setting-control">
-                    <input type="range" id="key-hold-duration" min="100" max="1000" step="50" value="300">
-                    <div class="range-value"><span id="hold-duration-value">300</span> ms</div>
+                  <input
+                    type="range"
+                    id="key-hold-duration"
+                    min="100"
+                    max="1000"
+                    step="50"
+                    value="300"
+                  />
+                  <div class="range-value">
+                    <span id="hold-duration-value">300</span> ms
+                  </div>
                 </div>
-            </div>
-            
-            <div class="setting-item">
+              </div>
+
+              <div class="setting-item">
                 <div class="setting-info">
-                    <label for="repeat-rate">Key Repeat Rate</label>
-                    <span class="setting-description">How quickly a held key repeats its action</span>
+                  <label for="repeat-rate">Key Repeat Rate</label>
+                  <span class="setting-description"
+                    >How quickly a held key repeats its action</span
+                  >
                 </div>
                 <div class="setting-control">
-                    <input type="range" id="repeat-rate" min="50" max="500" step="25" value="150">
-                    <div class="range-value"><span id="repeat-rate-value">150</span> ms</div>
+                  <input
+                    type="range"
+                    id="repeat-rate"
+                    min="50"
+                    max="500"
+                    step="25"
+                    value="150"
+                  />
+                  <div class="range-value">
+                    <span id="repeat-rate-value">150</span> ms
+                  </div>
                 </div>
+              </div>
             </div>
-        </div>
-        
-        <div class="settings-group">
-            <h3>Device Configuration</h3>
-            
-            <div class="setting-item">
+
+            <div class="settings-group">
+              <h3>Device Configuration</h3>
+
+              <div class="setting-item">
                 <div class="setting-info">
-                    <label for="auto-connect">Auto-Connect</label>
-                    <span class="setting-description">Automatically reconnect to last used keyboard</span>
+                  <label for="auto-connect">Auto-Connect</label>
+                  <span class="setting-description"
+                    >Automatically reconnect to last used keyboard</span
+                  >
                 </div>
                 <div class="setting-control">
-                    <label class="toggle">
-                        <input type="checkbox" id="auto-connect" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+                  <label class="toggle">
+                    <input type="checkbox" id="auto-connect" checked />
+                    <span class="toggle-slider"></span>
+                  </label>
                 </div>
-            </div>
-            
-            <div class="setting-item">
+              </div>
+
+              <div class="setting-item">
                 <div class="setting-info">
-                    <label for="exclusive-mode">Exclusive Mode</label>
-                    <span class="setting-description">Prevent keyboard input from reaching other applications</span>
+                  <label for="exclusive-mode">Exclusive Mode</label>
+                  <span class="setting-description"
+                    >Prevent keyboard input from reaching other
+                    applications</span
+                  >
                 </div>
                 <div class="setting-control">
-                    <label class="toggle">
-                        <input type="checkbox" id="exclusive-mode" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+                  <label class="toggle">
+                    <input type="checkbox" id="exclusive-mode" checked />
+                    <span class="toggle-slider"></span>
+                  </label>
                 </div>
-            </div>
-            
-            <div class="setting-item">
+              </div>
+
+              <div class="setting-item">
                 <div class="setting-info">
-                    <label for="device-polling">Device Polling Rate</label>
-                    <span class="setting-description">How frequently to check for input (lower is more responsive)</span>
+                  <label for="device-polling">Device Polling Rate</label>
+                  <span class="setting-description"
+                    >How frequently to check for input (lower is more
+                    responsive)</span
+                  >
                 </div>
                 <div class="setting-control">
-                    <select id="device-polling">
-                        <option value="1">1ms (1000Hz)</option>
-                        <option value="2">2ms (500Hz)</option>
-                        <option value="4">4ms (250Hz)</option>
-                        <option value="8" selected>8ms (125Hz)</option>
-                        <option value="16">16ms (62.5Hz)</option>
-                    </select>
+                  <select id="device-polling">
+                    <option value="1">1ms (1000Hz)</option>
+                    <option value="2">2ms (500Hz)</option>
+                    <option value="4">4ms (250Hz)</option>
+                    <option value="8" selected>8ms (125Hz)</option>
+                    <option value="16">16ms (62.5Hz)</option>
+                  </select>
                 </div>
+              </div>
             </div>
-        </div>
-        
-        <div class="settings-group">
-            <h3>Advanced Options</h3>
-            
-            <div class="setting-item">
+
+            <div class="settings-group">
+              <h3>Advanced Options</h3>
+
+              <div class="setting-item">
                 <div class="setting-info">
-                    <label for="key-debounce">Key Debounce Time</label>
-                    <span class="setting-description">Prevents accidental double presses</span>
+                  <label for="key-debounce">Key Debounce Time</label>
+                  <span class="setting-description"
+                    >Prevents accidental double presses</span
+                  >
                 </div>
                 <div class="setting-control">
-                    <input type="range" id="key-debounce" min="0" max="50" step="5" value="10">
-                    <div class="range-value"><span id="debounce-value">10</span> ms</div>
+                  <input
+                    type="range"
+                    id="key-debounce"
+                    min="0"
+                    max="50"
+                    step="5"
+                    value="10"
+                  />
+                  <div class="range-value">
+                    <span id="debounce-value">10</span> ms
+                  </div>
                 </div>
-            </div>
-            
-            <div class="setting-item">
+              </div>
+
+              <div class="setting-item">
                 <div class="setting-info">
-                    <label for="debug-mode">Debug Mode</label>
-                    <span class="setting-description">Show detailed logs in console for troubleshooting</span>
+                  <label for="debug-mode">Debug Mode</label>
+                  <span class="setting-description"
+                    >Show detailed logs in console for troubleshooting</span
+                  >
                 </div>
                 <div class="setting-control">
-                    <label class="toggle">
-                        <input type="checkbox" id="debug-mode">
-                        <span class="toggle-slider"></span>
-                    </label>
+                  <label class="toggle">
+                    <input type="checkbox" id="debug-mode" />
+                    <span class="toggle-slider"></span>
+                  </label>
                 </div>
+              </div>
             </div>
-        </div>
-    </div>
-    
-    <div class="settings-actions">
-        <button id="reset-settings" class="secondary-button">Reset to Defaults</button>
-        <button id="save-settings" class="primary-button">Save Settings</button>
-    </div>
-</section>
+          </div>
+
+          <div class="settings-actions">
+            <button id="reset-settings" class="secondary-button">
+              Reset to Defaults
+            </button>
+            <button id="save-settings" class="primary-button">
+              Save Settings
+            </button>
+          </div>
+        </section>
       </main>
     </div>
 
@@ -437,7 +489,12 @@
         </div>
         <div class="modal-body listening-mode">
           <div class="key-visualization">
-            <object id="keyboard-svg" type="image/svg+xml" data="./res/keyboard_layout.svg" class="keyboard-svg"></object>
+            <object
+              id="keyboard-svg"
+              type="image/svg+xml"
+              data="./res/keyboard_layout.svg"
+              class="keyboard-svg"
+            ></object>
           </div>
           <p class="listening-instruction">
             Press the key or key combination you want to assign

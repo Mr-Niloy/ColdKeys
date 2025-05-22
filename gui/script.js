@@ -1185,7 +1185,7 @@ function loadSettings() {
 // Update to show global settings panel when settings mode is selected
 function showGlobalSettingsPanel() {
   // Hide other panels
-  document.querySelector(".shortcut-list").classList.add("hidden");
+  document.querySelector("#assign-macros-panel").classList.add("hidden");
   document.getElementById("add-shortcut").classList.add("hidden");
 
   // Show settings panel
@@ -1194,7 +1194,7 @@ function showGlobalSettingsPanel() {
 
 function hideGlobalSettingsPanel() {
   // Show other panels
-  document.querySelector(".shortcut-list").classList.remove("hidden");
+  document.querySelector("#assign-macros-panel").classList.remove("hidden");
   document.getElementById("add-shortcut").classList.remove("hidden");
 
   // Hide settings panel

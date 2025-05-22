@@ -1,17 +1,17 @@
 :root {
   /* Dark Theme Variables (Default) */
-  --bg-primary: #121212;
-  --bg-secondary: #1e1e1e;
-  --bg-tertiary: #252525;
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --accent-color: #00bfff;
-  --accent-hover: #33ccff;
-  --border-color: #333333;
-  --error-color: #ff4444;
-  --success-color: #4caf50;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --modal-bg: rgba(18, 18, 18, 0.95);
+    --bg-primary: #1a171e;
+    --bg-secondary: #261f2b;
+    --bg-tertiary: #423058;
+    --text-primary: #f3edc7;
+    --text-secondary: #dcbdbd;
+    --accent-color: #7926c6;
+    --accent-hover: #9933ff;
+    --border-color: #41324d;
+    --error-color: #ff4444;
+    --success-color: #4caf50;
+    --shadow-color: rgb(10 9 16 / 50%);
+    --modal-bg: rgba(18, 18, 18, 0.95);
 }
 
 .light-theme {
@@ -36,7 +36,7 @@
 }
 
 body {
-  background-color: var(--bg-primary);
+  background: linear-gradient(var(--bg-primary), var(--bg-secondary));
   color: var(--text-primary);
   transition: background-color 0.3s, color 0.3s;
   min-height: 100vh;
@@ -51,9 +51,12 @@ header {
   align-items: center;
   padding: 0.75rem 1.5rem;
   background-color: var(--bg-secondary);
-  box-shadow: 0 2px 4px var(--shadow-color);
+  box-shadow: 0 5px 10px var(--shadow-color);
   position: relative;
   z-index: 10;
+  width: 90%;
+  margin: 1em auto;
+  border-radius: 15px;
 }
 
 .app-title h1 {
@@ -91,7 +94,7 @@ input {
   color: var(--text-primary);
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: 10px;
   padding: 0.5rem 0.75rem;
   font-size: 0.9rem;
   transition: border-color 0.3s, box-shadow 0.3s;
@@ -104,7 +107,11 @@ input:focus {
   border-color: var(--accent-color);
   box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2);
 }
-
+/* ===== panel styles ====== */
+.panel {
+  width: 90%;
+  margin: auto;
+}
 /* ===== Layout Styles ===== */
 .layout {
   display: flex;
@@ -114,13 +121,20 @@ input:focus {
 
 /* ===== Sidebar Styles ===== */
 aside {
-  width: 250px;
+  width: fit-content;
+  min-width: 15%;
+  height: fit-content;
   background-color: var(--bg-secondary);
-  border-right: 1px solid var(--border-color);
+  border-right: 3px solid var(--border-color);
+  box-shadow: 5px 0px 10px var(--shadow-color);
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  margin: auto;
+  margin-left: 5%;
+  margin-top: 1.5em;
+  border-radius: 15px;
 }
 
 .sidebar-section {
@@ -170,7 +184,7 @@ aside {
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  border-radius: 4px;
+  border-radius: 10px;
   color: var(--text-secondary);
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s;
@@ -191,19 +205,30 @@ aside {
 main {
   flex: 1;
   padding: 1.5rem;
+  padding-left: 0;
   overflow-y: auto;
   position: relative;
+  width: fit-content;
+  height: fit-content;
+  margin: auto;
+  margin-top: 0;
 }
 
 .top-actions {
+  width: 90%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  margin: auto;
+  margin-bottom: 1em;
+  margin-top: 0;
+  margin-bottom: 2em;
 }
 
 .search-box {
   position: relative;
+  box-shadow: 3px 3px 8px 2px var(--shadow-color);
   flex: 1;
   max-width: 300px;
 }
@@ -226,10 +251,11 @@ main {
   align-items: center;
   gap: 0.5rem;
   background-color: var(--accent-color);
+  box-shadow: 4px 4px 8px 2px var(--shadow-color);
   color: white;
   border: none;
   padding: 0.6rem 1.25rem;
-  border-radius: 4px;
+  border-radius: 10px;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -571,7 +597,7 @@ main {
   }
 
   aside {
-    width: 100%;
+    width: 90%;
     border-right: none;
     border-bottom: 1px solid var(--border-color);
     padding: 1rem;
@@ -676,7 +702,7 @@ main {
 
 .action-card {
     background-color: var(--bg-secondary);
-    border-radius: 8px;
+    border-radius: 15px;
     padding: 1.25rem;
     border: 1px solid var(--border-color);
     transition: transform 0.2s, box-shadow 0.2s;
@@ -792,9 +818,9 @@ main {
 }
 
 /* ===== Settings Panel Styles ===== */
-.settings-panel {
+#global-settings-panel {
     background-color: var(--bg-secondary);
-    border-radius: 8px;
+    border-radius: 15px;
     box-shadow: 0 2px 8px var(--shadow-color);
     margin-bottom: 2rem;
 }
@@ -836,7 +862,7 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 0;
+    padding: 1.1rem 0;
     border-bottom: 1px solid var(--border-color);
 }
 
