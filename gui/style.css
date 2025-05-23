@@ -42,6 +42,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* ===== Header Styles ===== */
@@ -110,20 +111,41 @@ input:focus {
 }
 /* ===== panel styles ====== */
 .panel {
-  width: 90%;
+  width: 100%;
   margin: auto;
+  height: 72vh;
+  overflow-y: auto;
+  margin-top: 1.5em;
 }
+
+.panel::-webkit-scrollbar {
+  width: 10px;
+}
+.panel::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 10px;
+}
+.panel::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+}
+.panel::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
 /* ===== Layout Styles ===== */
 .layout {
   display: flex;
   flex: 1;
   height: calc(100vh - 4rem);
+  margin: auto;
+  margin-top: 1.5em;
+  width: 90%;
 }
 
 /* ===== Sidebar Styles ===== */
 aside {
   width: fit-content;
-  min-width: 15%;
+  min-width: 16%;
   height: fit-content;
   background-color: var(--bg-secondary);
   border-right: 3px solid var(--border-color);
@@ -133,8 +155,8 @@ aside {
   flex-direction: column;
   gap: 2rem;
   margin: auto;
-  margin-left: 5%;
-  margin-top: 1.5em;
+  margin-left: 0;
+  margin-top: 0;
   border-radius: 15px;
 }
 
@@ -205,26 +227,21 @@ aside {
 /* ===== Main Content Styles ===== */
 main {
   flex: 1;
-  padding: 1.5rem;
-  padding-left: 0;
-  overflow-y: auto;
-  position: relative;
   width: fit-content;
   height: fit-content;
   margin: auto;
   margin-top: 0;
+  margin-left: 2em;
+  margin-right: 0;
 }
 
 .top-actions {
-  width: 90%;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
   margin: auto;
-  margin-bottom: 1em;
   margin-top: 0;
-  margin-bottom: 2em;
 }
 
 .search-box {
@@ -295,6 +312,7 @@ main {
   border-radius: 12px;
   overflow: hidden;
   margin-top: 1rem;
+  box-shadow: 5px 5px 12px var(--shadow-color);
 }
 
 .shortcut-table thead th {
@@ -303,6 +321,10 @@ main {
   font-weight: 600;
   padding: 0.75rem 1rem;
   text-align: left;
+}
+
+.shortcut-table thead th:last-child {
+  text-align: right;
 }
 
 .shortcut-table tbody tr {
@@ -417,7 +439,7 @@ main {
 .floating-button {
   position: fixed;
   bottom: 2rem;
-  right: 2rem;
+  right: 5%;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -468,7 +490,7 @@ main {
   border-radius: 8px;
   width: fit-content;
   min-width: 25%;
-  max-height: 90vh;
+  max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   transform: translateY(0);
@@ -894,19 +916,12 @@ main {
 }
 
 .setting-control {
-    width: 180px;
+    width: fit-content;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-}
-
-.setting-control select,
-.setting-control input[type="number"] {
-    width: 100%;
-}
-
-.setting-control input[type="range"] {
-    width: 100%;
+    margin: auto;
+    margin-right: 0;
 }
 
 .range-value {
