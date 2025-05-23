@@ -1,18 +1,19 @@
 :root {
   /* Dark Theme Variables (Default) */
     --bg-primary: #1a171e;
-    --bg-secondary: #261f2b;
-    --bg-tertiary: #423058;
+    --bg-secondary: #3c2b48;
+    --bg-tertiary: #613e8d;
+    --accent-color: #ad54ff;
+    --accent-hover: #c790ff;
     --text-primary: #f3edc7;
     --text-secondary: #dcbdbd;
-    --accent-color: #7926c6;
-    --accent-hover: #9933ff;
-    --border-color: #41324d;
+    --border-color: #9071aa;
     --error-color: #ff4444;
     --success-color: #4caf50;
     --shadow-color: rgb(10 9 16 / 50%);
     --modal-bg: rgba(18, 18, 18, 0.95);
 }
+
 
 .light-theme {
   --bg-primary: #f5f5f5;
@@ -130,6 +131,7 @@ input:focus {
 }
 .panel::-webkit-scrollbar-track {
   background: var(--bg-secondary);
+  border-radius: 10px;
 }
 
 /* ===== Layout Styles ===== */
@@ -487,10 +489,10 @@ main {
 
 .modal-content {
   background-color: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: 15px;
   width: fit-content;
   min-width: 25%;
-  max-height: 80vh;
+  max-height: fit-content;
   overflow-y: auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   transform: translateY(0);
