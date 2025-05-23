@@ -42,10 +42,14 @@ svgObject.addEventListener("load", () => {
 function injectSvgCss(svgDoc) {
   const style = svgDoc.createElementNS("http://www.w3.org/2000/svg", "style");
   style.textContent = `
+    rect {
+      fill: #8a53a5;
+      stroke: #392841;
+      stroke-width: 1px;
+    }
     .highlighted-key rect {
-      fill: #00eaff !important;
-      stroke: #007a99 !important;
-      stroke-width: 2;
+      fill: #cc95dd;
+      stroke-width: 3px;
     }
   `;
   svgDoc.querySelector("svg").appendChild(style);
