@@ -43,12 +43,17 @@ function injectSvgCss(svgDoc) {
   const style = svgDoc.createElementNS("http://www.w3.org/2000/svg", "style");
   style.textContent = `
     rect {
-      fill: #8a53a5;
-      stroke: #392841;
+      fill: #86334e;
+      stroke: #c8869b;
       stroke-width: 1px;
     }
+      text {
+      font-family: 'Arial', sans-serif;
+      font-size: 12px;
+      fill: #f8c3d0;
+    }
     .highlighted-key rect {
-      fill: #cc95dd;
+      fill: #f7618f;
       stroke-width: 3px;
     }
   `;
@@ -1108,7 +1113,7 @@ function setActiveNavLink(activeLink) {
 // Global settings variables
 const globalSettings = {
   unusedKeys: "disable",
-  keyHoldDuration: 300,
+  keyHoldDuration: 700,
   repeatRate: 150,
   autoConnect: true,
   exclusiveMode: true,
@@ -1156,7 +1161,7 @@ function initializeSettingsControls() {
 function resetSettings() {
   const defaultSettings = {
     unusedKeys: "disable",
-    keyHoldDuration: 300,
+    keyHoldDuration: 700,
     repeatRate: 150,
     autoConnect: true,
     exclusiveMode: true,
