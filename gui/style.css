@@ -120,7 +120,7 @@ input:focus {
   width: 100%;
   margin: auto;
   height: 72vh;
-  overflow-y: auto;
+  background: transparent;
   margin-top: 1.5em;
 }
 
@@ -757,7 +757,9 @@ main {
   gap: 1rem;
   margin-top: 1rem;
 }
-
+#view-actions-panel{
+  overflow-y: auto;
+}
 .action-card {
   background-color: var(--bg-secondary);
   border-radius: 15px;
@@ -878,10 +880,9 @@ main {
 
 /* ===== Settings Panel Styles ===== */
 #global-settings-panel {
-  background-color: var(--bg-secondary);
   border-radius: 15px;
-  box-shadow: 0 2px 8px 5px var(--shadow-color);
   margin-bottom: 2rem;
+  overflow-y: auto;
 }
 
 .panel-header {
