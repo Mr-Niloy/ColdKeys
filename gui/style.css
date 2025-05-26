@@ -1,7 +1,7 @@
 :root {
   /* Dark Theme Variables (Default) */
   --bg-primary: #19151b;
-  --bg-secondary: #271d24;
+  --bg-secondary: #2b1c27;
   --bg-tertiary: #110c0f;
   --bg-gradient-a: #311d20;
   --bg-gradient-b: #1e1315;
@@ -11,24 +11,24 @@
   --text-secondary: #e7c4c4;
   --shadow-color: rgb(16 9 14 / 50%);
   --modal-bg: rgb(35 35 35 / 95%);
-  --border-color: #412630;
+  --border-color: #4d323c;
   --error-color: #ff4444;
   --success-color: #4caf50;
 }
 
 .light-theme {
-  --bg-primary: #cfdcf5;
-  --bg-secondary: #becff5;
-  --bg-tertiary: #aeb9d2;
-  --bg-gradient-a: #b2bcd0;
-  --bg-gradient-b: #8494b3;
-  --text-primary: #212121;
-  --text-secondary: #282b36;
-  --accent-color: #3f51b5;
-  --accent-hover: #5c6bc0;
-  --border-color: #94a4c2;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --modal-bg: rgba(245, 245, 245, 0.95);
+--bg-primary: #d0c7e3;
+    --bg-secondary: #d5caea;
+    --bg-tertiary: #e3e0ff;
+    --bg-gradient-a: #d0b8eb;
+    --bg-gradient-b: #ecd9fd;
+    --text-primary: #26050f;
+    --text-secondary: #2e3038;
+    --accent-color: #9248b3;
+    --accent-hover: #5f356b;
+    --border-color: #8b6dcb;
+    --shadow-color: rgb(51 29 6 / 13%);
+    --modal-bg: rgba(245, 245, 245, 0.95);
 }
 
 * {
@@ -55,7 +55,12 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(43deg, var(--bg-gradient-a), var(--bg-secondary), var(--bg-gradient-b));
+  background: linear-gradient(
+    43deg,
+    var(--bg-gradient-a),
+    var(--bg-secondary),
+    var(--bg-gradient-b)
+  );
   box-shadow: 0 5px 10px 5px var(--shadow-color);
   border: 1px solid var(--border-color);
   position: relative;
@@ -122,6 +127,7 @@ input:focus {
   height: 72vh;
   background: transparent;
   margin-top: 1.5em;
+  padding: 10px 0;
 }
 
 .panel::-webkit-scrollbar {
@@ -154,10 +160,14 @@ aside {
   width: fit-content;
   min-width: 16%;
   height: fit-content;
-  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-gradient-b));
+  background: linear-gradient(
+    135deg,
+    var(--bg-secondary),
+    var(--bg-gradient-b)
+  );
   border: 1px solid var(--border-color);
   border-right: 3px solid var(--border-color);
-  box-shadow: 5px 0px 10px var(--shadow-color);
+  box-shadow: 5px 0px 10px 6px var(--shadow-color);
   padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
@@ -257,6 +267,7 @@ main {
   box-shadow: 3px 3px 8px 2px var(--shadow-color);
   flex: 1;
   max-width: 35%;
+  border-radius: 15px;
 }
 
 .search-box i {
@@ -721,11 +732,15 @@ main {
 }
 
 .toast-dismiss {
+  width: 2em;
+  height: 2em;
   background: none;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
   padding: 0.25rem;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
 }
 
 @keyframes slideIn {
@@ -757,7 +772,7 @@ main {
   gap: 1rem;
   margin-top: 1rem;
 }
-#view-actions-panel{
+#view-actions-panel {
   overflow-y: auto;
 }
 .action-card {
