@@ -1,5 +1,6 @@
 # device_manager/linux.py
 from evdev import InputDevice, list_devices, ecodes
+from collections import defaultdict
 from utils.logger import get_logger
 from utils.led_control import save_led_state, restore_led_state_all
 
@@ -26,6 +27,26 @@ def list_keyboards():
                 keyboards.append((device.name, path))
         except Exception as e:
             logger.warning(f"Could not access device {path}: {e}")
+    return keyboards
+
+
+def list_primary_keyboards():
+    keyboards = []
+    phys_groups = defaultdict(list)
+
+    for path in list_devices():
+        try:
+            device = InputDevice(path)
+            if is_keyboard(device):
+                phys_groups[device.phys].append((device, path))
+        except Exception:
+            continue
+
+    for group in phys_groups.values():
+        # Pick the one with the most keys or just the first
+        best = max(group, key=lambda x: len(x[0].capabilities().get(ecodes.EV_KEY, [])))
+        keyboards.append((best[0].name, best[1]))
+
     return keyboards
 
 def open_device(path):
@@ -56,4 +77,3 @@ def ungrab_device(device):
     except Exception as e:
         logger.warning(f"Failed to ungrab device: {e}")
         return False
-    

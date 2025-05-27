@@ -10,7 +10,6 @@
   --text-primary: #fffdf2;
   --text-secondary: #e7c4c4;
   --shadow-color: rgb(16 9 14 / 50%);
-  --modal-bg: rgb(35 35 35 / 95%);
   --border-color: #4d323c;
   --error-color: #ff4444;
   --success-color: #4caf50;
@@ -28,7 +27,6 @@
     --accent-hover: #5f356b;
     --border-color: #8b6dcb;
     --shadow-color: rgb(51 29 6 / 13%);
-    --modal-bg: rgba(245, 245, 245, 0.95);
 }
 
 * {
@@ -511,7 +509,7 @@ main {
 }
 
 .modal-content {
-  background-color: var(--bg-secondary);
+  background: linear-gradient(337deg, var(--bg-secondary), var(--bg-gradient-a));
   border-radius: 15px;
   width: fit-content;
   min-width: 25%;
@@ -519,6 +517,7 @@ main {
   overflow-y: auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   transform: translateY(0);
+    border: 1px solid var(--border-color);
   transition: transform 0.3s;
 }
 
@@ -894,7 +893,7 @@ main {
 }
 
 /* ===== Settings Panel Styles ===== */
-#global-settings-panel {
+#device-settings-panel {
   border-radius: 15px;
   margin-bottom: 2rem;
   overflow-y: auto;
@@ -1033,4 +1032,98 @@ input:checked + .toggle-slider {
 input:checked + .toggle-slider:before {
   transform: translateX(22px);
   background-color: white;
+}
+
+/* Overlay & Popup */
+.settings-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: linear-gradient(1deg, var(--bg-secondary), var(--bg-gradient-b));
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    z-index: 9999;
+    padding: 24px;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.settings-popup::-webkit-scrollbar {
+  width: 10px;
+}
+.settings-popup::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 10px;
+}
+.settings-popup::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+}
+.settings-popup::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+}
+
+/* Header */
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.popup-header h2 {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.close-btn {
+  background: none;
+  color: var(--text-primary);
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+/* Group Title */
+.settings-group h3 {
+  margin-bottom: 12px;
+  margin-top: 20px;
+}
+
+
+/* Drop Zone */
+.drop-zone {
+  padding: 12px;
+  border: 2px dashed var(--border-color);
+  border-radius: 10px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.drop-zone:hover {
+  border-color: var(--accent-color);  
+  color: var(--text-primary);
+}
+
+.settings-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+.popup-overlay {
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
 }

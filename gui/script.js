@@ -25,7 +25,7 @@ const viewActionsPanel = document.getElementById("view-actions-panel");
 const assignMacrosPanel = document.getElementById("assign-macros-panel");
 const filterButtons = document.querySelectorAll(".filter-button");
 const actionCards = document.querySelectorAll(".action-card");
-const globalSettingsPanel = document.getElementById("global-settings-panel");
+const deviceSettingsPanel = document.getElementById("device-settings-panel");
 const holdDurationSlider = document.getElementById("key-hold-duration");
 const holdDurationValue = document.getElementById("hold-duration-value");
 const repeatRateSlider = document.getElementById("repeat-rate");
@@ -34,6 +34,7 @@ const debounceSlider = document.getElementById("key-debounce");
 const debounceValue = document.getElementById("debounce-value");
 const resetSettingsBtn = document.getElementById("reset-settings");
 const saveSettingsBtn = document.getElementById("save-settings");
+const SettingsButton = document.getElementById("settings-button");
 const svgObject = document.getElementById("keyboard-svg");
 svgObject.addEventListener("load", () => {
   const svgDoc = svgObject.contentDocument;
@@ -58,6 +59,11 @@ function injectSvgCss(svgDoc) {
     }
   `;
   svgDoc.querySelector("svg").appendChild(style);
+}
+SettingsButton.addEventListener("click", togglePopupSettings);
+function togglePopupSettings() {
+  document.getElementById("popup-settings").classList.toggle("hidden");
+  document.querySelector(".popup-overlay").classList.toggle("hidden");
 }
 
 // Initialize the application when DOM is loaded
@@ -174,7 +180,7 @@ function updateDeviceSelector() {
   // Add placeholder
   const placeholderOption = document.createElement("option");
   placeholderOption.value = "";
-  placeholderOption.textContent = "Select a keyboard";
+  placeholderOption.textContent = "Audo Detect";
   placeholderOption.disabled = true;
   placeholderOption.selected = true;
   deviceSelector.appendChild(placeholderOption);
@@ -1111,8 +1117,8 @@ function setActiveNavLink(activeLink) {
 }
 
 // Global settings variables
-const globalSettings = {
-  unusedKeys: "disable",
+const deviceSettings = {
+  unusedKeys: "passthrough",
   keyHoldDuration: 700,
   repeatRate: 150,
   autoConnect: true,
@@ -1124,20 +1130,20 @@ const globalSettings = {
 
 // Initialize settings controls
 function initializeSettingsControls() {
-  // Set initial values from globalSettings
-  document.getElementById("unused-keys").value = globalSettings.unusedKeys;
-  holdDurationSlider.value = globalSettings.keyHoldDuration;
-  holdDurationValue.textContent = globalSettings.keyHoldDuration;
-  repeatRateSlider.value = globalSettings.repeatRate;
-  repeatRateValue.textContent = globalSettings.repeatRate;
-  document.getElementById("auto-connect").checked = globalSettings.autoConnect;
+  // Set initial values from deviceSettings
+  document.getElementById("unused-keys").value = deviceSettings.unusedKeys;
+  holdDurationSlider.value = deviceSettings.keyHoldDuration;
+  holdDurationValue.textContent = deviceSettings.keyHoldDuration;
+  repeatRateSlider.value = deviceSettings.repeatRate;
+  repeatRateValue.textContent = deviceSettings.repeatRate;
+  document.getElementById("auto-connect").checked = deviceSettings.autoConnect;
   document.getElementById("exclusive-mode").checked =
-    globalSettings.exclusiveMode;
+    deviceSettings.exclusiveMode;
   document.getElementById("device-polling").value =
-    globalSettings.devicePolling;
-  debounceSlider.value = globalSettings.keyDebounce;
-  debounceValue.textContent = globalSettings.keyDebounce;
-  document.getElementById("debug-mode").checked = globalSettings.debugMode;
+    deviceSettings.devicePolling;
+  debounceSlider.value = deviceSettings.keyDebounce;
+  debounceValue.textContent = deviceSettings.keyDebounce;
+  document.getElementById("debug-mode").checked = deviceSettings.debugMode;
 
   // Add event listeners for range sliders
   holdDurationSlider.addEventListener("input", () => {
@@ -1160,7 +1166,7 @@ function initializeSettingsControls() {
 // Reset settings to default values
 function resetSettings() {
   const defaultSettings = {
-    unusedKeys: "disable",
+    unusedKeys: "passthrough",
     keyHoldDuration: 700,
     repeatRate: 150,
     autoConnect: true,
@@ -1170,8 +1176,8 @@ function resetSettings() {
     debugMode: false,
   };
 
-  // Update globalSettings
-  Object.assign(globalSettings, defaultSettings);
+  // Update deviceSettings
+  Object.assign(deviceSettings, defaultSettings);
 
   // Update UI
   document.getElementById("unused-keys").value = defaultSettings.unusedKeys;
@@ -1193,21 +1199,21 @@ function resetSettings() {
 
 // Save current settings
 function saveSettings() {
-  // Update globalSettings from UI
-  globalSettings.unusedKeys = document.getElementById("unused-keys").value;
-  globalSettings.keyHoldDuration = parseInt(holdDurationSlider.value);
-  globalSettings.repeatRate = parseInt(repeatRateSlider.value);
-  globalSettings.autoConnect = document.getElementById("auto-connect").checked;
-  globalSettings.exclusiveMode =
+  // Update deviceSettings from UI
+  deviceSettings.unusedKeys = document.getElementById("unused-keys").value;
+  deviceSettings.keyHoldDuration = parseInt(holdDurationSlider.value);
+  deviceSettings.repeatRate = parseInt(repeatRateSlider.value);
+  deviceSettings.autoConnect = document.getElementById("auto-connect").checked;
+  deviceSettings.exclusiveMode =
     document.getElementById("exclusive-mode").checked;
-  globalSettings.devicePolling = parseInt(
+  deviceSettings.devicePolling = parseInt(
     document.getElementById("device-polling").value
   );
-  globalSettings.keyDebounce = parseInt(debounceSlider.value);
-  globalSettings.debugMode = document.getElementById("debug-mode").checked;
+  deviceSettings.keyDebounce = parseInt(debounceSlider.value);
+  deviceSettings.debugMode = document.getElementById("debug-mode").checked;
 
   // Save to localStorage (would be server in real app)
-  localStorage.setItem("coldkeys_settings", JSON.stringify(globalSettings));
+  localStorage.setItem("coldkeys_settings", JSON.stringify(deviceSettings));
 
   // Apply settings to application
   applySettings();
@@ -1219,10 +1225,10 @@ function saveSettings() {
 function applySettings() {
   // Here you would implement the actual application of settings
   // For example, updating device manager with new polling rate
-  console.log("Applied settings:", globalSettings);
+  console.log("Applied settings:", deviceSettings);
 
   // Toggle debug mode
-  if (globalSettings.debugMode) {
+  if (deviceSettings.debugMode) {
     console.log("Debug mode enabled");
   }
 }
@@ -1233,21 +1239,21 @@ function loadSettings() {
   if (savedSettings) {
     try {
       const parsedSettings = JSON.parse(savedSettings);
-      Object.assign(globalSettings, parsedSettings);
+      Object.assign(deviceSettings, parsedSettings);
     } catch (error) {
       console.error("Error loading settings:", error);
     }
   }
 }
 
-// Update to show global settings panel when settings mode is selected
+// Update to show device Settings panel when settings mode is selected
 function showGlobalSettingsPanel() {
   // Hide other panels
   document.querySelector("#assign-macros-panel").classList.add("hidden");
   document.getElementById("add-shortcut").classList.add("hidden");
 
   // Show settings panel
-  globalSettingsPanel.classList.remove("hidden");
+  deviceSettingsPanel.classList.remove("hidden");
 }
 
 function hideGlobalSettingsPanel() {
@@ -1256,7 +1262,7 @@ function hideGlobalSettingsPanel() {
   document.getElementById("add-shortcut").classList.remove("hidden");
 
   // Hide settings panel
-  globalSettingsPanel.classList.add("hidden");
+  deviceSettingsPanel.classList.add("hidden");
 }
 
 // Add these lines to the initializeApp function
@@ -1273,4 +1279,38 @@ function initializeApp() {
   // Load and initialize settings
   loadSettings();
   initializeSettingsControls();
+}
+
+// Add event listeners for drag and drop import export  
+
+function triggerFileInput() {
+  document.getElementById("import-file").click();
+}
+
+function handleDrop(event) {
+  event.preventDefault();
+  const files = event.dataTransfer.files;
+  if (files.length) {
+    // handle import
+    showToast("Imported: " + files[0].name);
+  }
+}
+
+function exportProfile() {
+  const settings = { theme: "dark", overlays: true }; // Example object
+  const blob = new Blob([JSON.stringify(settings, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "coldkeys-profile.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function savePopupSettings() {
+  showToast("Settings saved!");
+}
+
+function resetPopupSettings() {
+  showToast("Settings reset to default!");
 }

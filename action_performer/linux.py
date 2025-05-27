@@ -6,6 +6,7 @@ logger = get_logger("action_performer")
 
 # Create virtual input device once
 ui = UInput()
+ui.name = "Virtual Input Device"
 
 def simulate_key(code, value):
     """

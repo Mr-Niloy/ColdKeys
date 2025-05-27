@@ -11,6 +11,8 @@
     />
   </head>
   <body class="dark-theme">
+    <div class="popup-overlay hidden"></div>
+
     <header>
       <div class="profile-selector">
         <select id="profile-dropdown">
@@ -38,7 +40,6 @@
         <div class="sidebar-section">
           <h3>Macro Keyboard</h3>
           <select id="device-selector">
-            <option value="" disabled selected>Select a keyboard</option>
             <option value="loading">Loading devices...</option>
           </select>
           <div class="device-status">
@@ -56,8 +57,8 @@
             <a href="#view-actions-panel" data-mode="view">
               <i class="fas fa-list"></i> View Actions
             </a>
-            <a href="#global-settings-panel" data-mode="settings">
-              <i class="fas fa-sliders-h"></i> Global Settings
+            <a href="#device-settings-panel" data-mode="settings">
+              <i class="fas fa-sliders-h"></i> Device Settings
             </a>
           </nav>
         </div>
@@ -76,23 +77,26 @@
         <!-- assign-macros (initaially visible)-->
         <section id="assign-macros-panel" class="panel">
           <table class="shortcut-table">
-           <thead>
+            <thead>
               <tr>
                 <th class="key-column">Key Combination</th>
                 <th class="action-column">Action</th>
                 <th class="device-column">Device</th>
                 <th class="controls-column">Controls</th>
-                <th class="status-column">Status</th> <!-- ✅ NEW -->
+                <th class="status-column">Status</th>
+                <!-- ✅ NEW -->
               </tr>
             </thead>
 
             <tbody class="shortcuts-container">
               <!-- Shortcut rows will be injected here -->
               <tr class="empty-state">
-                <td colspan="4" style="text-align: center; padding: 2rem;">
+                <td colspan="4" style="text-align: center; padding: 2rem">
                   <i class="fas fa-keyboard empty-icon"></i>
                   <p>No shortcuts assigned yet</p>
-                  <p class="empty-subtitle">Start by selecting a keyboard and adding shortcuts</p>
+                  <p class="empty-subtitle">
+                    Start by selecting a keyboard and adding shortcuts
+                  </p>
                 </td>
               </tr>
             </tbody>
@@ -303,8 +307,8 @@
             </div>
           </div>
         </section>
-        <!-- Global Settings Panel (initially hidden) -->
-        <section id="global-settings-panel" class="panel hidden">
+        <!-- Device Settings Panel (initially hidden) -->
+        <section id="device-settings-panel" class="panel hidden">
           <div class="panel-header">
             <h2>Keyboard Settings</h2>
             <p class="panel-description">
@@ -325,9 +329,11 @@
                 </div>
                 <div class="setting-control">
                   <select id="unused-keys">
-                    <option value="disable">Disable</option>
                     <option value="passthrough">Pass Through to System</option>
-                    <option value="block">Block (No Action)</option>
+                    <option value="block">Block (custom Action only)</option>
+                    <option value="noblock">
+                      Pass & Play (Action and Syatem)
+                    </option>
                   </select>
                 </div>
               </div>
@@ -566,6 +572,128 @@
         </div>
       </div>
     </div>
+
+    <!-- ⚙ Settings Popup Box -->
+    <div id="popup-settings" class="settings-popup hidden">
+
+      <div class="popup-header">
+        <h2>App Settings</h2>
+        <button class="close-button" onclick="togglePopupSettings()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Settings Group -->
+      <div class="settings-group">
+        <h3>Interface Preferences</h3>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="startup-toggle">Audo Start</label>
+            <span class="setting-description"
+              >Audo Start ColdKeys when System boots</span
+            >
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" id="startup-toggle" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="show-overlays">Show Key Overlays</label>
+            <span class="setting-description"
+              >Display shortcut overlays on screen</span
+            >
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" id="show-overlays" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Import / Export</h3>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label>Import Settings</label>
+            <span class="setting-description"
+              >Drag and drop JSON or click to upload</span
+            >
+          </div>
+          <div class="setting-control">
+            <div
+              class="drop-zone"
+              onclick="triggerFileInput()"
+              ondrop="handleDrop(event)"
+              ondragover="event.preventDefault()"
+            >
+              Drop file here or click
+            </div>
+            <input type="file" id="import-file" accept=".json" hidden />
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label>Export Profile</label>
+            <span class="setting-description"
+              >Download current settings as JSON</span
+            >
+          </div>
+          <div class="setting-control">
+            <button class="export-btn" onclick="exportProfile()">Export</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Other Options</h3>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="device-hotkey">Device Hotkey</label>
+            <span class="setting-description"
+              >Enable universal hotkey toggle</span
+            >
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" id="device-hotkey" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="notifications">Notifications</label>
+            <span class="setting-description"
+              >Show tips, errors and confirmations</span
+            >
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" id="notifications" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-footer">
+        <button id="reset-app-settings" onclick="resetPopupSettings()" class="secondary-button">Reset to Defaults</button>
+        <button id="save-app-settings" onclick="savePopupSettings()" class="primary-button">Save Settings</button>
+      </div>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>

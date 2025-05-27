@@ -11,7 +11,7 @@ CUSTOM_MAPPED_KEYS = {
     ecodes.KEY_F1,  # These won't be passed to OS
     ecodes.KEY_F2,
     ecodes.KEY_LEFTMETA,  # Example of custom mapped keys
-    ecodes.KEY_RIGHTMETA,
+
 }
 
 def read_key_events(device, simulate_unmapped=True):
@@ -30,8 +30,8 @@ def read_key_events(device, simulate_unmapped=True):
                 logger.info(f"{key_state}: {key_name} ({key_code}) at {key_timestamp:.4f}")
 
                 # Only simulate if device is grabbed and key is unmapped
-                if simulate_unmapped and key_code not in CUSTOM_MAPPED_KEYS:
-                    simulate_key(key_code, key_value)
+                # if simulate_unmapped and key_code not in CUSTOM_MAPPED_KEYS:
+                    # simulate_key(key_code, key_value)
 
     except KeyboardInterrupt:
         logger.info("Stopped input reading | KeyboardInterrupt received. Exiting.")
