@@ -1,75 +1,39 @@
+# input_handler/linux.py
+from evdev import ecodes
+from utils.logger import get_logger
+from action_performer.linux import simulate_key
 
+logger = get_logger("input_handler")
 
-# ===== input_handler/linux.py =====
-"""
-Linux Input Handler
-Manages event listening from multiple devices simultaneously
-"""
+# Define a placeholder for mapped keys
+# In real case, fetch this from user config or keymap handler
+CUSTOM_MAPPED_KEYS = {
+    ecodes.KEY_F1,  # These won't be passed to OS
+    ecodes.KEY_F2,
+    ecodes.KEY_LEFTMETA,  # Example of custom mapped keys
+    ecodes.KEY_RIGHTMETA,
+}
 
-import select
-from typing import List, Callable
-from evdev import InputDevice, InputEvent, ecodes
-from utils.logger import Logger
+def read_key_events(device, simulate_unmapped=True):
+    logger.info(f"Started reading events from {device.name} ({device.path})")
 
-class InputHandler:
-    def __init__(self):
-        self.logger = Logger()
-        self.running = False
-
-    def listen(self, devices: List[InputDevice], on_event: Callable[[InputDevice, InputEvent], None]) -> None:
-        """
-        Listen for events from multiple devices simultaneously
-        Uses select() to efficiently monitor multiple file descriptors
-        """
-        if not devices:
-            self.logger.log("No devices to listen to")
-            return
-
-        self.running = True
-        self.logger.log(f"Starting event listener for {len(devices)} devices")
-        
-        # Create device map for quick lookup
-        device_map = {device.fd: device for device in devices}
-        
-        try:
-            while self.running:
-                # Use select to wait for events from any device
-                ready_fds, _, _ = select.select(device_map.keys(), [], [], 1.0)  # 1 second timeout
-                
-                for fd in ready_fds:
-                    device = device_map[fd]
-                    try:
-                        # Read all available events from this device
-                        for event in device.read():
-                            self._process_event(device, event, on_event)
-                    except (OSError, IOError) as e:
-                        self.logger.log(f"Error reading from device {device.name}: {e}")
-                        # Remove the problematic device
-                        if fd in device_map:
-                            del device_map[fd]
-                        if not device_map:
-                            self.logger.log("No more devices available")
-                            self.running = False
-                            break
-                        
-        except KeyboardInterrupt:
-            self.logger.log("Event listener interrupted")
-        except Exception as e:
-            self.logger.log(f"Unexpected error in event listener: {e}")
-        finally:
-            self.running = False
-            self.logger.log("Event listener stopped")
-
-    def _process_event(self, device: InputDevice, event: InputEvent, callback: Callable) -> None:
-        """Process individual events and forward to callback"""
-        try:
-            # Only process key events (press/release)
+    try:
+        for event in device.read_loop():  # This blocks until an event is available
             if event.type == ecodes.EV_KEY:
-                callback(device, event)
-        except Exception as e:
-            self.logger.log(f"Error processing event from {device.name}: {e}")
+                key_code = event.code
+                key_value = event.value
+                key_timestamp = event.timestamp()
 
-    def stop(self) -> None:
-        """Stop the event listener"""
-        self.running = False
+                key_state = {0: "KEY_UP", 1: "KEY_DOWN", 2: "KEY_HOLD"}.get(key_value, "UNKNOWN")
+                key_name = ecodes.KEY.get(key_code, f"KEY_{key_code}")
 
+                logger.info(f"{key_state}: {key_name} ({key_code}) at {key_timestamp:.4f}")
+
+                # Only simulate if device is grabbed and key is unmapped
+                if simulate_unmapped and key_code not in CUSTOM_MAPPED_KEYS:
+                    simulate_key(key_code, key_value)
+
+    except KeyboardInterrupt:
+        logger.info("Stopped input reading | KeyboardInterrupt received. Exiting.")
+    except Exception as e:
+        logger.error(f"Error reading events: {e}")

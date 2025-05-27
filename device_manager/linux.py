@@ -1,110 +1,59 @@
-# ===== device_manager/linux.py =====
-"""
-Linux Device Manager
-Handles device detection, selection, and exclusive access
-"""
-
-import os
-from typing import List, Optional
+# device_manager/linux.py
 from evdev import InputDevice, list_devices, ecodes
-from utils.logger import Logger
+from utils.logger import get_logger
+from utils.led_control import save_led_state, restore_led_state_all
 
-class DeviceManager:
-    def __init__(self):
-        self.logger = Logger()
-        self.grabbed_devices = []
 
-    def list_devices(self) -> List[InputDevice]:
-        """
-        Enumerate all keyboard-capable input devices
-        Returns list of InputDevice objects that support keyboard input
-        """
-        keyboard_devices = []
-        
-        try:
-            device_paths = list_devices()
-            self.logger.log(f"Found {len(device_paths)} total input devices")
-            
-            for path in device_paths:
-                try:
-                    device = InputDevice(path)
-                    
-                    # Check if device has keyboard capabilities
-                    if self._is_keyboard_device(device):
-                        # Check if we can read from it
-                        if self._can_access_device(device):
-                            keyboard_devices.append(device)
-                            self.logger.log(f"Added keyboard device: {device.name} ({path})")
-                        else:
-                            self.logger.log(f"Cannot access device: {device.name} ({path})")
-                    
-                except (OSError, IOError) as e:
-                    self.logger.log(f"Cannot access device {path}: {e}")
-                    continue
-                    
-        except Exception as e:
-            self.logger.log(f"Error listing devices: {e}")
-            
-        return keyboard_devices
+logger = get_logger("device_manager")
 
-    def _is_keyboard_device(self, device: InputDevice) -> bool:
-        """Check if device has keyboard capabilities"""
-        capabilities = device.capabilities()
-        
-        # Must have EV_KEY events
-        if ecodes.EV_KEY not in capabilities:
-            return False
-        
-        # Check for common keyboard keys
+def is_keyboard(device):
+    """Check if the device is a keyboard based on capabilities."""
+    capabilities = device.capabilities()
+    if ecodes.EV_KEY in capabilities:
         keys = capabilities[ecodes.EV_KEY]
-        keyboard_keys = [
-            ecodes.KEY_A, ecodes.KEY_B, ecodes.KEY_C,
-            ecodes.KEY_SPACE, ecodes.KEY_ENTER, ecodes.KEY_ESC
-        ]
-        
-        # If it has at least some keyboard keys, consider it a keyboard
-        return any(key in keys for key in keyboard_keys)
+        # Heuristic: if it has alphabet keys, it's likely a keyboard
+        return any(k for k in keys if k in range(ecodes.KEY_A, ecodes.KEY_Z + 1))
+    return False
 
-    def _can_access_device(self, device: InputDevice) -> bool:
-        """Check if we can read from the device"""
+def list_keyboards():
+    """List and return all input devices that appear to be keyboards."""
+    keyboards = []
+    for path in list_devices():
         try:
-            # Try to read device info
-            _ = device.name
-            _ = device.path
-            return True
-        except:
-            return False
+            device = InputDevice(path)
+            if is_keyboard(device):
+                logger.info(f"Detected keyboard: {device.name} ({path})")
+                keyboards.append((device.name, path))
+        except Exception as e:
+            logger.warning(f"Could not access device {path}: {e}")
+    return keyboards
 
-    def choose_device(self, devices: List[InputDevice], index: int) -> Optional[InputDevice]:
-        """Select a device by index"""
-        if 0 <= index < len(devices):
-            return devices[index]
+def open_device(path):
+    try:
+        device = InputDevice(path)
+        logger.info(f"Opened device: {device.name} ({path})")
+        return device
+    except Exception as e:
+        logger.error(f"Failed to open device {path}: {e}")
         return None
 
-    def grab_device(self, device: InputDevice) -> None:
-        """
-        Take exclusive control of the device
-        Prevents the device from sending events to other applications
-        """
-        try:
-            device.grab()
-            self.grabbed_devices.append(device)
-            self.logger.log(f"Successfully grabbed device: {device.name}")
-        except Exception as e:
-            self.logger.log(f"Failed to grab device {device.name}: {e}")
-            raise
+def grab_device(device):
+    try:
+        save_led_state(device)
+        device.grab()
+        logger.info(f"Grabbed device: {device.name} ({device.path})")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to grab device: {e}")
+        return False
 
-    def release_device(self, device: InputDevice) -> None:
-        """Release exclusive control of the device"""
-        try:
-            device.ungrab()
-            if device in self.grabbed_devices:
-                self.grabbed_devices.remove(device)
-            self.logger.log(f"Released device: {device.name}")
-        except Exception as e:
-            self.logger.log(f"Failed to release device {device.name}: {e}")
-
-    def release_all_devices(self) -> None:
-        """Release all grabbed devices"""
-        for device in self.grabbed_devices[:]:  # Copy list to avoid modification during iteration
-            self.release_device(device)
+def ungrab_device(device):
+    try:
+        device.ungrab()
+        restore_led_state_all()
+        logger.info(f"Ungrabbed device: {device.name} ({device.path})")
+        return True
+    except Exception as e:
+        logger.warning(f"Failed to ungrab device: {e}")
+        return False
+    
