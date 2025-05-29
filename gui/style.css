@@ -1,42 +1,3 @@
-:root {
-  /* Dark Theme Variables (Default) */
-  --bg-primary: #19151b;
-  --bg-secondary: #2b1c27;
-  --bg-tertiary: #110c0f;
-  --bg-gradient-a: #311d20;
-  --bg-gradient-b: #1e1315;
-  --accent-color: #d52f67;
-  --accent-hover: #d5688b;
-  --text-primary: #fffdf2;
-  --text-secondary: #e7c4c4;
-  --shadow-color: rgb(16 9 14 / 50%);
-  --border-color: #4d323c;
-  --error-color: #ff4444;
-  --success-color: #4caf50;
-}
-
-.light-theme {
---bg-primary: #d0c7e3;
-    --bg-secondary: #d5caea;
-    --bg-tertiary: #e3e0ff;
-    --bg-gradient-a: #d0b8eb;
-    --bg-gradient-b: #ecd9fd;
-    --text-primary: #26050f;
-    --text-secondary: #2e3038;
-    --accent-color: #9248b3;
-    --accent-hover: #5f356b;
-    --border-color: #8b6dcb;
-    --shadow-color: rgb(51 29 6 / 13%);
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    sans-serif;
-}
-
 body {
   background: linear-gradient(-50deg, var(--bg-primary), var(--bg-secondary));
   color: var(--text-primary);
@@ -98,26 +59,6 @@ header {
   background-color: var(--bg-tertiary);
 }
 
-select,
-button,
-input {
-  color: var(--text-primary);
-  background-color: var(--bg-tertiary);
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  box-shadow: 2px 2px 5px 3px var(--shadow-color);
-}
-
-select:focus,
-button:focus,
-input:focus {
-  outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2);
-}
 /* ===== panel styles ====== */
 .panel {
   width: 100%;
@@ -190,14 +131,62 @@ aside {
   margin-bottom: 0.5rem;
 }
 
-.device-status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
+#device-selector{
+  max-height: 40vh;
+  overflow-y: auto;
+  width: 100%;
+  padding: 5px;
 }
 
+#device-selector::-webkit-scrollbar {
+  width: 10px;
+}
+#device-selector::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 10px;
+}
+#device-selector::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+}
+#device-selector::-webkit-scrollbar-track {
+  display: none;
+}
+
+.dev-option{
+  margin: 5px auto;
+  margin-left: 0;
+  width: 100%;
+  display: flex;
+  background: var(--bg-gradient-b);
+  color: var(--text-secondary);
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: linear 100ms;
+}
+#device-selector .selected{
+  background: var(--bg-tertiary);
+}
+#device-selector .presed{
+  animation: optionPresed .5s cubic-bezier(0, 0.5, 1, 1) 1;
+}
+@keyframes optionPresed {
+  to{
+    background: var(--accent-color);
+  }
+}
+.dev-option:hover{
+  background: var(--border-color);
+}
+.dev-option p{
+  width: fit-content;
+  margin: auto;
+  margin-left: 0;
+}
+.dev-option i{
+  margin: auto 0;
+  margin-right: 10px;
+}
 .status-dot {
   width: 10px;
   height: 10px;
@@ -281,45 +270,6 @@ main {
   padding-left: 2.5rem;
 }
 
-.primary-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: var(--accent-color);
-  box-shadow: 4px 4px 8px 2px var(--shadow-color);
-  border: 1px solid var(--border-color);
-  color: white;
-  padding: 0.6rem 1.25rem;
-  border-radius: 10px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.primary-button:hover {
-  background-color: var(--accent-hover);
-}
-
-.primary-button.disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.secondary-button {
-  background-color: transparent;
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  box-shadow: 4px 4px 8px 2px var(--shadow-color);
-  padding: 0.6rem 1.25rem;
-  border-radius: 10px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.secondary-button:hover {
-  background-color: var(--bg-tertiary);
-}
 
 /* ===== Shortcut List Styles ===== */
 .shortcut-table {
@@ -536,17 +486,6 @@ main {
 .modal-header h2 {
   font-size: 1.25rem;
   font-weight: 600;
-}
-
-.close-button {
-  background: none;
-  border: 1px solid var(--border-color);
-  border-radius: 50%;
-  color: var(--text-secondary);
-  font-size: 1.2rem;
-  width: 2em;
-  height: 2em;
-  cursor: pointer;
 }
 
 .modal-body {
@@ -1079,14 +1018,6 @@ input:checked + .toggle-slider:before {
 .popup-header h2 {
   font-size: 1.5rem;
   color: var(--text-secondary);
-}
-
-.close-btn {
-  background: none;
-  color: var(--text-primary);
-  border: none;
-  font-size: 1.25rem;
-  cursor: pointer;
 }
 
 /* Group Title */

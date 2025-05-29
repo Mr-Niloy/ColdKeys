@@ -10,7 +10,6 @@ let isDarkTheme = true;
 // DOM elements
 const deviceSelector = document.getElementById("device-selector");
 const profileDropdown = document.getElementById("profile-dropdown");
-const deviceStatus = document.querySelector(".device-status");
 const shortcutsContainer = document.querySelector(".shortcuts-container");
 const emptyState = document.querySelector(".empty-state");
 const addShortcutButton = document.getElementById("add-shortcut");
@@ -162,34 +161,33 @@ function fetchDevices() {
   // Simulate API call to backend
   setTimeout(() => {
     keyboardDevices = [
-      { id: "keyboard1", name: "Logitech G Pro" },
-      { id: "keyboard2", name: "Razer BlackWidow" },
-      { id: "keyboard3", name: "Generic USB Keyboard" },
+      { id: "event9", type : 'mouse', name: "Logitech G Pro" },
+      { id: "event3", type : 'keybord', name: "Generic USB Keyboard" },
+      { id: "event12", type : 'switch', name: "Power button" },
     ];
 
     // Update device selector
     updateDeviceSelector();
-  }, 1000);
+  }, 300);
 }
 
 // Update device selector dropdown with available devices
 function updateDeviceSelector() {
   // Clear loading option
   deviceSelector.innerHTML = "";
-
-  // Add placeholder
-  const placeholderOption = document.createElement("option");
-  placeholderOption.value = "";
-  placeholderOption.textContent = "Auto Detect";
-  placeholderOption.disabled = true;
-  placeholderOption.selected = true;
-  deviceSelector.appendChild(placeholderOption);
-
+  // set icons
+  const icons = {
+    mouse: '<i class="fa-solid fa-computer-mouse"></i>',
+    keybord: '<i class="fa-solid fa-keyboard"></i>',
+    switch : '<i class="fa-solid fa-toggle-on"></i>'
+  }
   // Add devices
   keyboardDevices.forEach((device) => {
-    const option = document.createElement("option");
+    const option = document.createElement("div");
+    option.innerHTML = `${icons[device.type]} <p>${device.name}</p>`
     option.value = device.id;
-    option.textContent = device.name;
+    option.classList.add('dev-option')
+    device.element = option;
     deviceSelector.appendChild(option);
   });
   renderShortcuts();
@@ -201,13 +199,6 @@ function handleDeviceChange(e) {
   selectedKeyboard = keyboardDevices.find((device) => device.id === deviceId);
 
   if (selectedKeyboard) {
-    // Update status
-    const statusDot = document.querySelector(".status-dot");
-    const statusText = document.querySelector(".status-text");
-
-    statusDot.classList.remove("disconnected");
-    statusDot.classList.add("connected");
-    statusText.textContent = "Connected";
 
     console.log(`Selected keyboard: ${selectedKeyboard.name}`);
   }

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ColdKeys - Macro Keyboard Manager</title>
+    <link rel="stylesheet" href="auto.css" />
     <link rel="stylesheet" href="style.css" />
     <link
       rel="stylesheet"
@@ -38,18 +39,17 @@
     <div class="layout">
       <aside>
         <div class="sidebar-section">
-          <h3>Macro Keyboard</h3>
-          <select id="device-selector">
-            <option value="loading">Loading devices...</option>
-          </select>
-          <div class="device-status">
-            <span class="status-dot disconnected"></span>
-            <span class="status-text">Disconnected</span>
+          <h3>All Devices</h3>
+          <div id="device-selector">
+            <div class="dev-option" value="loading">
+              <i class="fa-solid fa-spinner"></i>
+              <p>Loading devices...</p>
+            </div>
           </div>
         </div>
 
         <div class="sidebar-section">
-          <h3>Modes</h3>
+          <h3>Tabs</h3>
           <nav class="nav-links">
             <a href="#assign-macros-panel" class="active" data-mode="assign">
               <i class="fas fa-keyboard"></i> Assign Macros
@@ -695,5 +695,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="service.js"></script>
   </body>
 </html>
