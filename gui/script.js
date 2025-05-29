@@ -250,6 +250,7 @@ function loadProfile(profileName) {
         modifiers: [],
         deviceId: "event9",
         status: true,
+        date: '12 Mar 25',
         actionType: "launch",
         action: { path: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" },
       },
@@ -258,6 +259,8 @@ function loadProfile(profileName) {
         key: "M",
         modifiers: ["Ctrl", "Alt"],
         deviceId: "event9",
+        status: true,
+        date: '12 Mar 25',
         actionType: "volume",
         action: { command: "mute" },
       },
@@ -267,6 +270,7 @@ function loadProfile(profileName) {
         modifiers: ["Shift"],
         deviceId: "event3",
         status: true,
+        date: '12 Mar 25',
         actionType: "media",
         action: { command: "play_pause" },
       },
@@ -279,6 +283,7 @@ function loadProfile(profileName) {
         modifiers: [],
         deviceId: "event3",
         status: false,
+        date: '12 Mar 25',
         actionType: "hotkey",
         action: { keys: "Ctrl+F" },
       },
@@ -288,6 +293,7 @@ function loadProfile(profileName) {
         modifiers: [],
         deviceId: "event9",
         status: true,
+        date: '12 Mar 25',
         actionType: "launch",
         action: { path: "C:\\Program Files\\Steam\\steam.exe" },
       },
@@ -300,6 +306,7 @@ function loadProfile(profileName) {
         modifiers: [],
         deviceId: "event9",
         status: true,
+        date: '12 Mar 25',
         actionType: "launch",
         action: {
           path: "C:\\Program Files\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE",
@@ -311,6 +318,7 @@ function loadProfile(profileName) {
         modifiers: [],
         deviceId: "event3",
         status: false,
+        date: '12 Mar 25',
         actionType: "launch",
         action: {
           path: "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
@@ -436,6 +444,11 @@ function createShortcutElement(shortcut) {
   controls.appendChild(deleteButton);
   controlCell.appendChild(controls);
 
+
+    // === created time (optional, placeholder) ===
+  const adedCell = document.createElement("td");
+  adedCell.textContent = shortcut.date
+
   // === Status Toggle ===
   const statusCell = document.createElement("td");
   const toggleWrapper = document.createElement("div");
@@ -464,6 +477,7 @@ function createShortcutElement(shortcut) {
   row.appendChild(keyCell);
   row.appendChild(actionCell);
   row.appendChild(deviceCell);
+  row.appendChild(adedCell);
   row.appendChild(controlCell);
   row.appendChild(statusCell); // ✅ NEW
 
