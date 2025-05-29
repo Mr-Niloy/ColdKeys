@@ -180,7 +180,7 @@ function updateDeviceSelector() {
   // Add placeholder
   const placeholderOption = document.createElement("option");
   placeholderOption.value = "";
-  placeholderOption.textContent = "Audo Detect";
+  placeholderOption.textContent = "Auto Detect";
   placeholderOption.disabled = true;
   placeholderOption.selected = true;
   deviceSelector.appendChild(placeholderOption);
@@ -501,7 +501,7 @@ function formatCommand(command) {
 // Open key listen modal
 function openKeyListenModal() {
   if (!selectedKeyboard) {
-    alert("Please select a keyboard first!");
+    showToastError("Please select a keyboard first!");
     return;
   }
 
@@ -841,11 +841,11 @@ function saveAction() {
 
   // Validate required fields
   if ((actionType === "launch" || actionType === "script") && !action.path) {
-    alert("Please enter a path");
+    showToastError("Please enter a path");
     return;
   }
   if (actionType === "hotkey" && !action.keys) {
-    alert("Please enter a hotkey combination");
+    showToastError("Please enter a hotkey combination");
     return;
   }
 
@@ -957,8 +957,44 @@ function showToast(message) {
   const toast = document.createElement("div");
   toast.className = "toast";
   toast.innerHTML = `
-        <div class="toast-content">
+        <div class="toast-content toast-success">
             <i class="fas fa-check-circle toast-icon"></i>
+            <span>${message}</span>
+        </div>
+    `;
+
+  // Add to container
+  toastContainer.appendChild(toast);
+
+  // Remove after animation
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 10);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 3000);
+}
+// Show toast notification
+function showToastError(message) {
+  // Create toast container if it doesn't exist
+  let toastContainer = document.querySelector(".toast-container");
+
+  if (!toastContainer) {
+    toastContainer = document.createElement("div");
+    toastContainer.className = "toast-container";
+    document.body.appendChild(toastContainer);
+  }
+
+  // Create toast
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.innerHTML = `
+        <div class="toast-content toast-error">
+            <i class="fa-solid fa-circle-info toast-icon"></i>
             <span>${message}</span>
         </div>
     `;

@@ -235,7 +235,7 @@ aside {
 }
 
 .nav-links a.active {
-  background-color: var(--bg-gradient-a);
+  background-color: var(--border-color);
   color: var(--text-primary);
   font-weight: 500;
 }
@@ -570,7 +570,7 @@ main {
   border-radius: 15px;
   padding: 3rem 1rem;
   margin: 1rem 0;
-  border: 1px dashed var(--border-color);
+  border: 2px dashed var(--border-color);
 }
 
 .keyboard-svg {
