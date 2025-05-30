@@ -37,112 +37,109 @@ class NodeEditor {
     this.connectionUpdateQueued = false;
 
     this.nodeTemplates = {
-    // ✨ INPUT ONLY NODES (System or Device Source)
+    // Input Only Nodes
     'Time Trigger': {
         type: 'input',
+        category: 'input',
         icon: 'fas fa-clock',
         pins: {
             inputs: [],
             outputs: [
                 { name: 'tick', data_type: 'flow' },
-                { name: 'timestamp', data_type: 'number' }
+                { name: 'timestamp', data_type: 'time' }
             ]
         }
     },
     'Key Trigger': {
         type: 'input',
+        category: 'input',
         icon: 'fas fa-keyboard',
         pins: {
             inputs: [],
             outputs: [
                 { name: 'key', data_type: 'key' },
                 { name: 'device', data_type: 'device' },
-                { name: 'action', data_type: 'string' },
-                { name: 'on_press', data_type: 'flow' },
-                { name: 'on_release', data_type: 'flow' }
+                { name: 'action', data_type: 'string' }
             ]
         }
     },
     'Mouse Trigger': {
         type: 'input',
+        category: 'input',
         icon: 'fas fa-mouse',
         pins: {
             inputs: [],
             outputs: [
                 { name: 'button', data_type: 'string' },
                 { name: 'click_type', data_type: 'string' },
-                { name: 'position_x', data_type: 'number' },
-                { name: 'position_y', data_type: 'number' },
-                { name: 'on_click', data_type: 'flow' }
+                { name: 'position', data_type: 'string' }
             ]
         }
     },
     'Window Focus': {
         type: 'input',
+        category: 'input',
         icon: 'fas fa-window-maximize',
         pins: {
             inputs: [],
             outputs: [
-                { name: 'window_title', data_type: 'string' },
                 { name: 'app_name', data_type: 'string' },
-                { name: 'on_focus', data_type: 'flow' },
-                { name: 'on_blur', data_type: 'flow' }
+                { name: 'window_title', data_type: 'string' },
+                { name: 'focused', data_type: 'bool' }
             ]
         }
     },
     'Device Connect': {
         type: 'input',
+        category: 'input',
         icon: 'fas fa-usb',
         pins: {
             inputs: [],
             outputs: [
                 { name: 'device', data_type: 'device' },
-                { name: 'device_name', data_type: 'string' },
-                { name: 'on_connect', data_type: 'flow' },
-                { name: 'on_disconnect', data_type: 'flow' }
+                { name: 'connected', data_type: 'bool' }
             ]
         }
     },
     'System Event': {
         type: 'input',
+        category: 'input',
         icon: 'fas fa-desktop',
         pins: {
             inputs: [],
             outputs: [
                 { name: 'event_type', data_type: 'string' },
-                { name: 'event_data', data_type: 'string' },
-                { name: 'on_login', data_type: 'flow' },
-                { name: 'on_wake', data_type: 'flow' },
-                { name: 'on_sleep', data_type: 'flow' }
+                { name: 'timestamp', data_type: 'time' }
             ]
         }
     },
 
-    // 🔌 OUTPUT ONLY NODES
+    // Output Only Nodes
     'Pass to OS': {
         type: 'output',
-        icon: 'fas fa-share-square',
+        category: 'output',
+        icon: 'fas fa-share',
         pins: {
             inputs: [
-                { name: 'trigger', data_type: 'flow' },
-                { name: 'data', data_type: 'string' }
+                { name: 'trigger', data_type: 'flow' }
             ],
             outputs: []
         }
     },
     'Block Input': {
         type: 'output',
+        category: 'output',
         icon: 'fas fa-ban',
         pins: {
             inputs: [
-                { name: 'trigger', data_type: 'flow' },
-                { name: 'duration', data_type: 'number' }
+                { name: 'trigger', data_type: 'flow' }
             ],
             outputs: []
         }
     },
     'Send Notification': {
         type: 'output',
+        category: 'output',
         icon: 'fas fa-bell',
         pins: {
             inputs: [
@@ -155,6 +152,7 @@ class NodeEditor {
     },
     'Show Overlay': {
         type: 'output',
+        category: 'output',
         icon: 'fas fa-layer-group',
         pins: {
             inputs: [
@@ -167,53 +165,46 @@ class NodeEditor {
     },
     'Run Script': {
         type: 'output',
+        category: 'output',
         icon: 'fas fa-code',
         pins: {
             inputs: [
                 { name: 'script_path', data_type: 'string' },
-                { name: 'arguments', data_type: 'string' },
                 { name: 'trigger', data_type: 'flow' }
             ],
-            outputs: [
-                { name: 'on_complete', data_type: 'flow' },
-                { name: 'exit_code', data_type: 'number' },
-                { name: 'output', data_type: 'string' }
-            ]
+            outputs: []
         }
     },
     'Open App': {
         type: 'output',
+        category: 'output',
         icon: 'fas fa-external-link-alt',
         pins: {
             inputs: [
-                { name: 'file_path', data_type: 'string' },
-                { name: 'arguments', data_type: 'string' },
+                { name: 'path', data_type: 'string' },
                 { name: 'trigger', data_type: 'flow' }
             ],
-            outputs: [
-                { name: 'on_done', data_type: 'flow' }
-            ]
+            outputs: []
         }
     },
     'Write to File': {
         type: 'output',
+        category: 'output',
         icon: 'fas fa-file-alt',
         pins: {
             inputs: [
-                { name: 'file_path', data_type: 'string' },
+                { name: 'path', data_type: 'string' },
                 { name: 'content', data_type: 'string' },
-                { name: 'append', data_type: 'bool' },
                 { name: 'trigger', data_type: 'flow' }
             ],
-            outputs: [
-                { name: 'on_complete', data_type: 'flow' }
-            ]
+            outputs: []
         }
     },
 
-    // ↔️ BIDIRECTIONAL NODES (Modifiers/Logic)
+    // Logic/Bidirectional Nodes
     'Condition': {
         type: 'logic',
+        category: 'logic',
         icon: 'fas fa-code-branch',
         pins: {
             inputs: [
@@ -228,25 +219,23 @@ class NodeEditor {
     },
     'Switch/Case': {
         type: 'logic',
+        category: 'logic',
         icon: 'fas fa-random',
         pins: {
             inputs: [
                 { name: 'value', data_type: 'string' },
-                { name: 'case1', data_type: 'string' },
-                { name: 'case2', data_type: 'string' },
-                { name: 'case3', data_type: 'string' },
                 { name: 'input', data_type: 'flow' }
             ],
             outputs: [
-                { name: 'case1_out', data_type: 'flow' },
-                { name: 'case2_out', data_type: 'flow' },
-                { name: 'case3_out', data_type: 'flow' },
+                { name: 'case_1', data_type: 'flow' },
+                { name: 'case_2', data_type: 'flow' },
                 { name: 'default', data_type: 'flow' }
             ]
         }
     },
     'Wait/Delay': {
         type: 'logic',
+        category: 'logic',
         icon: 'fas fa-hourglass-half',
         pins: {
             inputs: [
@@ -260,6 +249,7 @@ class NodeEditor {
     },
     'Loop': {
         type: 'logic',
+        category: 'logic',
         icon: 'fas fa-redo',
         pins: {
             inputs: [
@@ -268,36 +258,32 @@ class NodeEditor {
             ],
             outputs: [
                 { name: 'iteration', data_type: 'flow' },
-                { name: 'index', data_type: 'number' },
-                { name: 'on_complete', data_type: 'flow' }
+                { name: 'complete', data_type: 'flow' }
             ]
         }
     },
     'Compare': {
         type: 'logic',
-        icon: 'fas fa-equals',
+        category: 'logic',
+        icon: 'fas fa-balance-scale',
         pins: {
             inputs: [
                 { name: 'value_a', data_type: 'number' },
-                { name: 'value_b', data_type: 'number' },
-                { name: 'operator', data_type: 'string' }
+                { name: 'value_b', data_type: 'number' }
             ],
             outputs: [
-                { name: 'result', data_type: 'bool' },
-                { name: 'greater', data_type: 'bool' },
-                { name: 'less', data_type: 'bool' },
-                { name: 'equal', data_type: 'bool' }
+                { name: 'result', data_type: 'bool' }
             ]
         }
     },
     'Math': {
         type: 'logic',
+        category: 'logic',
         icon: 'fas fa-calculator',
         pins: {
             inputs: [
-                { name: 'value_a', data_type: 'number' },
-                { name: 'value_b', data_type: 'number' },
-                { name: 'operation', data_type: 'string' }
+                { name: 'a', data_type: 'number' },
+                { name: 'b', data_type: 'number' }
             ],
             outputs: [
                 { name: 'result', data_type: 'number' }
@@ -306,65 +292,65 @@ class NodeEditor {
     },
     'String Join/Split': {
         type: 'logic',
+        category: 'logic',
         icon: 'fas fa-text-width',
         pins: {
             inputs: [
-                { name: 'string1', data_type: 'string' },
-                { name: 'string2', data_type: 'string' },
-                { name: 'separator', data_type: 'string' },
-                { name: 'operation', data_type: 'string' }
+                { name: 'input_a', data_type: 'string' },
+                { name: 'input_b', data_type: 'string' },
+                { name: 'separator', data_type: 'string' }
             ],
             outputs: [
-                { name: 'result', data_type: 'string' },
-                { name: 'parts', data_type: 'string' }
+                { name: 'result', data_type: 'string' }
             ]
         }
     },
     'Convert Type': {
         type: 'logic',
+        category: 'logic',
         icon: 'fas fa-exchange-alt',
         pins: {
             inputs: [
-                { name: 'input', data_type: 'string' },
-                { name: 'target_type', data_type: 'string' }
+                { name: 'input', data_type: 'string' }
             ],
             outputs: [
-                { name: 'output', data_type: 'string' },
-                { name: 'as_number', data_type: 'number' },
-                { name: 'as_bool', data_type: 'bool' }
+                { name: 'string', data_type: 'string' },
+                { name: 'number', data_type: 'number' },
+                { name: 'bool', data_type: 'bool' }
             ]
         }
     },
 
-    // 🏠 DEVICE INFO NODES (Read-only)
+    // Device Info Nodes
     'Device Name': {
-        type: 'info',
+        type: 'device_info',
+        category: 'device_info',
         icon: 'fas fa-tag',
         pins: {
             inputs: [
                 { name: 'device', data_type: 'device' }
             ],
             outputs: [
-                { name: 'name', data_type: 'string' },
-                { name: 'manufacturer', data_type: 'string' }
+                { name: 'name', data_type: 'string' }
             ]
         }
     },
     'Polling Rate': {
-        type: 'info',
+        type: 'device_info',
+        category: 'device_info',
         icon: 'fas fa-tachometer-alt',
         pins: {
             inputs: [
                 { name: 'device', data_type: 'device' }
             ],
             outputs: [
-                { name: 'rate_hz', data_type: 'number' },
-                { name: 'interval_ms', data_type: 'number' }
+                { name: 'rate_hz', data_type: 'number' }
             ]
         }
     },
-    'Vendor ID / Product ID': {
-        type: 'info',
+    'Vendor/Product ID': {
+        type: 'device_info',
+        category: 'device_info',
         icon: 'fas fa-fingerprint',
         pins: {
             inputs: [
@@ -372,59 +358,55 @@ class NodeEditor {
             ],
             outputs: [
                 { name: 'vendor_id', data_type: 'string' },
-                { name: 'product_id', data_type: 'string' },
-                { name: 'serial', data_type: 'string' }
+                { name: 'product_id', data_type: 'string' }
             ]
         }
     },
     'Device Type': {
-        type: 'info',
-        icon: 'fas fa-question-circle',
+        type: 'device_info',
+        category: 'device_info',
+        icon: 'fas fa-microchip',
         pins: {
             inputs: [
                 { name: 'device', data_type: 'device' }
             ],
             outputs: [
-                { name: 'type', data_type: 'string' },
-                { name: 'is_keyboard', data_type: 'bool' },
-                { name: 'is_mouse', data_type: 'bool' },
-                { name: 'is_switch', data_type: 'bool' }
+                { name: 'type', data_type: 'string' }
             ]
         }
     },
     'Connected State': {
-        type: 'info',
+        type: 'device_info',
+        category: 'device_info',
         icon: 'fas fa-plug',
         pins: {
             inputs: [
                 { name: 'device', data_type: 'device' }
             ],
             outputs: [
-                { name: 'is_connected', data_type: 'bool' },
-                { name: 'connection_time', data_type: 'number' }
+                { name: 'connected', data_type: 'bool' }
             ]
         }
     },
 
-    // ✉️ DEVICE OUTPUT NODES
+    // Device Output Nodes
     'Set LED Color': {
         type: 'device_output',
+        category: 'device_output',
         icon: 'fas fa-lightbulb',
         pins: {
             inputs: [
                 { name: 'device', data_type: 'device' },
                 { name: 'key', data_type: 'key' },
                 { name: 'color', data_type: 'string' },
-                { name: 'brightness', data_type: 'number' },
                 { name: 'trigger', data_type: 'flow' }
             ],
-            outputs: [
-                { name: 'on_complete', data_type: 'flow' }
-            ]
+            outputs: []
         }
     },
     'Vibrate Device': {
         type: 'device_output',
+        category: 'device_output',
         icon: 'fas fa-mobile-alt',
         pins: {
             inputs: [
@@ -433,31 +415,176 @@ class NodeEditor {
                 { name: 'duration', data_type: 'number' },
                 { name: 'trigger', data_type: 'flow' }
             ],
-            outputs: [
-                { name: 'on_complete', data_type: 'flow' }
-            ]
+            outputs: []
         }
     },
     'Play Sound': {
         type: 'device_output',
+        category: 'device_output',
         icon: 'fas fa-volume-up',
         pins: {
             inputs: [
                 { name: 'device', data_type: 'device' },
                 { name: 'frequency', data_type: 'number' },
                 { name: 'duration', data_type: 'number' },
-                { name: 'volume', data_type: 'number' },
                 { name: 'trigger', data_type: 'flow' }
             ],
-            outputs: [
-                { name: 'on_complete', data_type: 'flow' }
-            ]
+            outputs: []
         }
     }
 };
 
+this.nodeCategories = {
+    'input': {
+        title: 'Input Nodes',
+        icon: 'fas fa-sign-in-alt',
+        color: '#81c784'
+    },
+    'output': {
+        title: 'Output Nodes',  
+        icon: 'fas fa-sign-out-alt',
+        color: '#f44336'
+    },
+    'logic': {
+        title: 'Logic Nodes',
+        icon: 'fas fa-cogs',
+        color: '#ff9800'
+    },
+    'device_info': {
+        title: 'Device Info',
+        icon: 'fas fa-info-circle',
+        color: '#ba68c8'
+    },
+    'device_output': {
+        title: 'Device Output',
+        icon: 'fas fa-broadcast-tower',
+        color: '#64b5f6'
+    }
+};
     this.initEvents();
+
+    this.initEvents();
+    this.initializeSidebar(); // ADD THIS
+    this.initContextMenu();   // ADD THIS
   }
+  initializeSidebar() {
+    this.buildSidebar();
+    this.initSidebarEvents();
+}
+
+buildSidebar() {
+    const sidebarContent = document.getElementById('sidebarContent');
+    sidebarContent.innerHTML = '';
+
+    Object.entries(this.nodeCategories).forEach(([categoryId, category]) => {
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'node-category';
+        
+        const header = document.createElement('div');
+        header.className = 'category-header';
+        header.innerHTML = `<i class="${category.icon}"></i>${category.title}`;
+        header.dataset.category = categoryId;
+        
+        const nodesContainer = document.createElement('div');
+        nodesContainer.className = 'category-nodes';
+        nodesContainer.dataset.category = categoryId;
+        
+        // Add nodes to category
+        Object.entries(this.nodeTemplates).forEach(([nodeName, nodeData]) => {
+            if (nodeData.category === categoryId) {
+                const nodeItem = document.createElement('div');
+                nodeItem.className = 'node-item';
+                nodeItem.innerHTML = `<i class="${nodeData.icon}"></i>${nodeName}`;
+                nodeItem.dataset.nodeName = nodeName;
+                nodeItem.addEventListener('click', () => this.addNode(nodeData.type, nodeName));
+                nodesContainer.appendChild(nodeItem);
+            }
+        });
+        
+        categoryDiv.appendChild(header);
+        categoryDiv.appendChild(nodesContainer);
+        sidebarContent.appendChild(categoryDiv);
+    });
+}
+
+initSidebarEvents() {
+    // Toggle sidebar
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+    });
+    
+    // Category collapse/expand
+    document.querySelectorAll('.category-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const category = header.dataset.category;
+            const nodesContainer = document.querySelector(`.category-nodes[data-category="${category}"]`);
+            nodesContainer.classList.toggle('collapsed');
+        });
+    });
+}
+
+initContextMenu() {
+    this.canvasContainer.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        this.showContextMenu(e.clientX, e.clientY);
+    });
+    
+    document.addEventListener('click', () => {
+        this.hideContextMenu();
+    });
+}
+
+showContextMenu(x, y) {
+    const contextMenu = document.getElementById('contextMenu');
+    contextMenu.innerHTML = '';
+    
+    Object.entries(this.nodeCategories).forEach(([categoryId, category]) => {
+        const menuItem = document.createElement('div');
+        menuItem.className = 'context-menu-item';
+        menuItem.innerHTML = `<i class="${category.icon}"></i>${category.title}`;
+        
+        const submenu = document.createElement('div');
+        submenu.className = 'context-submenu';
+        
+        // Add nodes to submenu
+        Object.entries(this.nodeTemplates).forEach(([nodeName, nodeData]) => {
+            if (nodeData.category === categoryId) {
+                const subItem = document.createElement('div');
+                subItem.className = 'context-menu-item';
+                subItem.innerHTML = `<i class="${nodeData.icon}"></i>${nodeName}`;
+                subItem.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const rect = this.canvas.getBoundingClientRect();
+                    const canvasX = (x - rect.left - this.panX) / this.scale;
+                    const canvasY = (y - rect.top - this.panY) / this.scale;
+                    this.addNode(nodeData.type, nodeName, canvasX, canvasY);
+                    this.hideContextMenu();
+                });
+                submenu.appendChild(subItem);
+            }
+        });
+        
+        menuItem.appendChild(submenu);
+        contextMenu.appendChild(menuItem);
+    });
+    
+    contextMenu.style.display = 'block';
+    contextMenu.style.left = `${x}px`;
+    contextMenu.style.top = `${y}px`;
+    
+    // Keep menu on screen
+    const rect = contextMenu.getBoundingClientRect();
+    if (rect.right > window.innerWidth) {
+        contextMenu.style.left = `${x - rect.width}px`;
+    }
+    if (rect.bottom > window.innerHeight) {
+        contextMenu.style.top = `${y - rect.height}px`;
+    }
+}
+
+hideContextMenu() {
+    document.getElementById('contextMenu').style.display = 'none';
+}
 
   initEvents() {
     this.canvasContainer.addEventListener("wheel", this.handleWheel.bind(this));
@@ -835,6 +962,9 @@ class NodeEditor {
       });
       this.connectionUpdateQueued = false;
     });
+    
+    this.initializeSidebar(); 
+    this.initContextMenu();   
   }
 
   updateConnectionPath(connectionId) {
