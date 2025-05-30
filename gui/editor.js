@@ -1,10 +1,5 @@
 class NodeEditor {
   constructor() {
-    this.canvas = document.getElementById("canvas");
-    this.nodesLayer = document.getElementById("nodesLayer");
-    this.connectionsLayer = document.getElementById("connectionsLayer");
-    this.canvasContainer = document.getElementById("canvasContainer");
-
     this.nodes = new Map();
     this.connections = new Map();
     this.scale = 1;
