@@ -458,7 +458,6 @@ this.nodeCategories = {
 };
     this.initEvents();
 
-    this.initEvents();
     this.initializeSidebar(); // ADD THIS
     this.initContextMenu();   // ADD THIS
   }
