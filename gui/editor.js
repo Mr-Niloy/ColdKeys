@@ -1078,12 +1078,12 @@ hideContextMenu() {
       "http://www.w3.org/2000/svg",
       "rect"
     );
-    header.classList.add("node-header");
+    header.classList.add("node-header", node.type);
     header.setAttribute("width", nodeWidth);
     header.setAttribute("height", headerHeight);
     header.setAttribute("fill", "url(#headerGradient)");
     nodeGroup.appendChild(header);
-
+    
     // Node icon
     const iconGroup = document.createElementNS(
       "http://www.w3.org/2000/svg",

@@ -23,23 +23,19 @@ body {
   position: fixed;
   left: 0;
   top: 0;
-  width: 280px;
+  width: 295px;
   height: 95vh;
   margin: 2.5vh 2em;
-  background: linear-gradient(
-    40deg,
-    var(--bg-gradient-b),
-    var(--bg-secondary)
-  );
+  background: linear-gradient(40deg, var(--bg-gradient-b), var(--bg-secondary));
   /* backdrop-filter: blur(10px); */
   border: 1px solid var(--border-color);
   border-radius: 15px;
   z-index: 1000;
   transition: 0.1s ease;
   overflow-y: auto;
-      border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-    box-shadow: 6px 6px 10px 3px var(--shadow-color);
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  box-shadow: 6px 6px 10px 3px var(--shadow-color);
 }
 .sidebar::-webkit-scrollbar {
   width: 10px;
@@ -56,12 +52,12 @@ body {
   border-radius: 10px;
 }
 .sidebar.collapsed {
-  transition: linear .1s;
+  transition: linear 0.1s;
   top: auto;
-  bottom: .5em;
+  bottom: 0.5em;
   border-radius: 15px;
   height: auto;
-  opacity: .5;
+  opacity: 0.5;
 }
 
 .sidebar-header {
@@ -85,7 +81,7 @@ body {
 }
 
 .sidebar.collapsed .toggle-btn i {
-  transition: linear .3s;
+  transition: linear 0.3s;
   transform: rotate(180deg);
 }
 
@@ -171,7 +167,7 @@ body {
   min-width: 200px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
-.context-menu:hover{
+.context-menu:hover {
   border-right-width: 3px;
 }
 
@@ -218,7 +214,11 @@ body {
   display: block;
 }
 .context-menu {
-  background: linear-gradient(190deg, var(--bg-gradient-a), var(--bg-secondary));
+  background: linear-gradient(
+    190deg,
+    var(--bg-gradient-a),
+    var(--bg-secondary)
+  );
   border: 1px solid var(--border-color);
   border-radius: 15px;
   width: fit-content;
@@ -226,7 +226,11 @@ body {
 }
 .context-submenu {
   left: 105%;
-  background: linear-gradient(190deg, var(--bg-gradient-a), var(--bg-secondary));
+  background: linear-gradient(
+    190deg,
+    var(--bg-gradient-a),
+    var(--bg-secondary)
+  );
   border: 1px solid var(--border-color);
   border-radius: 15px;
   min-width: 160px;
@@ -245,7 +249,7 @@ body {
   padding: 0;
 }
 
-.sidebar.collapsed .sidebar-content{
+.sidebar.collapsed .sidebar-content {
   display: none;
 }
 
@@ -458,4 +462,38 @@ body {
   color: var(--text-secondary);
   font-size: 12px;
   max-width: 200px;
+}
+
+/* node group header color */
+.node-header.input {
+  fill: url(#headerGradient-input);
+}
+.node-header.logic {
+  fill: url(#headerGradient-logic);
+}
+.node-header.output {
+  fill: url(#headerGradient-output);
+}
+.node-header.device_info {
+  fill: url(#headerGradient-device-info);
+}
+.node-header.device_output {
+  fill: url(#headerGradient-device-output);
+}
+
+#canvas {
+    --n-bg-a: #290b15;
+    --n-bg-b: #2a1624;
+
+  /* per node group header colors */
+    --nh-bg-input-a: #390610;
+    --nh-bg-input-b: #5a1324;
+    --nh-bg-logic-a: #04123f;
+    --nh-bg-output-b: #1b4d1b;
+    --nh-bg-output-a: #08240c;
+    --nh-bg-logic-b: #153865;
+    --nh-bg-device-info-a: #032429;
+    --nh-bg-device-info-b: #01545a;
+    --nh-bg-device-output-a: #3a2707;
+    --nh-bg-device-output-b: #6e530b;
 }

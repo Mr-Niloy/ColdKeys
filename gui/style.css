@@ -1,5 +1,5 @@
 body {
-  background: linear-gradient(-50deg, var(--bg-primary), var(--bg-secondary));
+  background: radial-gradient(var(--bg-secondary), var(--bg-tertiary));
   color: var(--text-primary);
   transition: background-color 0.3s, color 0.3s;
   min-height: 100vh;
@@ -99,11 +99,7 @@ aside {
   width: fit-content;
   min-width: 16%;
   height: fit-content;
-  background: linear-gradient(
-    135deg,
-    var(--bg-secondary),
-    var(--bg-gradient-b)
-  );
+  background: linear-gradient(111deg, var(--bg-secondary), var(--bg-gradient-b));
   border: 1px solid var(--border-color);
   border-right-width: 3px;
   box-shadow: 5px 0px 10px 6px var(--shadow-color);
@@ -285,7 +281,9 @@ main {
   margin-top: 1rem;
   box-shadow: 5px 5px 12px 5px var(--shadow-color);
 }
-
+.shortcuts-container{
+  background: linear-gradient(335deg, var(--bg-secondary), transparent);
+}
 .shortcut-table thead th {
   background-color: var(--bg-tertiary);
   color: var(--text-secondary);
@@ -299,9 +297,6 @@ main {
 }
 
 .shortcut-table tbody tr {
-  background-color: var(
-    --bg-secondary
-  ); /* assuming bg-secondary is row background */
   transition: background-color 0.2s ease;
 }
 
