@@ -488,7 +488,7 @@ buildSidebar() {
             if (nodeData.category === categoryId) {
                 const nodeItem = document.createElement('div');
                 nodeItem.className = 'node-item';
-                nodeItem.innerHTML = `<i class="${nodeData.icon}"></i>${nodeName}`;
+                nodeItem.innerHTML = `<i class="${nodeData.icon}"></i><p>${nodeName}</p>`;
                 nodeItem.dataset.nodeName = nodeName;
                 nodeItem.addEventListener('click', () => this.addNode(nodeData.type, nodeName));
                 nodesContainer.appendChild(nodeItem);
@@ -1199,7 +1199,7 @@ function clearCanvas() {
 }
 
 // Add some sample nodes
-editor.addNode("input", "Key Trigger", 100, 150);
-editor.addNode("logic", "Condition", 350, 150);
-editor.addNode("action", "Open App", 600, 100);
-editor.addNode("output", "Notification", 600, 250);
+// editor.addNode("input", "Key Trigger", 100, 150);
+// editor.addNode("logic", "Condition", 350, 150);
+// editor.addNode("action", "Open App", 600, 100);
+// editor.addNode("output", "Notification", 600, 250);

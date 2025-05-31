@@ -105,7 +105,7 @@ aside {
     var(--bg-gradient-b)
   );
   border: 1px solid var(--border-color);
-  border-right: 3px solid var(--border-color);
+  border-right-width: 3px;
   box-shadow: 5px 0px 10px 6px var(--shadow-color);
   padding: 1.5rem 1rem;
   display: flex;
@@ -982,7 +982,7 @@ input:checked + .toggle-slider:before {
     width: 60%;
     max-height: 80vh;
     overflow-y: auto;
-    background: linear-gradient(1deg, var(--bg-secondary), var(--bg-gradient-b));
+    background: linear-gradient(295deg, var(--bg-gradient-b), var(--bg-secondary));
     border: 1px solid var(--border-color);
     border-radius: 15px;
     border-top-right-radius: 5px;
