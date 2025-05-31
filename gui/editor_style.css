@@ -26,30 +26,34 @@ body {
   width: 295px;
   height: 95vh;
   margin: 2.5vh 2em;
-  background: linear-gradient(40deg, var(--bg-gradient-b), var(--bg-secondary));
+  background: linear-gradient(
+    300deg,
+    var(--bg-gradient-b),
+    var(--bg-secondary)
+  );
   /* backdrop-filter: blur(10px); */
   border: 1px solid var(--border-color);
   border-radius: 15px;
   z-index: 1000;
   transition: 0.1s ease;
   overflow-y: auto;
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
   box-shadow: 6px 6px 10px 3px var(--shadow-color);
 }
 .sidebar::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
 }
 .sidebar::-webkit-scrollbar-thumb {
   background: var(--border-color);
-  border-radius: 10px;
+  border-radius: 5px;
 }
 .sidebar::-webkit-scrollbar-thumb:hover {
   background: var(--accent-hover);
 }
 .sidebar::-webkit-scrollbar-track {
   background: var(--bg-gradient-a);
-  border-radius: 10px;
+  border-radius: 5px;
 }
 .sidebar.collapsed {
   transition: linear 0.1s;
@@ -119,12 +123,19 @@ body {
 .category-nodes {
   height: fit-content;
   overflow: hidden;
-  transition: max-height 0.3s ease;
-  padding-left: 13px;
+  transition: 0.3s ease;
+  width: 85%;
+  padding: 0 5px;
+  margin: auto;
+  margin-left: 1.5em;
+  border-left: 3px solid var(--border-color);
 }
 
 .category-nodes.collapsed {
-  max-height: 0;
+  height: 0;
+}
+.category-nodes:hover {
+  border-color: var(--accent-color);
 }
 
 .node-item {
@@ -278,14 +289,15 @@ body {
   height: 100%;
   background-image: radial-gradient(
     circle at 20px 20px,
-    rgba(255, 255, 255, 0.05) 1px,
-    transparent 1px
+    rgba(255, 255, 255, 0.05) 2px,
+    transparent 2px
   );
   background-size: 40px 40px;
 }
 
 .toggle-btn {
   box-shadow: none;
+  height: 2.5em;
   height: 2.5em;
 }
 .node-category {
@@ -300,7 +312,8 @@ body {
   color: var(--text-secondary);
   border-radius: 15px;
   /* background: rgba(255, 255, 255, 0.05); */
-  background: var(--border-color);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
 }
 .node-item {
   text-align: left;
@@ -363,14 +376,15 @@ body {
 
 .pin:hover .pin-circle {
   r: 8;
-  stroke: rgba(255, 255, 255, 0.8);
+  stroke: var(--border-color);
 }
 
 .pin-label {
-  font-size: 11px;
-  fill: #b0bec5;
+  font-size: 13px;
+  fill: var(--text-secondary);
   text-anchor: start;
   dominant-baseline: middle;
+  font-family: system-ui;
 }
 
 .pin-label.output {
@@ -482,18 +496,18 @@ body {
 }
 
 #canvas {
-    --n-bg-a: #290b15;
-    --n-bg-b: #2a1624;
+  --n-bg-a: #21121b;
+  --n-bg-b: #402232;
 
   /* per node group header colors */
-    --nh-bg-input-a: #390610;
-    --nh-bg-input-b: #5a1324;
-    --nh-bg-logic-a: #04123f;
-    --nh-bg-output-b: #1b4d1b;
-    --nh-bg-output-a: #08240c;
-    --nh-bg-logic-b: #153865;
-    --nh-bg-device-info-a: #032429;
-    --nh-bg-device-info-b: #01545a;
-    --nh-bg-device-output-a: #3a2707;
-    --nh-bg-device-output-b: #6e530b;
+  --nh-bg-input-a: #3a0711;
+  --nh-bg-input-b: #5a1324;
+  --nh-bg-logic-a: #041445;
+  --nh-bg-logic-b: #153865;
+  --nh-bg-output-a: #0a3210;
+  --nh-bg-output-b: #1b4d1b;
+  --nh-bg-device-info-a: #03262b;
+  --nh-bg-device-info-b: #01545a;
+  --nh-bg-device-output-a: #3e2a07;
+  --nh-bg-device-output-b: #6e530b;
 }
