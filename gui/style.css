@@ -153,19 +153,21 @@ aside {
 }
 
 .dev-option{
-  margin: 5px auto;
+  margin: 10px auto;
   margin-left: 0;
   width: 100%;
   display: flex;
   background: var(--bg-gradient-b);
   color: var(--text-secondary);
+  border: 1px solid var(--border-color);
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 15px;
   cursor: pointer;
   transition: linear 100ms;
 }
 #device-selector .selected{
-  background: var(--bg-tertiary);
+  background: var(--border-color);
+  color: var(--accent-color);
 }
 #device-selector .presed{
   animation: optionPresed .5s cubic-bezier(0, 0.5, 1, 1) 1;
@@ -176,7 +178,7 @@ aside {
   }
 }
 .dev-option:hover{
-  background: var(--border-color);
+  background: var(--bg-tertiary);
 }
 .dev-option p{
   width: fit-content;
@@ -212,7 +214,7 @@ aside {
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  border-radius: 10px;
+  border-radius: 15px;
   color: var(--text-secondary);
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s;
@@ -225,7 +227,7 @@ aside {
 
 .nav-links a.active {
   background-color: var(--border-color);
-  color: var(--text-primary);
+  color: var(--accent-color);
   font-weight: 500;
 }
 
@@ -278,7 +280,7 @@ main {
   table-layout: auto;
   border-collapse: separate;
   border-spacing: 0;
-  border-radius: 12px;
+  border-radius: 15px;
   overflow: hidden;
   margin-top: 1rem;
   box-shadow: 5px 5px 12px 5px var(--shadow-color);
@@ -334,7 +336,7 @@ main {
 
 .item-controls {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .key-badge {
@@ -357,11 +359,6 @@ main {
 .action-icon {
   width: 20px;
   color: var(--text-secondary);
-}
-
-.item-controls {
-  display: flex;
-  gap: 0.5rem;
 }
 
 .control-button {

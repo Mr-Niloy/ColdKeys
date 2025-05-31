@@ -87,7 +87,7 @@ class NodeEditor {
     'Device Connect': {
         type: 'input',
         category: 'input',
-        icon: 'fas fa-usb',
+        icon: 'fa-brands fa-usb',
         pins: {
             inputs: [],
             outputs: [
