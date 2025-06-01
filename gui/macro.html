@@ -1050,12 +1050,12 @@ recalculateDelays() {
 
         getDetailsDisplay(action) {
           if (action.type === "keyboard") {
-            return `Code: ${action.code} | Action: ${action.action}`;
+            return `Code: ${action.code} | As: ${action.action}`;
           } else {
             if (action.action === "wheel") {
-              return `ΔX: ${action.deltaX} | ΔY: ${action.deltaY}`;
+              return `${action.deltaX!='0' ? `ΔX: ${action.deltaX} | `: ''}ΔY: ${action.deltaY} | As: ${action.action}-${action.deltaY > 0 ? "down" : "up"}`;
             }
-            return `Button: ${action.button} | Action: ${action.action}`;
+            return `Button: ${action.button} | As: ${action.action}`;
           }
         }
 
