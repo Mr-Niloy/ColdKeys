@@ -309,7 +309,7 @@ body {
 }
 .category-header {
   /* color: #ffffff; */
-  color: var(--text-secondary);
+  color: var(--text-primary);
   border-radius: 15px;
   /* background: rgba(255, 255, 255, 0.05); */
   background: var(--bg-tertiary);
@@ -320,7 +320,7 @@ body {
   /* padding: 8px 24px; */
   /* color: #b0bec5; */
   padding: 10px 24px;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   /* font-size: 13px; */
   font-size: 1em;
   border-radius: 15px;
@@ -335,11 +335,13 @@ body {
 .node:hover {
   filter: drop-shadow(0 6px 16px rgba(122, 18, 84, 0.4));
 }
-
+.node:hover text{
+  fill: var(--text-primary);
+}
 .node-bg {
   fill: url(#nodeGradient);
   stroke: var(--border-color);
-  stroke-width: 2;
+  stroke-width: 1;
   rx: 12;
 }
 
