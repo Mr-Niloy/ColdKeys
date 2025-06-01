@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Key Cold Keys - Macro Recorder</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../lib/auto.css">
+    <link rel="stylesheet" href="macro.css">
+  </head>
+  <body>
+    <div class="recorder-container">
+      <header class="recorder-header">
+        <div class="header-content">
+          <div class="recorder-title">
+            <i class="fas fa-record-vinyl title-icon"></i>
+            Macro Recorder
+          </div>
+
+          <div class="recording-controls">
+            <div class="recording-status">
+              <div class="status-indicator" id="statusIndicator"></div>
+              <span id="statusText">Ready</span>
+            </div>
+
+            <button class="record-btn" id="recordBtn">
+              <i class="fa-solid fa-play"></i>
+              <span id="recordBtnText">Start Recording</span>
+            </button>
+
+            <button
+              class="control-btn"
+              id="pauseBtn"
+              disabled
+              title="Pause Recording"
+            >
+              <i class="fas fa-pause"></i>
+            </button>
+
+            <button
+              class="control-btn"
+              id="stopBtn"
+              disabled
+              title="Stop Recording"
+            >
+              <i class="fas fa-stop"></i>
+            </button>
+
+            <button class="control-btn" id="clearBtn" title="Clear All">
+              <i class="fas fa-trash"></i>
+            </button>
+
+            <button class="control-btn" id="saveBtn" title="Save Macro">
+              <i class="fas fa-save"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="macro-table-container">
+        <div class="macro-stats">
+          <div class="stat-item">
+            <div class="stat-value" id="totalActions">0</div>
+            <div class="stat-label">Total Actions</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="recordingDuration">0.0s</div>
+            <div class="stat-label">Duration</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="keystrokes">0</div>
+            <div class="stat-label">Keystrokes</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="mouseActions">0</div>
+            <div class="stat-label">Mouse Actions</div>
+          </div>
+        </div>
+
+        <table class="macro-table">
+          <thead>
+            <tr>
+              <th style="width: 60px">#</th>
+              <th style="width: 120px">Type</th>
+              <th style="width: 200px">Action</th>
+              <th style="width: 250px">Details</th>
+              <th style="width: 120px">Timestamp</th>
+              <th style="width: 100px">Delay</th>
+              <th style="width: 100px">Duration</th>
+              <th style="width: 150px">Position</th>
+              <th style="width: 50px; text-align: center">
+                <i class="fa-solid fa-wrench"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="macroTableBody">
+            <tr class="empty-state">
+              <td colspan="7">
+                <div class="empty-icon">
+                  <i class="fas fa-keyboard"></i>
+                </div>
+                <div class="empty-title">No actions recorded yet</div>
+                <div class="empty-subtitle">
+                  Click "Start Recording" to begin capturing keystrokes and
+                  mouse movements
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+<script src="macro.js"></script>
+  </body>
+</html>
