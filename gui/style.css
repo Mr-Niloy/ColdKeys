@@ -366,6 +366,7 @@ main {
   width: 2em;
   height: 2em;
   transition: color 0.2s, background-color 0.2s;
+  box-shadow: none;
 }
 
 .control-button:hover {
