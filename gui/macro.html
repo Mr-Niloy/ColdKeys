@@ -570,6 +570,14 @@
           this.recordingDuration = 0;
           this.durationInterval = null;
           this.keyHoldTracking = new Map();
+           this.mouseTracking = {
+        isMoving: false,
+        lastPosition: { x: 0, y: 0 },
+        moveStartTime: 0,
+        lastRecordTime: 0,
+        moveStartId: null
+    };
+          
 
           this.initializeElements();
           this.bindEvents();
@@ -733,6 +741,12 @@
           this.statusText.textContent = "Stopped";
 
           this.stopDurationTimer();
+          if (this.mouseStopTimer) {
+        clearTimeout(this.mouseStopTimer);
+    }
+    if (this.mouseTracking.isMoving) {
+        this.handleMouseStop();
+    }
         }
 
         startDurationTimer() {
@@ -885,28 +899,133 @@ recalculateDelays() {
           }
         }
 
-        handleMouseEvent(event, type) {
-          if (!this.isRecording || this.isPaused) return;
-
-          // Ignore recording control events
-          if (event.target.closest(".recording-controls")) return;
-
-          // Throttle mousemove events
-          if (type === "mousemove" && Math.random() > 0.1) return;
-
-          const action = {
+handleMouseEvent(event, type) {
+    if (!this.isRecording || this.isPaused) return;
+    if (event.target.closest('.recording-controls')) return;
+    
+    if (type === 'mousemove') {
+        this.handleMouseMove(event);
+    } else {
+        // Handle regular mouse events (mousedown, mouseup)
+        const action = {
             id: ++this.actionCounter,
-            type: "mouse",
+            type: 'mouse',
             action: type,
             button: event.button,
             x: event.clientX,
             y: event.clientY,
             timestamp: this.getRelativeTimestamp(),
-            duration: type === "mouseup" ? 0.1 : 0,
-          };
-
-          this.addAction(action);
+            duration: type === 'mouseup' ? 0.1 : 0
+        };
+        
+        this.addAction(action);
+    }
+}
+handleMouseMove(event) {
+    const currentPos = { x: event.clientX, y: event.clientY };
+    const currentTime = Date.now();
+    
+    // Check if mouse actually moved (avoid duplicate positions)
+    if (currentPos.x === this.mouseTracking.lastPosition.x && 
+        currentPos.y === this.mouseTracking.lastPosition.y) {
+        return;
+    }
+    
+    if (!this.mouseTracking.isMoving) {
+        // Start of movement
+        this.mouseTracking.isMoving = true;
+        this.mouseTracking.moveStartTime = currentTime;
+        this.mouseTracking.lastRecordTime = currentTime;
+        
+        const startAction = {
+            id: ++this.actionCounter,
+            type: 'mouse',
+            action: 'move_start',
+            x: this.mouseTracking.lastPosition.x,
+            y: this.mouseTracking.lastPosition.y,
+            timestamp: this.getRelativeTimestamp(),
+            duration: 0
+        };
+        
+        this.mouseTracking.moveStartId = startAction.id;
+        this.addAction(startAction);
+        
+        // Set up movement end detection
+        this.resetMouseStopTimer();
+    } else {
+        // Calculate movement speed and determine if we should record
+        const timeSinceLastRecord = currentTime - this.mouseTracking.lastRecordTime;
+        const distance = Math.sqrt(
+            Math.pow(currentPos.x - this.mouseTracking.lastPosition.x, 2) + 
+            Math.pow(currentPos.y - this.mouseTracking.lastPosition.y, 2)
+        );
+        
+        // Calculate speed (pixels per second)
+        const speed = distance / (timeSinceLastRecord / 1000);
+        
+        // Determine recording frequency based on speed
+        // Slow movement: 1 record/s, Fast movement: 10 records/s
+        const minInterval = 100; // 10 records/s (100ms)
+        const maxInterval = 1000; // 1 record/s (1000ms)
+        const speedThreshold = 500; // pixels per second
+        
+        let recordInterval;
+        if (speed > speedThreshold) {
+            recordInterval = minInterval; // Fast movement
+        } else {
+            // Linear interpolation between min and max based on speed
+            const speedRatio = Math.min(speed / speedThreshold, 1);
+            recordInterval = maxInterval - (speedRatio * (maxInterval - minInterval));
         }
+        
+        // Record if enough time has passed based on calculated interval
+        if (timeSinceLastRecord >= recordInterval) {
+            const moveAction = {
+                id: ++this.actionCounter,
+                type: 'mouse',
+                action: 'move',
+                x: currentPos.x,
+                y: currentPos.y,
+                timestamp: this.getRelativeTimestamp(),
+                duration: 0,
+                speed: Math.round(speed) // Add speed info
+            };
+            
+            this.addAction(moveAction);
+            this.mouseTracking.lastRecordTime = currentTime;
+        }
+        
+        this.resetMouseStopTimer();
+    }
+    
+    this.mouseTracking.lastPosition = currentPos;
+}
+resetMouseStopTimer() {
+    if (this.mouseStopTimer) {
+        clearTimeout(this.mouseStopTimer);
+    }
+    
+    this.mouseStopTimer = setTimeout(() => {
+        this.handleMouseStop();
+    }, 150); // 150ms of no movement = stopped
+}
+
+handleMouseStop() {
+    if (this.mouseTracking.isMoving) {
+        const stopAction = {
+            id: ++this.actionCounter,
+            type: 'mouse',
+            action: 'move_stop',
+            x: this.mouseTracking.lastPosition.x,
+            y: this.mouseTracking.lastPosition.y,
+            timestamp: this.getRelativeTimestamp(),
+            duration: 0
+        };
+        
+        this.addAction(stopAction);
+        this.mouseTracking.isMoving = false;
+    }
+}
         handleWheelEvent(event) {
           if (!this.isRecording || this.isPaused) return;
           if (event.target.closest(".recording-controls")) return;
@@ -996,34 +1115,28 @@ recalculateDelays() {
           this.tableBody.appendChild(row);
         }
 
-        getActionIcon(action) {
-          if (action.type === "keyboard") {
-            switch (action.action) {
-              case "keydown":
-                return "fas fa-arrow-down";
-              case "keyup":
-                return "fas fa-arrow-up";
-              case "keyhold":
-                return "fas fa-hand-paper";
-              default:
-                return "fas fa-keyboard";
-            }
-          } else if (action.type === "mouse") {
-            switch (action.action) {
-              case "mousedown":
-                return "fas fa-hand-pointer";
-              case "mouseup":
-                return "fas fa-hand-paper";
-              case "mousemove":
-                return "fas fa-mouse";
-              case "wheel":
-                return "fas fa-circle-notch";
-              default:
-                return "fas fa-mouse";
-            }
-          }
-          return "fas fa-question";
+getActionIcon(action) {
+    if (action.type === 'keyboard') {
+        switch (action.action) {
+            case 'keydown': return 'fas fa-arrow-down';
+            case 'keyup': return 'fas fa-arrow-up';
+            case 'keyhold': return 'fas fa-hand-paper';
+            default: return 'fas fa-keyboard';
         }
+    } else if (action.type === 'mouse') {
+        switch (action.action) {
+            case 'mousedown': return 'fas fa-hand-pointer';
+            case 'mouseup': return 'fas fa-hand-paper';
+            case 'wheel': return 'fas fa-circle-notch';
+            case 'move_start': return 'fas fa-play';
+            case 'move': return 'fas fa-arrows-alt';
+            case 'move_stop': return 'fas fa-stop';
+            case 'mousemove': return 'fas fa-mouse'; // fallback
+            default: return 'fas fa-mouse';
+        }
+    }
+    return 'fas fa-question';
+}
 
         getActionDisplay(action) {
           if (action.type === "keyboard") {
@@ -1042,10 +1155,13 @@ recalculateDelays() {
               ? `${modifierDisplay} + ${keyDisplay}`
               : keyDisplay;
           } else {
-            if (action.action === "wheel") {
-              return `WHEEL ${action.deltaY > 0 ? "↓" : "↑"}`;
-            }
-            return action.action.replace("mouse", "").toUpperCase();
+             switch (action.action) {
+            case 'wheel': return `WHEEL ${action.deltaY > 0 ? '↓' : '↑'}`;
+            case 'move_start': return 'MOVE START';
+            case 'move': return 'MOVING';
+            case 'move_stop': return 'MOVE STOP';
+            default: return action.action.replace('mouse', '').toUpperCase();
+        }
           }
         }
 
@@ -1055,8 +1171,11 @@ recalculateDelays() {
           } else {
             if (action.action === "wheel") {
               return `${action.deltaX!='0' ? `ΔX: ${action.deltaX} | `: ''}ΔY: ${action.deltaY} | As: ${action.action}-${action.deltaY > 0 ? "down" : "up"}`;
-            }
-            return `Button: ${action.button} | As: ${action.action}`;
+            }else if (action.action === 'move' && action.speed) {
+            return `Speed: ${action.speed}px/s | Action: ${action.action}`;
+        } else {
+            return `Button: ${action.button} | Action: ${action.action}`;
+        }
           }
         }
 
