@@ -1091,8 +1091,8 @@ hideContextMenu() {
     );
     iconGroup.setAttribute("x", 12);
     iconGroup.setAttribute("y", headerHeight / 2 - 8);
-    iconGroup.setAttribute("width", 16);
-    iconGroup.setAttribute("height", 16);
+    iconGroup.setAttribute("width", 20);
+    iconGroup.setAttribute("height", 18);
     const iconDiv = document.createElement("div");
     iconDiv.innerHTML = `<i class="${node.icon}" style="color: var(--accent-color); font-size: 16px;"></i>`;
     iconGroup.appendChild(iconDiv);
