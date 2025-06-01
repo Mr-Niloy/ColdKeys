@@ -124,7 +124,8 @@ body {
   height: fit-content;
   overflow: hidden;
   transition: 0.3s ease;
-  width: 85%;
+  min-width: 85%;
+  width: fit-content;
   padding: 0 5px;
   margin: auto;
   margin-left: 1.5em;
@@ -135,6 +136,7 @@ body {
   height: 0;
 }
 .category-nodes:hover {
+  transition-duration: .1s;
   border-color: var(--accent-color);
 }
 
