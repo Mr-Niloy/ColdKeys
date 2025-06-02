@@ -540,11 +540,22 @@ class NodeEditor {
         if (nodeData.category === categoryId) {
           const nodeItem = document.createElement("div");
           nodeItem.className = "node-item";
+          nodeItem.setAttribute("draggable", "true");
           nodeItem.innerHTML = `<i class="${nodeData.icon}"></i><p>${nodeName}</p>`;
           nodeItem.dataset.nodeName = nodeName;
-          nodeItem.addEventListener("click", () =>
-            this.addNode(nodeData.type, nodeName)
-          );
+          nodeItem.addEventListener("click", () =>{
+            const rect = this.canvas.getBoundingClientRect();
+            const canvasX = ((window.innerWidth/2)- rect.left - this.panX) / this.scale;
+            const canvasY = ((window.innerHeight/2) - rect.top - this.panY) / this.scale;
+            this.addNode(nodeData.type, nodeName, canvasX, canvasY);
+        });
+          nodeItem.addEventListener("dragend", (e) => {
+            e.preventDefault();
+            const rect = this.canvas.getBoundingClientRect();
+            const canvasX = (e.clientX - rect.left - this.panX) / this.scale;
+            const canvasY = (e.clientY - rect.top - this.panY) / this.scale;
+            this.addNode(nodeData.type, nodeName, canvasX, canvasY);
+          });
           nodesContainer.appendChild(nodeItem);
         }
       });
