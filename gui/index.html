@@ -15,18 +15,24 @@
     <div class="popup-overlay hidden"></div>
 
     <header>
-      <div class="profile-selector">
-        <select id="profile-dropdown">
-          <option value="default">Default Profile</option>
-          <option value="gaming">Gaming</option>
-          <option value="productivity">Productivity</option>
-          <option value="custom">+ New Profile</option>
-        </select>
-      </div>
-      <div class="app-title">
+      <div class="app-title nav-item">
         <h1>ColdKeys</h1>
       </div>
-      <div class="header-controls">
+      <div class="profile-selector nav-item">
+          
+      </div>
+      <div class="search-box nav-item">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search shortcuts..."
+        />
+      </div>
+      <div class="header-controls nav-item">
+        <button id="save-profile" class="primary-button">
+          <i class="fas fa-save"></i>
+        </button>
         <button id="theme-toggle" class="icon-button">
           <i class="fas fa-moon"></i>
         </button>
@@ -65,15 +71,6 @@
       </aside>
 
       <main>
-        <div class="top-actions">
-          <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search shortcuts..." />
-          </div>
-          <button id="save-profile" class="primary-button">
-            <i class="fas fa-save"></i> Save Profile
-          </button>
-        </div>
         <!-- assign-macros (initaially visible)-->
         <section id="assign-macros-panel" class="panel">
           <table class="shortcut-table">
@@ -576,7 +573,6 @@
 
     <!-- ⚙ Settings Popup Box -->
     <div id="popup-settings" class="settings-popup hidden">
-
       <div class="popup-header">
         <h2>App Settings</h2>
         <button class="close-button" onclick="togglePopupSettings()">
@@ -690,8 +686,20 @@
       </div>
 
       <div class="settings-footer">
-        <button id="reset-app-settings" onclick="resetPopupSettings()" class="secondary-button">Reset to Defaults</button>
-        <button id="save-app-settings" onclick="savePopupSettings()" class="primary-button">Save Settings</button>
+        <button
+          id="reset-app-settings"
+          onclick="resetPopupSettings()"
+          class="secondary-button"
+        >
+          Reset to Defaults
+        </button>
+        <button
+          id="save-app-settings"
+          onclick="savePopupSettings()"
+          class="primary-button"
+        >
+          Save Settings
+        </button>
       </div>
     </div>
 

@@ -19,16 +19,51 @@ header {
     var(--bg-gradient-a),
     var(--bg-secondary),
     var(--bg-gradient-b)
-  );
-  box-shadow: 0 5px 10px 5px var(--shadow-color);
-  border: 1px solid var(--border-color);
-  position: relative;
-  z-index: 10;
-  width: 90%;
-  margin: 1em auto;
+    );
+    box-shadow: 0 5px 10px 5px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    position: relative;
+    z-index: 10;
+    width: 90%;
+    margin: 1em auto;
+    border-radius: 15px;
+  }
+  .nav-item{
+    margin: auto;
+    width: fit-content;
+  }
+.search-box {
+  display: flex;
+  max-width: 40%;
+  min-width: 30%;
   border-radius: 15px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  align-items: center;
 }
 
+.search-box i {
+  color: var(--text-secondary);
+  margin: auto 1em;
+  margin-right: 0;
+  width: auto;
+}
+
+.search-box input {
+  width: 100%;
+  box-shadow: none;
+  border: none;
+  font-size: 1.1em;
+  background: none;
+  text-align: left;
+  margin: auto 0;
+}
+.profile-selector{
+  margin-left: 1em;
+}
+.app-title{
+  margin: auto 0;
+}
 .app-title h1 {
   font-size: 1.5rem;
   font-weight: 600;
@@ -36,6 +71,7 @@ header {
 }
 
 .header-controls {
+  margin-right: 0;
   display: flex;
   gap: 0.75rem;
 }
@@ -65,8 +101,7 @@ header {
   margin: auto;
   height: 72vh;
   background: transparent;
-  margin-top: 1.5em;
-  padding: 10px 0;
+  padding: 0;
 }
 
 .panel::-webkit-scrollbar {
@@ -238,36 +273,6 @@ main {
   margin-right: 0;
 }
 
-.top-actions {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: auto;
-  margin-top: 0;
-}
-
-.search-box {
-  position: relative;
-  box-shadow: 3px 3px 8px 2px var(--shadow-color);
-  flex: 1;
-  max-width: 35%;
-  border-radius: 15px;
-}
-
-.search-box i {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-secondary);
-}
-
-.search-box input {
-  width: 100%;
-  padding-left: 2.5rem;
-}
-
 
 /* ===== Shortcut List Styles ===== */
 .shortcut-table {
@@ -278,7 +283,6 @@ main {
   border-spacing: 0;
   border-radius: 15px;
   overflow: hidden;
-  margin-top: 1rem;
   box-shadow: 5px 5px 12px 5px var(--shadow-color);
 }
 .shortcuts-container{
@@ -387,6 +391,7 @@ main {
   padding: 3rem 1rem;
   color: var(--text-secondary);
   text-align: center;
+  background: none !important;
 }
 
 .empty-icon {
