@@ -9,8 +9,6 @@ class MacroRecorder {
     this.durationInterval = null;
     this.keyHoldTracking = new Map();
     this.keyPressTimers = new Map();
-    this.visualizer = new MousePathVisualizer();
-    console.log(this.visualizer);
     
     this.mouseTracking = {
       isMoving: false,
@@ -181,7 +179,6 @@ class MacroRecorder {
     if (this.mouseTracking.isMoving) {
       this.handleMouseStop();
     }
-        this.visualizer.actionStepCounter = 0;
 
   }
 
@@ -414,9 +411,9 @@ class MacroRecorder {
 
       // Determine recording frequency based on speed
       // Slow movement: 1 record/s, Fast movement: 10 records/s
-      const minInterval = 100; // 10 records/s (100ms)
-      const maxInterval = 1000; // 1 record/s (1000ms)
-      const speedThreshold = 500; // pixels per second
+      const minInterval = 200; // 5 records/s
+      const maxInterval = 1000; // 1 record/s
+      const speedThreshold = 600; // pixels per second
 
       let recordInterval;
       if (speed > speedThreshold) {
@@ -514,11 +511,7 @@ class MacroRecorder {
     } else {
       action.delay = 0; // First action has 0 delay
     }
-if (action.type === 'mouse') {
-    console.log(action);
-        this.visualizer.addMouseAction(action);
-        
-    }
+
     this.actions.push(action);
     this.renderAction(action);
     this.updateStats();
@@ -703,7 +696,6 @@ if (action.type === 'mouse') {
                           `;
 
       this.updateStats();
-          this.visualizer.reset();
 
     }
   }
