@@ -194,10 +194,14 @@ body {
   top: 0;
   z-index: 10;
 }
+.macro-table td, .macro-table th {
+  border-bottom: 1px solid var(--border-color);
+}
+
 
 .macro-table tbody tr {
   transition: all 0.2s ease;
-  border-bottom: 1px solid var(--border-color);
+  /* border-bottom: 1px solid var(--border-color); */
 }
 
 .macro-table tbody tr:hover {

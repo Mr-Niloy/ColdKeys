@@ -429,7 +429,7 @@ class MacroRecorder {
         const moveAction = {
           id: ++this.actionCounter,
           type: "mouse",
-          action: "move",
+          action: "moveing",
           x: currentPos.x,
           y: currentPos.y,
           timestamp: this.getRelativeTimestamp(),
@@ -640,7 +640,7 @@ class MacroRecorder {
       } else if (action.action === "move" && action.speed) {
         return `Speed: ${action.speed}px/s | Action: ${action.action}`;
       } else {
-        return `Button: ${action.button} | Action: ${action.action}`;
+        return `movement | Action: ${action.action}`;
       }
     }
   }
