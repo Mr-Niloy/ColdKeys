@@ -554,7 +554,7 @@ class NodeEditor {
             const rect = this.canvas.getBoundingClientRect();
             const canvasX = (e.clientX - rect.left - this.panX) / this.scale;
             const canvasY = (e.clientY - rect.top - this.panY) / this.scale;
-            this.addNode(nodeData.type, nodeName, canvasX, canvasY);
+            this.addNode(nodeData.type, nodeName, canvasX, canvasY, false);
           });
           nodesContainer.appendChild(nodeItem);
         }
@@ -618,7 +618,7 @@ class NodeEditor {
             const rect = this.canvas.getBoundingClientRect();
             const canvasX = (x - rect.left - this.panX) / this.scale;
             const canvasY = (y - rect.top - this.panY) / this.scale;
-            this.addNode(nodeData.type, nodeName, canvasX, canvasY);
+            this.addNode(nodeData.type, nodeName, canvasX, canvasY, false);
             this.hideContextMenu();
           });
           submenu.appendChild(subItem);
@@ -1087,7 +1087,7 @@ class NodeEditor {
     );
   }
 
-  addNode(type, name, x = 200, y = 200) {
+  addNode(type, name, x = window.innerWidth/2, y = window.innerHeight/2, randomize = true) {
     const nodeId = `node-${++this.nodeCounter}`;
     const template = this.nodeTemplates[name];
 
@@ -1098,8 +1098,8 @@ class NodeEditor {
       type: type,
       name: name,
       position: {
-        x: x + Math.random() * 100,
-        y: y + Math.random() * 100,
+        x: randomize? x + Math.random() * 100 : x,
+        y: randomize? y + Math.random() * 100 : y,
       },
       pins: {
         inputs: template.pins.inputs.map((pin, i) => ({
