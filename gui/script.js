@@ -9,7 +9,6 @@ let isDarkTheme = true;
 
 // DOM elements
 const deviceSelector = document.getElementById("device-selector");
-const profileDropdown = document.getElementById("profile-dropdown");
 const shortcutsContainer = document.querySelector(".shortcuts-container");
 const emptyState = document.querySelector(".empty-state");
 const addShortcutButton = document.getElementById("add-shortcut");
@@ -80,7 +79,6 @@ function setupEventListeners() {
   deviceSelector.addEventListener("change", handleDeviceChange);
 
   // Profile selection
-  profileDropdown.addEventListener("change", handleProfileChange);
 
   // Add shortcut button
   addShortcutButton.addEventListener("click", openKeyListenModal);

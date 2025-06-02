@@ -18,9 +18,35 @@
       <div class="app-title nav-item">
         <h1>ColdKeys</h1>
       </div>
-      <div class="profile-selector nav-item">
-          
+<div class="profile-selector nav-item">
+  <div class="profile-circle" id="profile-circle">
+    <span class="profile-initial" id="profile-initial">D</span>
+  </div>
+  
+  <!-- Hover popup -->
+  <div class="profile-popup" id="profile-popup">
+    <div class="profile-grid">
+      <div class="profile-option add-new" data-value="custom">
+        <div class="profile-mini-circle">
+          <i class="fas fa-plus"></i>
+        </div>
+        <span class="profile-name">New Profile</span>
       </div>
+      <div class="profile-option" data-value="default">
+        <div class="profile-mini-circle">D</div>
+        <span class="profile-name">Default Profile</span>
+      </div>
+      <div class="profile-option" data-value="gaming">
+        <div class="profile-mini-circle">G</div>
+        <span class="profile-name">Gaming</span>
+      </div>
+      <div class="profile-option" data-value="gaming">
+        <div class="profile-mini-circle">G</div>
+        <span class="profile-name">Gaming</span>
+      </div>
+    </div>
+  </div>
+</div>
       <div class="search-box nav-item">
         <i class="fas fa-search"></i>
         <input
@@ -702,6 +728,55 @@
         </button>
       </div>
     </div>
+
+    <!-- New Profile Creation Popup -->
+<div class="new-profile-overlay" id="new-profile-overlay">
+  <div class="new-profile-popup">
+    <button class="close-button" onclick="togglePopupSettings()">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="popup-header">
+      <h3>Create New Profile</h3>
+      <p>Set up your new profile with a name and avatar</p>
+    </div>
+    
+    <div class="popup-content">
+      <!-- Profile Preview -->
+      <div class="profile-preview-section">
+        <div class="profile-preview-circle" id="profile-preview">
+          <span class="preview-initial" id="preview-initial">N</span>
+          <img class="preview-image" id="preview-image" style="display: none;" alt="Profile">
+        </div>
+        <label class="image-upload-label">
+          <input type="file" id="profile-image-input" accept="image/*" style="display: none;">
+          <i class="fas fa-camera"></i>
+          <span>Upload Image</span>
+        </label>
+      </div>
+      
+      <!-- Profile Name Input -->
+      <div class="form-group">
+        <label for="profile-name-input">Profile Name</label>
+        <input 
+          type="text" 
+          id="profile-name-input" 
+          placeholder="Enter profile name..."
+          maxlength="20"
+        >
+        <div class="char-counter">
+          <span id="char-count">0</span>/20
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="popup-actions">
+        <button class="btn-cancel" onclick="togglePopupSettings()">Cancel</button>
+        <button class="btn-create" id="create-profile-btn" disabled>Create Profile</button>
+      </div>
+    </div>
+  </div>
+</div>
 
     <script src="script.js"></script>
     <script src="service.js"></script>
