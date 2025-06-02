@@ -9,6 +9,9 @@ class MacroRecorder {
     this.durationInterval = null;
     this.keyHoldTracking = new Map();
     this.keyPressTimers = new Map();
+    this.visualizer = new MousePathVisualizer();
+    console.log(this.visualizer);
+    
     this.mouseTracking = {
       isMoving: false,
       lastPosition: { x: 0, y: 0 },
@@ -178,6 +181,8 @@ class MacroRecorder {
     if (this.mouseTracking.isMoving) {
       this.handleMouseStop();
     }
+        this.visualizer.actionStepCounter = 0;
+
   }
 
   startDurationTimer() {
@@ -509,7 +514,11 @@ class MacroRecorder {
     } else {
       action.delay = 0; // First action has 0 delay
     }
-
+if (action.type === 'mouse') {
+    console.log(action);
+        this.visualizer.addMouseAction(action);
+        
+    }
     this.actions.push(action);
     this.renderAction(action);
     this.updateStats();
@@ -694,6 +703,8 @@ class MacroRecorder {
                           `;
 
       this.updateStats();
+          this.visualizer.reset();
+
     }
   }
 
@@ -726,3 +737,273 @@ class MacroRecorder {
 document.addEventListener("DOMContentLoaded", () => {
   new MacroRecorder();
 });
+
+
+// new new 
+
+// Add this class to your existing MacroRecorder class or create as separate module
+
+class MousePathVisualizer {
+    constructor() {
+        this.svg = document.getElementById('mousePathSvg');
+        this.pathsGroup = document.getElementById('pathsGroup');
+        this.pointsGroup = document.getElementById('pointsGroup');
+        this.labelsGroup = document.getElementById('labelsGroup');
+        
+        this.clearVizBtn = document.getElementById('clearVizBtn');
+        this.toggleVizBtn = document.getElementById('toggleVizBtn');
+        this.vizContainer = document.getElementById('vizContainer');
+        
+        this.totalDistanceEl = document.getElementById('totalDistance');
+        this.avgSpeedEl = document.getElementById('avgSpeed');
+        this.clickCountEl = document.getElementById('clickCount');
+        
+        this.currentPath = null;
+        this.pathData = [];
+        this.actionStepCounter = 0;
+        this.totalDistance = 0;
+        this.speeds = [];
+        this.clickCount = 0;
+        this.isVisible = true;
+        
+        this.initializeEvents();
+    }
+    
+    initializeEvents() {
+        this.clearVizBtn?.addEventListener('click', () => this.clearVisualization());
+        this.toggleVizBtn?.addEventListener('click', () => this.toggleVisualization());
+    }
+    
+    // Convert screen coordinates to SVG coordinates
+    screenToSVG(x, y) {
+        const rect = this.svg.getBoundingClientRect();
+        const viewBox = this.svg.viewBox.baseVal;
+        
+        return {
+            x: ((x - rect.left) / rect.width) * viewBox.width,
+            y: ((y - rect.top) / rect.height) * viewBox.height
+        };
+    }
+    
+    // Process mouse action and update visualization
+    addMouseAction(action) {
+        if (!this.isVisible) return;
+        
+        const svgCoords = this.screenToSVG(action.x, action.y);
+        this.actionStepCounter++;
+        
+        switch (action.action) {
+            case 'move_start':
+                this.startNewPath(svgCoords, this.actionStepCounter);
+                break;
+                
+            case 'move':
+                this.addToPath(svgCoords, action.speed || 0);
+                break;
+                
+            case 'move_stop':
+                this.endPath(svgCoords, this.actionStepCounter);
+                break;
+                
+            case 'mousedown':
+            case 'mouseup':
+                this.addClickPoint(svgCoords, this.actionStepCounter, action.action);
+                break;
+        }
+        
+        this.updateStats();
+    }
+    
+    startNewPath(coords, stepIndex) {
+        // Create start point
+        this.addPoint(coords, 'start-point', stepIndex);
+        
+        // Initialize new path
+        this.currentPath = {
+            element: document.createElementNS('http://www.w3.org/2000/svg', 'path'),
+            data: [`M ${coords.x} ${coords.y}`],
+            startCoords: coords
+        };
+        
+        this.currentPath.element.setAttribute('class', 'mouse-path');
+        this.pathsGroup.appendChild(this.currentPath.element);
+    }
+    
+    addToPath(coords, speed) {
+        if (!this.currentPath) return;
+        
+        // Calculate distance from last point
+        const lastData = this.currentPath.data[this.currentPath.data.length - 1];
+        if (lastData) {
+            const lastCoords = this.parseLastCoords(lastData);
+            if (lastCoords) {
+                const distance = Math.sqrt(
+                    Math.pow(coords.x - lastCoords.x, 2) + 
+                    Math.pow(coords.y - lastCoords.y, 2)
+                );
+                this.totalDistance += distance;
+            }
+        }
+        
+        // Add line to path
+        this.currentPath.data.push(`L ${coords.x} ${coords.y}`);
+        this.currentPath.element.setAttribute('d', this.currentPath.data.join(' '));
+        
+        // Store speed for average calculation
+        if (speed > 0) {
+            this.speeds.push(speed);
+        }
+    }
+    
+    endPath(coords, stepIndex) {
+        if (!this.currentPath) return;
+        
+        // Ensure path ends at the final position
+        this.addToPath(coords, 0);
+        
+        // Create stop point
+        this.addPoint(coords, 'stop-point', stepIndex);
+        
+        // Reset current path
+        this.currentPath = null;
+    }
+    
+    addClickPoint(coords, stepIndex, actionType) {
+        this.clickCount++;
+        this.addPoint(coords, 'click-point', stepIndex);
+        
+        // Add ripple effect for clicks
+        this.addClickRipple(coords);
+    }
+    
+    addPoint(coords, className, stepIndex) {
+        // Create point circle with different sizes
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', coords.x);
+        circle.setAttribute('cy', coords.y);
+        
+        // Set radius based on type
+        let radius;
+        if (className === 'start-point') radius = '12';
+        else if (className === 'stop-point') radius = '8';
+        else if (className === 'click-point') radius = '5';
+        
+        circle.setAttribute('r', radius);
+        circle.setAttribute('class', className);
+        
+        this.pointsGroup.appendChild(circle);
+        
+        // Create step label
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', coords.x);
+        text.setAttribute('y', coords.y);
+        text.setAttribute('class', 'point-label');
+        text.textContent = stepIndex;
+        
+        this.labelsGroup.appendChild(text);
+    }
+    
+    addClickRipple(coords) {
+        // Create animated ripple effect
+        const ripple = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        ripple.setAttribute('cx', coords.x);
+        ripple.setAttribute('cy', coords.y);
+        ripple.setAttribute('r', '6');
+        ripple.setAttribute('fill', 'none');
+        ripple.setAttribute('stroke', '#f44336');
+        ripple.setAttribute('stroke-width', '2');
+        ripple.setAttribute('opacity', '0.8');
+        
+        this.pointsGroup.appendChild(ripple);
+        
+        // Animate ripple
+        const animation = ripple.animate([
+            { r: '6', opacity: '0.8', strokeWidth: '2' },
+            { r: '20', opacity: '0', strokeWidth: '0.5' }
+        ], {
+            duration: 600,
+            easing: 'ease-out'
+        });
+        
+        animation.onfinish = () => ripple.remove();
+    }
+    
+    parseLastCoords(pathData) {
+        const match = pathData.match(/([ML])\s*([0-9.-]+)\s*([0-9.-]+)/);
+        if (match) {
+            return {
+                x: parseFloat(match[2]),
+                y: parseFloat(match[3])
+            };
+        }
+        return null;
+    }
+    
+    updateStats() {
+        // Update total distance
+        this.totalDistanceEl.textContent = `${Math.round(this.totalDistance)}px`;
+        
+        // Update average speed
+        const avgSpeed = this.speeds.length > 0 
+            ? this.speeds.reduce((a, b) => a + b, 0) / this.speeds.length 
+            : 0;
+        this.avgSpeedEl.textContent = `${Math.round(avgSpeed)}px/s`;
+        
+        // Update click count
+        this.clickCountEl.textContent = this.clickCount;
+    }
+    
+    clearVisualization() {
+        this.pathsGroup.innerHTML = '';
+        this.pointsGroup.innerHTML = '';
+        this.labelsGroup.innerHTML = '';
+        
+        this.currentPath = null;
+        this.pathData = [];
+        this.actionStepCounter = 0;
+        this.totalDistance = 0;
+        this.speeds = [];
+        this.clickCount = 0;
+        
+        this.updateStats();
+    }
+    
+    toggleVisualization() {
+        this.isVisible = !this.isVisible;
+        this.vizContainer.style.display = this.isVisible ? 'block' : 'none';
+        
+        const icon = this.toggleVizBtn.querySelector('i');
+        icon.className = this.isVisible ? 'fas fa-eye' : 'fas fa-eye-slash';
+        
+        this.toggleVizBtn.title = this.isVisible ? 'Hide Visualization' : 'Show Visualization';
+    }
+    
+    // Reset for new recording session
+    reset() {
+        this.clearVisualization();
+    }
+}
+
+// Integration with your existing MacroRecorder class
+// Add this to your MacroRecorder constructor:
+/*
+    this.visualizer = new MousePathVisualizer();
+*/
+
+// Add this to your MacroRecorder's addAction method, right after adding the action:
+/*
+    if (action.type === 'mouse') {
+        this.visualizer.addMouseAction(action);
+    }
+*/
+
+// Add this to your MacroRecorder's clearActions method:
+/*
+    this.visualizer.reset();
+*/
+
+// Add this to your MacroRecorder's stopRecording method:
+/*
+    // Reset step counter when stopping
+    this.visualizer.actionStepCounter = 0;
+*/
