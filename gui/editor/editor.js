@@ -30,555 +30,611 @@ class NodeEditor {
     this.tempConnection = null;
     this.nodeCounter = 0;
     this.connectionUpdateQueued = false;
+    this.dataTypes = {
+      flow: { color: "#ffffff", input: null },
+      string: { color: "#f48fb1", input: "text" },
+      number: { color: "#64b5fe", input: "number" },
+      bool: { color: "#4caf50", input: "checkbox" },
+      vector2d: { color: "#ff9800", input: "vector2d" },
+      key: { color: "#9c27b0", input: "key" },
+      color: { color: "#e91e63", input: "color" },
+      time: { color: "#00bcd4", input: "text" },
+      device: { color: "#795548", input: "dropdown" },
+      array: { color: "#607d8b", input: "text" },
+      json: { color: "#ffc107", input: "textarea" },
+    };
 
     this.nodeTemplates = {
-    // Input Only Nodes
-    'Time Trigger': {
-        type: 'input',
-        category: 'input',
-        icon: 'fas fa-clock',
+      // Input Only Nodes
+      "Time Trigger": {
+        type: "input",
+        category: "input",
+        icon: "fas fa-clock",
         pins: {
-            inputs: [],
-            outputs: [
-                { name: 'tick', data_type: 'flow' },
-                { name: 'timestamp', data_type: 'time' }
-            ]
-        }
-    },
-    'Key Trigger': {
-        type: 'input',
-        category: 'input',
-        icon: 'fas fa-keyboard',
+          inputs: [],
+          outputs: [
+            { name: "tick", data_type: "flow" },
+            { name: "timestamp", data_type: "time" },
+          ],
+        },
+      },
+      "Key Trigger": {
+        type: "input",
+        category: "input",
+        icon: "fas fa-keyboard",
         pins: {
-            inputs: [],
-            outputs: [
-                { name: 'key', data_type: 'key' },
-                { name: 'device', data_type: 'device' },
-                { name: 'action', data_type: 'string' }
-            ]
-        }
-    },
-    'Mouse Trigger': {
-        type: 'input',
-        category: 'input',
-        icon: 'fas fa-mouse',
+          inputs: [],
+          outputs: [
+            { name: "tick", data_type: "flow" },
+            { name: "key", data_type: "key" },
+            { name: "device", data_type: "device" },
+            { name: "action", data_type: "string" },
+          ],
+        },
+      },
+      "Mouse Trigger": {
+        type: "input",
+        category: "input",
+        icon: "fas fa-mouse",
         pins: {
-            inputs: [],
-            outputs: [
-                { name: 'button', data_type: 'string' },
-                { name: 'click_type', data_type: 'string' },
-                { name: 'position', data_type: 'string' }
-            ]
-        }
-    },
-    'Window Focus': {
-        type: 'input',
-        category: 'input',
-        icon: 'fas fa-window-maximize',
+          inputs: [],
+          outputs: [
+            { name: "tick", data_type: "flow" },
+            { name: "button", data_type: "string" },
+            { name: "click_type", data_type: "string" },
+            { name: "position", data_type: "string" },
+          ],
+        },
+      },
+      "Window Focus": {
+        type: "input",
+        category: "input",
+        icon: "fas fa-window-maximize",
         pins: {
-            inputs: [],
-            outputs: [
-                { name: 'app_name', data_type: 'string' },
-                { name: 'window_title', data_type: 'string' },
-                { name: 'focused', data_type: 'bool' }
-            ]
-        }
-    },
-    'Device Connect': {
-        type: 'input',
-        category: 'input',
-        icon: 'fa-brands fa-usb',
+          inputs: [],
+          outputs: [
+            { name: "app_name", data_type: "string" },
+            { name: "window_title", data_type: "string" },
+            { name: "focused", data_type: "bool" },
+          ],
+        },
+      },
+      "Device Connect": {
+        type: "input",
+        category: "input",
+        icon: "fa-brands fa-usb",
         pins: {
-            inputs: [],
-            outputs: [
-                { name: 'device', data_type: 'device' },
-                { name: 'connected', data_type: 'bool' }
-            ]
-        }
-    },
-    'System Event': {
-        type: 'input',
-        category: 'input',
-        icon: 'fas fa-desktop',
+          inputs: [],
+          outputs: [
+            { name: "device", data_type: "device" },
+            { name: "connected", data_type: "bool" },
+          ],
+        },
+      },
+      "System Event": {
+        type: "input",
+        category: "input",
+        icon: "fas fa-desktop",
         pins: {
-            inputs: [],
-            outputs: [
-                { name: 'event_type', data_type: 'string' },
-                { name: 'timestamp', data_type: 'time' }
-            ]
-        }
-    },
+          inputs: [],
+          outputs: [
+            { name: "event_type", data_type: "string" },
+            { name: "timestamp", data_type: "time" },
+          ],
+        },
+      },
 
-    // Output Only Nodes
-    'Pass to OS': {
-        type: 'output',
-        category: 'output',
-        icon: 'fas fa-share',
+      // Output Only Nodes
+      "Pass to OS": {
+        type: "output",
+        category: "output",
+        icon: "fas fa-share",
         pins: {
-            inputs: [
-                { name: 'trigger', data_type: 'flow' }
-            ],
-            outputs: []
-        }
-    },
-    'Block Input': {
-        type: 'output',
-        category: 'output',
-        icon: 'fas fa-ban',
+          inputs: [{ name: "trigger", data_type: "flow" }],
+          outputs: [],
+        },
+      },
+      "Block Input": {
+        type: "output",
+        category: "output",
+        icon: "fas fa-ban",
         pins: {
-            inputs: [
-                { name: 'trigger', data_type: 'flow' }
-            ],
-            outputs: []
-        }
-    },
-    'Send Notification': {
-        type: 'output',
-        category: 'output',
-        icon: 'fas fa-bell',
+          inputs: [{ name: "trigger", data_type: "flow" }],
+          outputs: [],
+        },
+      },
+      "Send Notification": {
+        type: "output",
+        category: "output",
+        icon: "fas fa-bell",
         pins: {
-            inputs: [
-                { name: 'title', data_type: 'string' },
-                { name: 'message', data_type: 'string' },
-                { name: 'trigger', data_type: 'flow' }
-            ],
-            outputs: []
-        }
-    },
-    'Show Overlay': {
-        type: 'output',
-        category: 'output',
-        icon: 'fas fa-layer-group',
+          inputs: [
+            { name: "title", data_type: "string" },
+            { name: "message", data_type: "string" },
+            { name: "trigger", data_type: "flow" },
+          ],
+          outputs: [],
+        },
+      },
+      "Show Overlay": {
+        type: "output",
+        category: "output",
+        icon: "fas fa-layer-group",
         pins: {
-            inputs: [
-                { name: 'text', data_type: 'string' },
-                { name: 'timeout', data_type: 'number' },
-                { name: 'trigger', data_type: 'flow' }
-            ],
-            outputs: []
-        }
-    },
-    'Run Script': {
-        type: 'output',
-        category: 'output',
-        icon: 'fas fa-code',
+          inputs: [
+            { name: "text", data_type: "string" },
+            { name: "timeout", data_type: "number" },
+            { name: "trigger", data_type: "flow" },
+          ],
+          outputs: [],
+        },
+      },
+      "Run Script": {
+        type: "output",
+        category: "output",
+        icon: "fas fa-code",
         pins: {
-            inputs: [
-                { name: 'script_path', data_type: 'string' },
-                { name: 'trigger', data_type: 'flow' }
-            ],
-            outputs: []
-        }
-    },
-    'Open App': {
-        type: 'output',
-        category: 'output',
-        icon: 'fas fa-external-link-alt',
+          inputs: [
+            { name: "script_path", data_type: "string" },
+            { name: "trigger", data_type: "flow" },
+          ],
+          outputs: [],
+        },
+      },
+      "Open App": {
+        type: "output",
+        category: "output",
+        icon: "fas fa-external-link-alt",
         pins: {
-            inputs: [
-                { name: 'path', data_type: 'string' },
-                { name: 'trigger', data_type: 'flow' }
-            ],
-            outputs: []
-        }
-    },
-    'Write to File': {
-        type: 'output',
-        category: 'output',
-        icon: 'fas fa-file-alt',
+          inputs: [
+            { name: "path", data_type: "string" },
+            { name: "trigger", data_type: "flow" },
+          ],
+          outputs: [],
+        },
+      },
+      "Write to File": {
+        type: "output",
+        category: "output",
+        icon: "fas fa-file-alt",
         pins: {
-            inputs: [
-                { name: 'path', data_type: 'string' },
-                { name: 'content', data_type: 'string' },
-                { name: 'trigger', data_type: 'flow' }
-            ],
-            outputs: []
-        }
-    },
+          inputs: [
+            { name: "path", data_type: "string" },
+            { name: "content", data_type: "string" },
+            { name: "trigger", data_type: "flow" },
+          ],
+          outputs: [],
+        },
+      },
 
-    // Logic/Bidirectional Nodes
-    'Condition': {
-        type: 'logic',
-        category: 'logic',
-        icon: 'fas fa-code-branch',
+      // Logic/Bidirectional Nodes
+      Condition: {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-code-branch",
         pins: {
-            inputs: [
-                { name: 'condition', data_type: 'bool' },
-                { name: 'input', data_type: 'flow' }
-            ],
-            outputs: [
-                { name: 'true', data_type: 'flow' },
-                { name: 'false', data_type: 'flow' }
-            ]
-        }
-    },
-    'Switch/Case': {
-        type: 'logic',
-        category: 'logic',
-        icon: 'fas fa-random',
+          inputs: [
+            { name: "input", data_type: "flow" },
+            { name: "condition", data_type: "bool" },
+          ],
+          outputs: [
+            { name: "true", data_type: "flow" },
+            { name: "false", data_type: "flow" },
+          ],
+        },
+      },
+      "Switch/Case": {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-random",
         pins: {
-            inputs: [
-                { name: 'value', data_type: 'string' },
-                { name: 'input', data_type: 'flow' }
-            ],
-            outputs: [
-                { name: 'case_1', data_type: 'flow' },
-                { name: 'case_2', data_type: 'flow' },
-                { name: 'default', data_type: 'flow' }
-            ]
-        }
-    },
-    'Wait/Delay': {
-        type: 'logic',
-        category: 'logic',
-        icon: 'fas fa-hourglass-half',
+          inputs: [
+            { name: "value", data_type: "string" },
+            { name: "input", data_type: "flow" },
+          ],
+          outputs: [
+            { name: "case_1", data_type: "flow" },
+            { name: "case_2", data_type: "flow" },
+            { name: "default", data_type: "flow" },
+          ],
+        },
+      },
+      "Wait/Delay": {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-hourglass-half",
         pins: {
-            inputs: [
-                { name: 'time_ms', data_type: 'number' },
-                { name: 'input', data_type: 'flow' }
-            ],
-            outputs: [
-                { name: 'output', data_type: 'flow' }
-            ]
-        }
-    },
-    'Loop': {
-        type: 'logic',
-        category: 'logic',
-        icon: 'fas fa-redo',
+          inputs: [
+            { name: "time_ms", data_type: "number" },
+            { name: "input", data_type: "flow" },
+          ],
+          outputs: [{ name: "output", data_type: "flow" }],
+        },
+      },
+      Loop: {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-redo",
         pins: {
-            inputs: [
-                { name: 'count', data_type: 'number' },
-                { name: 'input', data_type: 'flow' }
-            ],
-            outputs: [
-                { name: 'iteration', data_type: 'flow' },
-                { name: 'complete', data_type: 'flow' }
-            ]
-        }
-    },
-    'Compare': {
-        type: 'logic',
-        category: 'logic',
-        icon: 'fas fa-balance-scale',
+          inputs: [
+            { name: "count", data_type: "number" },
+            { name: "input", data_type: "flow" },
+          ],
+          outputs: [
+            { name: "iteration", data_type: "flow" },
+            { name: "complete", data_type: "flow" },
+          ],
+        },
+      },
+      Compare: {
+        type: "logic",
+        category: "logic",
+        icon: "fa-solid fa-equals",
         pins: {
-            inputs: [
-                { name: 'value_a', data_type: 'number' },
-                { name: 'value_b', data_type: 'number' }
-            ],
-            outputs: [
-                { name: 'result', data_type: 'bool' }
-            ]
-        }
-    },
-    'Math': {
-        type: 'logic',
-        category: 'logic',
-        icon: 'fas fa-calculator',
+          inputs: [
+            { name: "value_a", data_type: "number" },
+            { name: "value_b", data_type: "number" },
+          ],
+          outputs: [{ name: "result", data_type: "bool" }],
+        },
+      },
+      "Key Match": {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-balance-scale",
         pins: {
-            inputs: [
-                { name: 'a', data_type: 'number' },
-                { name: 'b', data_type: 'number' }
-            ],
-            outputs: [
-                { name: 'result', data_type: 'number' }
-            ]
-        }
-    },
-    'String Join/Split': {
-        type: 'logic',
-        category: 'logic',
-        icon: 'fas fa-text-width',
+          inputs: [
+            { name: "Key_a", data_type: "key" },
+            { name: "Key_b", data_type: "key" },
+          ],
+          outputs: [{ name: "result", data_type: "bool" }],
+        },
+      },
+      Math: {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-calculator",
         pins: {
-            inputs: [
-                { name: 'input_a', data_type: 'string' },
-                { name: 'input_b', data_type: 'string' },
-                { name: 'separator', data_type: 'string' }
-            ],
-            outputs: [
-                { name: 'result', data_type: 'string' }
-            ]
-        }
-    },
-    'Convert Type': {
-        type: 'logic',
-        category: 'logic',
-        icon: 'fas fa-exchange-alt',
+          inputs: [
+            { name: "a", data_type: "number" },
+            { name: "b", data_type: "number" },
+          ],
+          outputs: [{ name: "result", data_type: "number" }],
+        },
+      },
+      "String Join/Split": {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-text-width",
         pins: {
-            inputs: [
-                { name: 'input', data_type: 'string' }
-            ],
-            outputs: [
-                { name: 'string', data_type: 'string' },
-                { name: 'number', data_type: 'number' },
-                { name: 'bool', data_type: 'bool' }
-            ]
-        }
-    },
+          inputs: [
+            { name: "input_a", data_type: "string" },
+            { name: "input_b", data_type: "string" },
+            { name: "separator", data_type: "string" },
+          ],
+          outputs: [{ name: "result", data_type: "string" }],
+        },
+      },
+      "Convert Type": {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-exchange-alt",
+        pins: {
+          inputs: [{ name: "input", data_type: "string" }],
+          outputs: [
+            { name: "string", data_type: "string" },
+            { name: "number", data_type: "number" },
+            { name: "bool", data_type: "bool" },
+          ],
+        },
+      },
 
-    // Device Info Nodes
-    'Device Name': {
-        type: 'device_info',
-        category: 'device_info',
-        icon: 'fas fa-tag',
+      // Device Info Nodes
+      "Device Name": {
+        type: "device_info",
+        category: "device_info",
+        icon: "fas fa-tag",
         pins: {
-            inputs: [
-                { name: 'device', data_type: 'device' }
-            ],
-            outputs: [
-                { name: 'name', data_type: 'string' }
-            ]
-        }
-    },
-    'Polling Rate': {
-        type: 'device_info',
-        category: 'device_info',
-        icon: 'fas fa-tachometer-alt',
+          inputs: [{ name: "device", data_type: "device" }],
+          outputs: [{ name: "name", data_type: "string" }],
+        },
+      },
+      "Polling Rate": {
+        type: "device_info",
+        category: "device_info",
+        icon: "fas fa-tachometer-alt",
         pins: {
-            inputs: [
-                { name: 'device', data_type: 'device' }
-            ],
-            outputs: [
-                { name: 'rate_hz', data_type: 'number' }
-            ]
-        }
-    },
-    'Vendor/Product ID': {
-        type: 'device_info',
-        category: 'device_info',
-        icon: 'fas fa-fingerprint',
+          inputs: [{ name: "device", data_type: "device" }],
+          outputs: [{ name: "rate_hz", data_type: "number" }],
+        },
+      },
+      "Vendor/Product ID": {
+        type: "device_info",
+        category: "device_info",
+        icon: "fas fa-fingerprint",
         pins: {
-            inputs: [
-                { name: 'device', data_type: 'device' }
-            ],
-            outputs: [
-                { name: 'vendor_id', data_type: 'string' },
-                { name: 'product_id', data_type: 'string' }
-            ]
-        }
-    },
-    'Device Type': {
-        type: 'device_info',
-        category: 'device_info',
-        icon: 'fas fa-microchip',
+          inputs: [{ name: "device", data_type: "device" }],
+          outputs: [
+            { name: "vendor_id", data_type: "string" },
+            { name: "product_id", data_type: "string" },
+          ],
+        },
+      },
+      "Device Type": {
+        type: "device_info",
+        category: "device_info",
+        icon: "fas fa-microchip",
         pins: {
-            inputs: [
-                { name: 'device', data_type: 'device' }
-            ],
-            outputs: [
-                { name: 'type', data_type: 'string' }
-            ]
-        }
-    },
-    'Connected State': {
-        type: 'device_info',
-        category: 'device_info',
-        icon: 'fas fa-plug',
+          inputs: [{ name: "device", data_type: "device" }],
+          outputs: [{ name: "type", data_type: "string" }],
+        },
+      },
+      "Connected State": {
+        type: "device_info",
+        category: "device_info",
+        icon: "fas fa-plug",
         pins: {
-            inputs: [
-                { name: 'device', data_type: 'device' }
-            ],
-            outputs: [
-                { name: 'connected', data_type: 'bool' }
-            ]
-        }
-    },
+          inputs: [{ name: "device", data_type: "device" }],
+          outputs: [{ name: "connected", data_type: "bool" }],
+        },
+      },
 
-    // Device Output Nodes
-    'Set LED Color': {
-        type: 'device_output',
-        category: 'device_output',
-        icon: 'fas fa-lightbulb',
+      // Device Output Nodes
+      "Set LED Color": {
+        type: "device_output",
+        category: "device_output",
+        icon: "fas fa-lightbulb",
         pins: {
-            inputs: [
-                { name: 'device', data_type: 'device' },
-                { name: 'key', data_type: 'key' },
-                { name: 'color', data_type: 'string' },
-                { name: 'trigger', data_type: 'flow' }
-            ],
-            outputs: []
-        }
-    },
-    'Vibrate Device': {
-        type: 'device_output',
-        category: 'device_output',
-        icon: 'fas fa-mobile-alt',
+          inputs: [
+            { name: "device", data_type: "device" },
+            { name: "key", data_type: "key" },
+            { name: "color", data_type: "string" },
+            { name: "trigger", data_type: "flow" },
+          ],
+          outputs: [],
+        },
+      },
+      "Vibrate Device": {
+        type: "device_output",
+        category: "device_output",
+        icon: "fas fa-mobile-alt",
         pins: {
-            inputs: [
-                { name: 'device', data_type: 'device' },
-                { name: 'intensity', data_type: 'number' },
-                { name: 'duration', data_type: 'number' },
-                { name: 'trigger', data_type: 'flow' }
-            ],
-            outputs: []
-        }
-    },
-    'Play Sound': {
-        type: 'device_output',
-        category: 'device_output',
-        icon: 'fas fa-volume-up',
+          inputs: [
+            { name: "device", data_type: "device" },
+            { name: "intensity", data_type: "number" },
+            { name: "duration", data_type: "number" },
+            { name: "trigger", data_type: "flow" },
+          ],
+          outputs: [],
+        },
+      },
+      "Play Sound": {
+        type: "device_output",
+        category: "device_output",
+        icon: "fas fa-volume-up",
         pins: {
-            inputs: [
-                { name: 'device', data_type: 'device' },
-                { name: 'frequency', data_type: 'number' },
-                { name: 'duration', data_type: 'number' },
-                { name: 'trigger', data_type: 'flow' }
-            ],
-            outputs: []
-        }
-    }
-};
+          inputs: [
+            { name: "device", data_type: "device" },
+            { name: "frequency", data_type: "number" },
+            { name: "duration", data_type: "number" },
+            { name: "trigger", data_type: "flow" },
+          ],
+          outputs: [],
+        },
+      },
+      // added latter expremintal
+      "Math Add": {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-plus",
+        pins: {
+          inputs: [
+            { name: "a", data_type: "number", default_value: 0 },
+            { name: "b", data_type: "number", default_value: 0 },
+          ],
+          outputs: [{ name: "result", data_type: "number" }],
+        },
+      },
+      "String Concat": {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-link",
+        pins: {
+          inputs: [
+            { name: "text1", data_type: "string", default_value: "" },
+            { name: "text2", data_type: "string", default_value: "" },
+          ],
+          outputs: [{ name: "result", data_type: "string" }],
+        },
+      },
+      Vector2D: {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-arrows-alt",
+        pins: {
+          inputs: [
+            { name: "x", data_type: "number", default_value: 0 },
+            { name: "y", data_type: "number", default_value: 0 },
+          ],
+          outputs: [
+            { name: "vector", data_type: "vector2d" },
+            { name: "x", data_type: "number" },
+            { name: "y", data_type: "number" },
+          ],
+        },
+      },
+      "Dynamic Switch": {
+        type: "logic",
+        category: "logic",
+        icon: "fas fa-code-branch",
+        dynamic: true,
+        pins: {
+          inputs: [
+            { name: "value", data_type: "string" },
+            { name: "input", data_type: "flow" },
+          ],
+          outputs: [
+            { name: "case_1", data_type: "flow" },
+            { name: "default", data_type: "flow" },
+          ],
+        },
+      },
+    };
 
-this.nodeCategories = {
-    'input': {
-        title: 'Input Nodes',
-        icon: 'fas fa-sign-in-alt',
-        color: '#81c784'
-    },
-    'output': {
-        title: 'Output Nodes',  
-        icon: 'fas fa-sign-out-alt',
-        color: '#f44336'
-    },
-    'logic': {
-        title: 'Logic Nodes',
-        icon: 'fas fa-cogs',
-        color: '#ff9800'
-    },
-    'device_info': {
-        title: 'Device Info',
-        icon: 'fas fa-info-circle',
-        color: '#ba68c8'
-    },
-    'device_output': {
-        title: 'Device Output',
-        icon: 'fas fa-broadcast-tower',
-        color: '#64b5f6'
-    }
-};
+    this.nodeCategories = {
+      input: {
+        title: "Input Nodes",
+        icon: "fas fa-sign-in-alt",
+        color: "#81c784",
+      },
+      output: {
+        title: "Output Nodes",
+        icon: "fas fa-sign-out-alt",
+        color: "#f44336",
+      },
+      logic: {
+        title: "Logic Nodes",
+        icon: "fas fa-cogs",
+        color: "#ff9800",
+      },
+      device_info: {
+        title: "Device Info",
+        icon: "fas fa-info-circle",
+        color: "#ba68c8",
+      },
+      device_output: {
+        title: "Device Output",
+        icon: "fas fa-broadcast-tower",
+        color: "#64b5f6",
+      },
+    };
     this.initEvents();
 
-    this.initializeSidebar(); // ADD THIS
-    this.initContextMenu();   // ADD THIS
+    this.initializeSidebar();
+    this.initContextMenu();
   }
   initializeSidebar() {
     this.buildSidebar();
     this.initSidebarEvents();
-}
+  }
 
-buildSidebar() {
-    const sidebarContent = document.getElementById('sidebarContent');
-    sidebarContent.innerHTML = '';
+  buildSidebar() {
+    const sidebarContent = document.getElementById("sidebarContent");
+    sidebarContent.innerHTML = "";
 
     Object.entries(this.nodeCategories).forEach(([categoryId, category]) => {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.className = 'node-category';
-        
-        const header = document.createElement('div');
-        header.className = 'category-header';
-        header.innerHTML = `<i class="${category.icon}"></i>${category.title}`;
-        header.dataset.category = categoryId;
-        
-        const nodesContainer = document.createElement('div');
-        nodesContainer.className = 'category-nodes';
-        nodesContainer.dataset.category = categoryId;
-        
-        // Add nodes to category
-        Object.entries(this.nodeTemplates).forEach(([nodeName, nodeData]) => {
-            if (nodeData.category === categoryId) {
-                const nodeItem = document.createElement('div');
-                nodeItem.className = 'node-item';
-                nodeItem.innerHTML = `<i class="${nodeData.icon}"></i><p>${nodeName}</p>`;
-                nodeItem.dataset.nodeName = nodeName;
-                nodeItem.addEventListener('click', () => this.addNode(nodeData.type, nodeName));
-                nodesContainer.appendChild(nodeItem);
-            }
-        });
-        
-        categoryDiv.appendChild(header);
-        categoryDiv.appendChild(nodesContainer);
-        sidebarContent.appendChild(categoryDiv);
-    });
-}
+      const categoryDiv = document.createElement("div");
+      categoryDiv.className = "node-category";
 
-initSidebarEvents() {
+      const header = document.createElement("div");
+      header.className = "category-header";
+      header.innerHTML = `<i class="${category.icon}"></i>${category.title}`;
+      header.dataset.category = categoryId;
+
+      const nodesContainer = document.createElement("div");
+      nodesContainer.className = "category-nodes";
+      nodesContainer.dataset.category = categoryId;
+
+      // Add nodes to category
+      Object.entries(this.nodeTemplates).forEach(([nodeName, nodeData]) => {
+        if (nodeData.category === categoryId) {
+          const nodeItem = document.createElement("div");
+          nodeItem.className = "node-item";
+          nodeItem.innerHTML = `<i class="${nodeData.icon}"></i><p>${nodeName}</p>`;
+          nodeItem.dataset.nodeName = nodeName;
+          nodeItem.addEventListener("click", () =>
+            this.addNode(nodeData.type, nodeName)
+          );
+          nodesContainer.appendChild(nodeItem);
+        }
+      });
+
+      categoryDiv.appendChild(header);
+      categoryDiv.appendChild(nodesContainer);
+      sidebarContent.appendChild(categoryDiv);
+    });
+  }
+
+  initSidebarEvents() {
     // Toggle sidebar
-    document.getElementById('sidebarToggle').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.toggle('collapsed');
+    document.getElementById("sidebarToggle").addEventListener("click", () => {
+      document.getElementById("sidebar").classList.toggle("collapsed");
     });
-    
+
     // Category collapse/expand
-    document.querySelectorAll('.category-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const category = header.dataset.category;
-            const nodesContainer = document.querySelector(`.category-nodes[data-category="${category}"]`);
-            nodesContainer.classList.toggle('collapsed');
-        });
+    document.querySelectorAll(".category-header").forEach((header) => {
+      header.addEventListener("click", () => {
+        const category = header.dataset.category;
+        const nodesContainer = document.querySelector(
+          `.category-nodes[data-category="${category}"]`
+        );
+        nodesContainer.classList.toggle("collapsed");
+      });
     });
-}
+  }
 
-initContextMenu() {
-    this.canvasContainer.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        this.showContextMenu(e.clientX, e.clientY);
+  initContextMenu() {
+    this.canvasContainer.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      this.showContextMenu(e.clientX, e.clientY);
     });
-    
-    document.addEventListener('click', () => {
-        this.hideContextMenu();
-    });
-}
 
-showContextMenu(x, y) {
-    const contextMenu = document.getElementById('contextMenu');
-    contextMenu.innerHTML = '';
-    
+    document.addEventListener("click", () => {
+      this.hideContextMenu();
+    });
+  }
+
+  showContextMenu(x, y) {
+    const contextMenu = document.getElementById("contextMenu");
+    contextMenu.innerHTML = "";
+
     Object.entries(this.nodeCategories).forEach(([categoryId, category]) => {
-        const menuItem = document.createElement('div');
-        menuItem.className = 'context-menu-item';
-        menuItem.innerHTML = `<i class="${category.icon}"></i>${category.title}`;
-        
-        const submenu = document.createElement('div');
-        submenu.className = 'context-submenu';
-        
-        // Add nodes to submenu
-        Object.entries(this.nodeTemplates).forEach(([nodeName, nodeData]) => {
-            if (nodeData.category === categoryId) {
-                const subItem = document.createElement('div');
-                subItem.className = 'context-menu-item';
-                subItem.innerHTML = `<i class="${nodeData.icon}"></i>${nodeName}`;
-                subItem.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const rect = this.canvas.getBoundingClientRect();
-                    const canvasX = (x - rect.left - this.panX) / this.scale;
-                    const canvasY = (y - rect.top - this.panY) / this.scale;
-                    this.addNode(nodeData.type, nodeName, canvasX, canvasY);
-                    this.hideContextMenu();
-                });
-                submenu.appendChild(subItem);
-            }
-        });
-        
-        menuItem.appendChild(submenu);
-        contextMenu.appendChild(menuItem);
+      const menuItem = document.createElement("div");
+      menuItem.className = "context-menu-item";
+      menuItem.innerHTML = `<i class="${category.icon}"></i>${category.title}`;
+
+      const submenu = document.createElement("div");
+      submenu.className = "context-submenu";
+
+      // Add nodes to submenu
+      Object.entries(this.nodeTemplates).forEach(([nodeName, nodeData]) => {
+        if (nodeData.category === categoryId) {
+          const subItem = document.createElement("div");
+          subItem.className = "context-menu-item";
+          subItem.innerHTML = `<i class="${nodeData.icon}"></i>${nodeName}`;
+          subItem.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const rect = this.canvas.getBoundingClientRect();
+            const canvasX = (x - rect.left - this.panX) / this.scale;
+            const canvasY = (y - rect.top - this.panY) / this.scale;
+            this.addNode(nodeData.type, nodeName, canvasX, canvasY);
+            this.hideContextMenu();
+          });
+          submenu.appendChild(subItem);
+        }
+      });
+
+      menuItem.appendChild(submenu);
+      contextMenu.appendChild(menuItem);
     });
-    
-    contextMenu.style.display = 'block';
+
+    contextMenu.style.display = "block";
     contextMenu.style.left = `${x}px`;
     contextMenu.style.top = `${y}px`;
-    
+
     // Keep menu on screen
     const rect = contextMenu.getBoundingClientRect();
     if (rect.right > window.innerWidth) {
-        contextMenu.style.left = `${x - rect.width}px`;
+      contextMenu.style.left = `${x - rect.width}px`;
     }
     if (rect.bottom > window.innerHeight) {
-        contextMenu.style.top = `${y - rect.height}px`;
+      contextMenu.style.top = `${y - rect.height}px`;
     }
-}
+  }
 
-hideContextMenu() {
-    document.getElementById('contextMenu').style.display = 'none';
-}
+  hideContextMenu() {
+    document.getElementById("contextMenu").style.display = "none";
+  }
 
   initEvents() {
     this.canvasContainer.addEventListener("wheel", this.handleWheel.bind(this));
@@ -956,9 +1012,9 @@ hideContextMenu() {
       });
       this.connectionUpdateQueued = false;
     });
-    
-    this.initializeSidebar(); 
-    this.initContextMenu();   
+
+    this.initializeSidebar();
+    this.initContextMenu();
   }
 
   updateConnectionPath(connectionId) {
@@ -1053,6 +1109,75 @@ hideContextMenu() {
     this.renderNode(node);
   }
 
+  renderNodeInput(nodeGroup, pin, pinX, pinY, nodeId) {
+    const dataType = this.dataTypes[pin.data_type];
+    if (!dataType || !dataType.input || pin.connected) return;
+
+    const inputGroup = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "foreignObject"
+    );
+    inputGroup.setAttribute("x", pinX + (pin.type === "input" ? 20 : -80));
+    inputGroup.setAttribute("y", pinY - 10);
+    inputGroup.setAttribute("width", 60);
+    inputGroup.setAttribute("height", 20);
+
+    const inputDiv = document.createElement("div");
+    inputDiv.style.cssText = "font-size: 11px; width: 100%;";
+
+    let inputElement;
+    switch (dataType.input) {
+      case "text":
+      case "number":
+        inputElement = document.createElement("input");
+        inputElement.type = dataType.input;
+        inputElement.value = pin.default_value || "";
+        inputElement.style.cssText =
+          "width: 100%; padding: 2px; border: 1px solid #555; background: #2a2a2a; color: white; border-radius: 3px; font-size: 10px;";
+        break;
+      case "checkbox":
+        inputElement = document.createElement("input");
+        inputElement.type = "checkbox";
+        inputElement.checked = pin.default_value || false;
+        break;
+      case "color":
+        inputElement = document.createElement("input");
+        inputElement.type = "color";
+        inputElement.value = pin.default_value || "#ffffff";
+        inputElement.style.cssText =
+          "width: 100%; height: 18px; border: none; padding: 0;";
+        break;
+      case "vector2d":
+        inputElement = document.createElement("div");
+        inputElement.innerHTML = `
+                <input type="number" placeholder="X" style="width: 45%; font-size: 9px; padding: 1px; background: #2a2a2a; color: white; border: 1px solid #555;">
+                <input type="number" placeholder="Y" style="width: 45%; font-size: 9px; padding: 1px; background: #2a2a2a; color: white; border: 1px solid #555;">
+            `;
+        break;
+      case "key":
+        inputElement = document.createElement("select");
+        inputElement.innerHTML = `
+                <option value="a">A</option>
+                <option value="b">B</option>
+                <option value="space">Space</option>
+                <option value="enter">Enter</option>
+                <option value="ctrl">Ctrl</option>
+                <option value="alt">Alt</option>
+            `;
+        inputElement.style.cssText =
+          "width: 100%; background: #2a2a2a; color: white; border: 1px solid #555; font-size: 10px;";
+        break;
+    }
+
+    if (inputElement) {
+      inputElement.dataset.nodeId = nodeId;
+      inputElement.dataset.pinId = pin.local_id;
+      inputDiv.appendChild(inputElement);
+      inputGroup.appendChild(inputDiv);
+      nodeGroup.appendChild(inputGroup);
+    }
+  }
+
   renderNode(node) {
     const nodeGroup = document.createElementNS(
       "http://www.w3.org/2000/svg",
@@ -1083,7 +1208,7 @@ hideContextMenu() {
     header.setAttribute("height", headerHeight);
     header.setAttribute("fill", "url(#headerGradient)");
     nodeGroup.appendChild(header);
-    
+
     // Node icon
     const iconGroup = document.createElementNS(
       "http://www.w3.org/2000/svg",
@@ -1158,8 +1283,40 @@ hideContextMenu() {
     label.setAttribute("y", pinY);
     label.textContent = pin.name;
     pinGroup.appendChild(label);
-
+    if (type === "input") {
+      this.renderNodeInput(
+        nodeGroup,
+        pin,
+        pinX,
+        pinY,
+        nodeGroup.dataset.nodeId
+      );
+    }
     nodeGroup.appendChild(pinGroup);
+  }
+  addDynamicPin(nodeId, pinType) {
+    const node = this.nodes.get(nodeId);
+    if (!node) return;
+
+    const pinIndex =
+      pinType === "input" ? node.pins.inputs.length : node.pins.outputs.length;
+    const newPin = {
+      name: `${pinType}_${pinIndex}`,
+      data_type: "string",
+      local_id: `${pinType === "input" ? "in" : "out"}-${pinIndex}`,
+      global_id: `${nodeId}-${pinType === "input" ? "in" : "out"}-${pinIndex}`,
+    };
+
+    if (pinType === "input") {
+      node.pins.inputs.push(newPin);
+    } else {
+      node.pins.outputs.push(newPin);
+    }
+
+    // Re-render the node
+    const nodeElement = document.querySelector(`[data-node-id="${nodeId}"]`);
+    nodeElement.remove();
+    this.renderNode(node);
   }
 
   updateNodePosition(nodeId) {
