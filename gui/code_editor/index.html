@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogicEdit - Modern Code Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 50%, #0f172a 100%);
+            color: #e2e8f0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        /* Top Toolbar */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .file-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            background: rgba(51, 65, 85, 0.6);
+            border-radius: 8px;
+            font-size: 14px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .tab.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+
+        .tab:hover {
+            background: rgba(71, 85, 105, 0.8);
+            color: #e2e8f0;
+        }
+
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toolbar-btn {
+            padding: 8px 12px;
+            background: rgba(51, 65, 85, 0.6);
+            border-radius: 6px;
+            font-size: 12px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .toolbar-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        /* Main Editor Area */
+        .editor-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Line Numbers */
+        .line-numbers {
+            width: 60px;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 20px 0;
+            font-size: 13px;
+            color: #64748b;
+            text-align: right;
+            padding-right: 16px;
+            border-right: 1px solid rgba(148, 163, 184, 0.1);
+            user-select: none;
+        }
+
+        .line-number {
+            height: 24px;
+            line-height: 24px;
+            position: relative;
+            transition: color 0.2s ease;
+        }
+
+        .line-number.active {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .line-number::before {
+            content: '';
+            position: absolute;
+            left: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+            transition: height 0.2s ease;
+        }
+
+        .line-number.active::before {
+            height: 20px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Code Area */
+        .code-area {
+            flex: 1;
+            position: relative;
+            background: rgba(15, 23, 42, 0.6);
+            overflow: hidden;
+        }
+
+        .canvas-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+        }
+
+        .code-content {
+            padding: 20px;
+            font-size: 14px;
+            line-height: 24px;
+            white-space: pre;
+            overflow: auto;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Syntax Highlighting */
+        .keyword { color: #8b5cf6; font-weight: 600; }
+        .string { color: #10b981; }
+        .comment { color: #64748b; font-style: italic; }
+        .function { color: #3b82f6; }
+        .number { color: #f59e0b; }
+        .operator { color: #e11d48; }
+        .bracket { color: #06b6d4; }
+
+        /* Cursor */
+        .cursor {
+            position: absolute;
+            width: 2px;
+            height: 24px;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            animation: blink 1s infinite;
+            border-radius: 1px;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Selection */
+        .selection {
+            position: absolute;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 3px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Minimap */
+        .minimap {
+            width: 120px;
+            background: rgba(15, 23, 42, 0.9);
+            border-left: 1px solid rgba(148, 163, 184, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .minimap-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .minimap-viewport {
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            height: 60px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+            backdrop-filter: blur(3px);
+            pointer-events: none;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .status-left {
+            display: flex;
+            gap: 20px;
+        }
+
+        .status-right {
+            display: flex;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .status-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Hidden textarea for input */
+        .hidden-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            z-index: 1000;
+            resize: none;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: transparent;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <!-- Top Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="logo">⚡ LogicEdit</div>
+                <div class="file-tabs">
+                    <div class="tab active">main.js</div>
+                    <div class="tab">utils.js</div>
+                    <div class="tab">styles.css</div>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <div class="toolbar-btn">⚙️ Settings</div>
+                <div class="toolbar-btn">🎨 Theme</div>
+                <div class="toolbar-btn">💾 Save</div>
+            </div>
+        </div>
+
+        <!-- Main Editor Area -->
+        <div class="editor-main">
+            <!-- Line Numbers -->
+            <div class="line-numbers">
+            </div>
+
+            <!-- Code Area -->
+            <div class="code-area">
+                <canvas class="canvas-layer" width="800" height="600"></canvas>
+                <div class="code-content">
+                    <div class="cursor" style="left: 0px; top: 0px;"></div>
+                    <span class="comment">// LogicEdit - Modern Web Code Editor</span>
+<span class="keyword">class</span> <span class="function">LogicEditor</span> <span class="bracket">{</span>
+  <span class="keyword">constructor</span><span class="bracket">(</span><span class="string">'#editor-container'</span><span class="bracket">)</span> <span class="bracket">{</span>
+    <span class="keyword">this</span><span class="operator">.</span>model <span class="operator">=</span> <span class="keyword">new</span> <span class="function">TextModel</span><span class="bracket">()</span><span class="operator">;</span>
+    <span class="keyword">this</span><span class="operator">.</span>renderer <span class="operator">=</span> <span class="keyword">new</span> <span class="function">CanvasRenderer</span><span class="bracket">()</span><span class="operator">;</span>
+    <span class="keyword">this</span><span class="operator">.</span>cursor <span class="operator">=</span> <span class="keyword">new</span> <span class="function">CursorManager</span><span class="bracket">()</span><span class="operator">;</span>
+    <span class="keyword">this</span><span class="operator">.</span>tokenizer <span class="operator">=</span> <span class="keyword">new</span> <span class="function">SyntaxTokenizer</span><span class="bracket">()</span><span class="operator">;</span>
+  <span class="bracket">}</span>
+
+  <span class="function">init</span><span class="bracket">()</span> <span class="bracket">{</span>
+    <span class="keyword">this</span><span class="operator">.</span><span class="function">setupEventListeners</span><span class="bracket">()</span><span class="operator">;</span>
+    <span class="keyword">this</span><span class="operator">.</span><span class="function">startRenderLoop</span><span class="bracket">()</span><span class="operator">;</span>
+    <span class="function">console</span><span class="operator">.</span><span class="function">log</span><span class="bracket">(</span><span class="string">'🚀 LogicEdit initialized!'</span><span class="bracket">)</span><span class="operator">;</span>
+  <span class="bracket">}</span>
+<span class="bracket">}</span>
+                </div>
+                <textarea class="hidden-input"></textarea>
+            </div>
+
+            <!-- Minimap -->
+            <div class="minimap">
+                <canvas class="minimap-canvas" width="120" height="600"></canvas>
+                <div class="minimap-viewport" style="top: 10px;"></div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>JavaScript</span>
+                </div>
+                <div class="status-item">📍 Ln 3, Col 24</div>
+                <div class="status-item">🎯 UTF-8</div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">⚡ 0 errors</div>
+                <div class="status-item">🔍 ESLint</div>
+                <div class="status-item">🌐 Prettier</div>
+                <div class="status-item">💾 Saved</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // LogicEdit Core Implementation
+        class LogicEditor {
+            constructor(container) {
+                this.container = document.querySelector(container);
+                this.canvas = document.querySelector('.canvas-layer');
+                this.ctx = this.canvas.getContext('2d');
+                this.minimapCanvas = document.querySelector('.minimap-canvas');
+                this.minimapCtx = this.minimapCanvas.getContext('2d');
+                this.hiddenInput = document.querySelector('.hidden-input');
+                this.cursor = document.querySelector('.cursor');
+                this.codeContent = document.querySelector('.code-content');
+                this.lineNumbers = document.querySelector('.line-numbers');
+                
+                // Editor state
+                this.lines = [
+                    "// LogicEdit - Modern Web Code Editor",
+                    "class LogicEditor {",
+                    "  constructor('#editor-container') {",
+                    "    this.model = new TextModel();",
+                    "    this.renderer = new CanvasRenderer();",
+                    "    this.cursor = new CursorManager();",
+                    "    this.tokenizer = new SyntaxTokenizer();",
+                    "  }",
+                    "",
+                    "  init() {",
+                    "    this.setupEventListeners();",
+                    "    this.startRenderLoop();",
+                    "    console.log('🚀 LogicEdit initialized!');",
+                    "  }",
+                    "}"
+                ];
+                this.cursorPos = { line: 0, col: 0 };
+                this.selection = null;
+                this.isComposing = false;
+                
+                this.init();
+            }
+
+            init() {
+                this.setupCanvas();
+                this.setupEventListeners();
+                this.renderCode();
+                this.renderMinimap();
+                this.updateLineNumbers();
+                this.startAnimations();
+                console.log('🚀 LogicEdit initialized with modern UI!');
+            }
+
+            setupCanvas() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.canvas.width = rect.width * devicePixelRatio;
+                this.canvas.height = rect.height * devicePixelRatio;
+                this.ctx.scale(devicePixelRatio, devicePixelRatio);
+                this.canvas.style.width = rect.width + 'px';
+                this.canvas.style.height = rect.height + 'px';
+                
+                // Setup minimap canvas
+                const minimapRect = this.minimapCanvas.getBoundingClientRect();
+                this.minimapCanvas.width = minimapRect.width * devicePixelRatio;
+                this.minimapCanvas.height = minimapRect.height * devicePixelRatio;
+                this.minimapCtx.scale(devicePixelRatio, devicePixelRatio);
+            }
+
+            updateLineNumbers() {
+                this.lineNumbers.innerHTML = '';
+                this.lines.forEach((_, index) => {
+                    const lineDiv = document.createElement('div');
+                    lineDiv.className = 'line-number';
+                    lineDiv.textContent = index + 1;
+                    if (index === this.cursorPos.line) {
+                        lineDiv.classList.add('active');
+                    }
+                    this.lineNumbers.appendChild(lineDiv);
+                });
+            }
+
+            renderCode() {
+                this.codeContent.innerHTML = '';
+                const cursorSpan = document.createElement('span');
+                cursorSpan.className = 'cursor';
+                
+                this.lines.forEach((line, lineIndex) => {
+                    const lineDiv = document.createElement('div');
+                    lineDiv.style.position = 'relative';
+                    lineDiv.style.height = '24px';
+                    lineDiv.style.lineHeight = '24px';
+                    
+                    if (lineIndex === this.cursorPos.line) {
+                        const beforeCursor = line.substring(0, this.cursorPos.col);
+                        const afterCursor = line.substring(this.cursorPos.col);
+                        
+                        lineDiv.innerHTML = this.highlightSyntax(beforeCursor) + 
+                                          '<span class="cursor"></span>' + 
+                                          this.highlightSyntax(afterCursor);
+                    } else {
+                        lineDiv.innerHTML = this.highlightSyntax(line);
+                    }
+                    
+                    this.codeContent.appendChild(lineDiv);
+                });
+                
+                // Position hidden input near cursor
+                const cursorEl = this.codeContent.querySelector('.cursor');
+                if (cursorEl) {
+                    const rect = cursorEl.getBoundingClientRect();
+                    const containerRect = this.codeContent.getBoundingClientRect();
+                    this.hiddenInput.style.left = (rect.left - containerRect.left) + 'px';
+                    this.hiddenInput.style.top = (rect.top - containerRect.top) + 'px';
+                }
+            }
+
+highlightSyntax(text) {
+    // Escape HTML to prevent breaking the DOM
+    const escapeHTML = (str) => str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    // Define regex patterns with priorities
+    const patterns = [
+        { type: 'comment', regex: /\/\/.*/y },
+        { type: 'string', regex: /(['"`])(?:\\[\s\S]|(?!\1)[^\\])*\1/y },
+        { type: 'keyword', regex: /\b(class|constructor|this|new|function|const|let|var|if|else|for|while|return)\b/y },
+        { type: 'number', regex: /\b\d+(\.\d+)?\b/y },
+        { type: 'function', regex: /\b\w+(?=\s*\()/y },
+        { type: 'operator', regex: /[=+\-*/]/y },
+        { type: 'bracket', regex: /[{}()[\]]/y },
+        { type: 'identifier', regex: /\b[a-zA-Z_]\w*\b/y },
+        { type: 'whitespace', regex: /\s+/y },
+        { type: 'other', regex: /./y }, // fallback for unknown characters
+    ];
+
+    const result = [];
+    let i = 0;
+
+    while (i < text.length) {
+        let matched = false;
+
+        for (const { type, regex } of patterns) {
+            regex.lastIndex = i;
+            const match = regex.exec(text);
+
+            if (match) {
+                const token = escapeHTML(match[0]);
+                if (type === 'whitespace' || type === 'other') {
+                    result.push(token); // Don't wrap
+                } else {
+                    result.push(`<span class="${type}">${token}</span>`);
+                }
+                i += match[0].length;
+                matched = true;
+                break;
+            }
+        }
+
+        if (!matched) break; // Safety stop
+    }
+
+    return result.join('');
+}
+
+
+            renderMinimap() {
+                this.minimapCtx.clearRect(0, 0, 120, 600);
+                this.minimapCtx.fillStyle = 'rgba(71, 85, 105, 0.6)';
+                this.minimapCtx.font = '3px monospace';
+                
+                this.lines.forEach((line, index) => {
+                    const y = index * 4 + 8;
+                    const shortLine = line.substring(0, 30);
+                    this.minimapCtx.fillText(shortLine, 4, y);
+                });
+                
+                // Update viewport position
+                const viewport = document.querySelector('.minimap-viewport');
+                const viewportTop = (this.cursorPos.line * 4) + 'px';
+                viewport.style.top = viewportTop;
+            }
+
+            setupEventListeners() {
+                // Focus management
+                this.container.addEventListener('click', (e) => {
+                    this.hiddenInput.focus();
+                    this.updateCursorFromClick(e);
+                });
+
+                // Input handling
+                this.hiddenInput.addEventListener('input', (e) => {
+                    if (!this.isComposing) {
+                        this.handleTextInput(e);
+                    }
+                });
+
+                // Keyboard shortcuts
+                this.hiddenInput.addEventListener('keydown', (e) => {
+                    this.handleKeydown(e);
+                });
+
+                // Composition events (for IME)
+                this.hiddenInput.addEventListener('compositionstart', () => {
+                    this.isComposing = true;
+                });
+
+                this.hiddenInput.addEventListener('compositionend', (e) => {
+                    this.isComposing = false;
+                    this.handleTextInput(e);
+                });
+
+                // Tab switching
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                        e.target.classList.add('active');
+                    });
+                });
+
+                // Toolbar buttons
+                document.querySelectorAll('.toolbar-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const action = e.target.textContent.trim();
+                        this.handleToolbarAction(action);
+                    });
+                });
+
+                // Status bar interactions
+                document.querySelectorAll('.status-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        item.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            item.style.transform = 'scale(1)';
+                        }, 100);
+                    });
+                });
+
+                // Window resize
+                window.addEventListener('resize', () => {
+                    this.setupCanvas();
+                });
+            }
+
+            updateCursorFromClick(e) {
+                const rect = this.codeContent.getBoundingClientRect();
+                const x = e.clientX - rect.left - 20;
+                const y = e.clientY - rect.top - 20;
+                
+                const lineHeight = 24;
+                const charWidth = 8.4;
+                
+                const line = Math.min(Math.max(0, Math.floor(y / lineHeight)), this.lines.length - 1);
+                const col = Math.min(Math.max(0, Math.floor(x / charWidth)), this.lines[line].length);
+                
+                this.setCursorPosition(line, col);
+            }
+
+            setCursorPosition(line, col) {
+                line = Math.min(Math.max(0, line), this.lines.length - 1);
+                col = Math.min(Math.max(0, col), this.lines[line].length);
+                
+                this.cursorPos = { line, col };
+                this.renderCode();
+                this.renderMinimap();
+                this.updateLineNumbers();
+                
+                // Update status bar
+                const statusPos = document.querySelector('.status-item:nth-child(2)');
+                statusPos.textContent = `📍 Ln ${line + 1}, Col ${col + 1}`;
+            }
+
+            handleTextInput(e) {
+                const inputValue = this.hiddenInput.value;
+                const currentLine = this.lines[this.cursorPos.line];
+                
+                if (inputValue.length > 0) {
+                    // Insert character at cursor position
+                    const newChar = inputValue.charAt(inputValue.length - 1);
+                    const newLine = currentLine.substring(0, this.cursorPos.col) + 
+                                   newChar + 
+                                   currentLine.substring(this.cursorPos.col);
+                    
+                    this.lines[this.cursorPos.line] = newLine;
+                    this.setCursorPosition(this.cursorPos.line, this.cursorPos.col + 1);
+                    
+                    // Clear the hidden input
+                    this.hiddenInput.value = '';
+                }
+            }
+
+            handleKeydown(e) {
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        if (this.cursorPos.col > 0) {
+                            this.setCursorPosition(this.cursorPos.line, this.cursorPos.col - 1);
+                        } else if (this.cursorPos.line > 0) {
+                            this.setCursorPosition(this.cursorPos.line - 1, this.lines[this.cursorPos.line - 1].length);
+                        }
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        if (this.cursorPos.col < this.lines[this.cursorPos.line].length) {
+                            this.setCursorPosition(this.cursorPos.line, this.cursorPos.col + 1);
+                        } else if (this.cursorPos.line < this.lines.length - 1) {
+                            this.setCursorPosition(this.cursorPos.line + 1, 0);
+                        }
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        if (this.cursorPos.line > 0) {
+                            const newCol = Math.min(this.cursorPos.col, this.lines[this.cursorPos.line - 1].length);
+                            this.setCursorPosition(this.cursorPos.line - 1, newCol);
+                        }
+                        break;
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        if (this.cursorPos.line < this.lines.length - 1) {
+                            const newCol = Math.min(this.cursorPos.col, this.lines[this.cursorPos.line + 1].length);
+                            this.setCursorPosition(this.cursorPos.line + 1, newCol);
+                        }
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        const currentLine = this.lines[this.cursorPos.line];
+                        const beforeCursor = currentLine.substring(0, this.cursorPos.col);
+                        const afterCursor = currentLine.substring(this.cursorPos.col);
+                        
+                        this.lines[this.cursorPos.line] = beforeCursor;
+                        this.lines.splice(this.cursorPos.line + 1, 0, afterCursor);
+                        this.setCursorPosition(this.cursorPos.line + 1, 0);
+                        break;
+                    case 'Backspace':
+                        e.preventDefault();
+                        if (this.cursorPos.col > 0) {
+                            const currentLine = this.lines[this.cursorPos.line];
+                            const newLine = currentLine.substring(0, this.cursorPos.col - 1) + 
+                                           currentLine.substring(this.cursorPos.col);
+                            this.lines[this.cursorPos.line] = newLine;
+                            this.setCursorPosition(this.cursorPos.line, this.cursorPos.col - 1);
+                        } else if (this.cursorPos.line > 0) {
+                            const currentLine = this.lines[this.cursorPos.line];
+                            const prevLine = this.lines[this.cursorPos.line - 1];
+                            const newCol = prevLine.length;
+                            
+                            this.lines[this.cursorPos.line - 1] = prevLine + currentLine;
+                            this.lines.splice(this.cursorPos.line, 1);
+                            this.setCursorPosition(this.cursorPos.line - 1, newCol);
+                        }
+                        break;
+                    case 's':
+                        if (e.ctrlKey || e.metaKey) {
+                            e.preventDefault();
+                            this.saveFile();
+                        }
+                        break;
+                }
+            }
+
+            handleToolbarAction(action) {
+                switch(action) {
+                    case '💾 Save':
+                        this.saveFile();
+                        break;
+                    case '⚙️ Settings':
+                        console.log('Opening settings...');
+                        break;
+                    case '🎨 Theme':
+                        this.toggleTheme();
+                        break;
+                }
+            }
+
+            saveFile() {
+                // Simulate save with animation
+                const saveBtn = document.querySelector('.toolbar-btn[title="Save"]');
+                const statusSave = document.querySelector('.status-item:last-child');
+                
+                statusSave.textContent = '💾 Saving...';
+                statusSave.style.color = '#f59e0b';
+                
+                setTimeout(() => {
+                    statusSave.textContent = '💾 Saved';
+                    statusSave.style.color = '#10b981';
+                    
+                    setTimeout(() => {
+                        statusSave.style.color = '';
+                    }, 2000);
+                }, 500);
+            }
+
+            toggleTheme() {
+                // Simple theme toggle demo
+                const body = document.body;
+                const currentBg = body.style.background;
+                
+                if (currentBg.includes('0a0e1a')) {
+                    body.style.background = 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)';
+                } else {
+                    body.style.background = 'linear-gradient(135deg, #0a0e1a 0%, #1a1f35 50%, #0f172a 100%)';
+                }
+            }
+
+            startAnimations() {
+                // Animate minimap viewport based on cursor position
+                const viewport = document.querySelector('.minimap-viewport');
+                
+                setInterval(() => {
+                    const position = Math.max(10, this.cursorPos.line * 4);
+                    viewport.style.top = position + 'px';
+                }, 100);
+
+                // Animate status dot
+                const dots = document.querySelectorAll('.status-dot');
+                dots.forEach(dot => {
+                    setInterval(() => {
+                        const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
+                        dot.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    }, 3000);
+                });
+            }
+        }
+
+        // Initialize the editor
+        document.addEventListener('DOMContentLoaded', () => {
+            new LogicEditor('.editor-container');
+        });
+    </script>
+</body>
+</html>

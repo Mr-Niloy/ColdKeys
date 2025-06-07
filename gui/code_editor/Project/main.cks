@@ -1,0 +1,75 @@
+# ColdKeys Main Script
+# Author: User
+# Created: today
+
+# Define hotkeys
+hotkey "ctrl+shift+t" {
+    send "Hello World!"
+    delay 100
+    click 500, 300
+}
+
+# Window management
+window "notepad.exe" {
+    title "Untitled - Notepad"
+    hotkey "ctrl+n" {
+        send "New document created"
+    }
+}
+
+# Function definition
+function greetUser(name) {
+    send "Hello, " + name + "!"
+    return true
+}
+
+# Loop example
+for i in range(1, 5) {
+    send "Count: " + i
+    delay 500
+}`,
+            'project/hotkeys.ck': `# Global Hotkeys Configuration
+
+# System shortcuts
+hotkey "win+q" {
+    run "cmd.exe"
+}
+
+hotkey "ctrl+alt+l" {
+    lock_screen()
+}
+
+# Application shortcuts
+hotkey "ctrl+shift+v" {
+    paste_special()
+}`,
+            'project/config.ck': `# ColdKeys Configuration File
+
+# Global settings
+config {
+    delay_default = 50
+    case_sensitive = false
+    auto_execute = true
+}
+
+# Window detection settings
+window_config {
+    match_timeout = 5000
+    retry_count = 3
+}`,
+            'project/scripts/utils.ck': `# Utility functions for ColdKeys
+
+function paste_special() {
+    send "ctrl+shift+v"
+}
+
+function lock_screen() {
+    send "win+l"
+}
+
+function open_terminal() {
+    send "win+r"
+    delay 100
+    send "cmd"
+    send "enter"
+}
