@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ColdKeys Mouse Curve Editor</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  </head>
+  <body>
+    <div class="editor-container">
+      <!-- Left Sidebar: Curve Segments -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h3>Curve Segments</h3>
+          <span class="segment-count">5 segments</span>
+        </div>
+        <div class="segment-list">
+          <div class="segment-item active" data-segment="0">
+            <div class="segment-icon">
+              <div class="event-badge click"></div>
+            </div>
+            <div class="segment-info">
+              <span class="segment-label">Mouse Click</span>
+              <span class="segment-time">0.0s - 0.2s</span>
+            </div>
+            <div class="segment-color-stripe click"></div>
+          </div>
+          <div class="segment-item" data-segment="1">
+            <div class="segment-icon">
+              <div class="event-badge drag"></div>
+            </div>
+            <div class="segment-info">
+              <span class="segment-label">Drag Motion</span>
+              <span class="segment-time">0.2s - 1.5s</span>
+            </div>
+            <div class="segment-color-stripe drag"></div>
+          </div>
+          <div class="segment-item" data-segment="2">
+            <div class="segment-icon">
+              <div class="event-badge move"></div>
+            </div>
+            <div class="segment-info">
+              <span class="segment-label">Free Move</span>
+              <span class="segment-time">1.5s - 2.8s</span>
+            </div>
+            <div class="segment-color-stripe move"></div>
+          </div>
+          <div class="segment-item" data-segment="3">
+            <div class="segment-icon">
+              <div class="event-badge right-click"></div>
+            </div>
+            <div class="segment-info">
+              <span class="segment-label">Right Click</span>
+              <span class="segment-time">2.8s - 3.0s</span>
+            </div>
+            <div class="segment-color-stripe right-click"></div>
+          </div>
+          <div class="segment-item" data-segment="4">
+            <div class="segment-icon">
+              <div class="event-badge click-drag"></div>
+            </div>
+            <div class="segment-info">
+              <span class="segment-label">Click & Drag</span>
+              <span class="segment-time">3.0s - 4.5s</span>
+            </div>
+            <div class="segment-color-stripe click-drag"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Viewport: Canvas -->
+      <div class="viewport">
+        <div class="canvas-container">
+          <canvas id="curveCanvas" width="800" height="600"></canvas>
+          <div class="playback-cursor" id="playbackCursor"></div>
+          <div class="click-ripple" id="clickRipple"></div>
+        </div>
+      </div>
+
+      <!-- Right Info Panel -->
+      <div class="info-panel">
+        <div class="curve-stats">
+          <h4><i class="fas fa-chart-line"></i> Active Curve</h4>
+          <div class="stat-item">
+            <span class="stat-label">Duration:</span>
+            <span class="stat-value">1.3s</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Distance:</span>
+            <span class="stat-value">342px</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Points:</span>
+            <span class="stat-value">24</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Type:</span>
+            <span class="stat-value">Drag Motion</span>
+          </div>
+        </div>
+
+        <div class="tools-section">
+          <h4><i class="fas fa-tools"></i> Mode</h4>
+          <div class="mode-toggles">
+            <button class="mode-btn active" data-mode="raw">
+              <i class="fas fa-dot-circle"></i>
+              Raw Points
+            </button>
+            <button class="mode-btn" data-mode="bezier">
+              <i class="fas fa-bezier-curve"></i>
+              Bezier Curve
+            </button>
+            <button class="mode-btn" data-mode="draw">
+              <i class="fas fa-pencil-alt"></i>
+              Draw Mode
+            </button>
+          </div>
+        </div>
+        <div class="tools-section">
+          <h4><i class="fas fa-cog"></i> Options</h4>
+          <div class="option-toggles">
+            <button class="option-btn active" data-option="clicks">
+              <i class="fas fa-mouse-pointer"></i>
+              Show Clicks
+            </button>
+            <button class="option-btn" data-option="grid">
+              <i class="fas fa-th"></i>
+              Show Grid
+            </button>
+            <button class="option-btn active" data-option="smooth">
+              <i class="fas fa-wave-square"></i>
+              Smooth Curves
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Timeline -->
+      <div class="timeline-container">
+        <div class="timeline-header">
+          <div class="playback-controls">
+            <button class="control-btn" id="playBtn">
+              <span class="play-icon">▶</span>
+            </button>
+            <button class="control-btn" id="pauseBtn" style="display: none">
+              <span class="pause-icon">⏸</span>
+            </button>
+            <span class="time-display">
+              <span id="currentTime">0.0</span>s /
+              <span id="totalTime">4.5</span>s
+            </span>
+          </div>
+          <div class="zoom-controls">
+            <button class="control-btn" id="zoomOut">−</button>
+            <span class="zoom-level">100%</span>
+            <button class="control-btn" id="zoomIn">+</button>
+          </div>
+        </div>
+        <div class="timeline">
+          <div class="timeline-track" id="timelineTrack">
+            <div class="timeline-content" id="timelineContent">
+              <div class="time-markers" id="timeMarkers"></div>
+              <div class="segment-blocks">
+                <div
+                  class="segment-block click"
+                  style="left: 0%; width: 4.4%"
+                ></div>
+                <div
+                  class="segment-block drag"
+                  style="left: 4.4%; width: 28.9%"
+                ></div>
+                <div
+                  class="segment-block move"
+                  style="left: 33.3%; width: 28.9%"
+                ></div>
+                <div
+                  class="segment-block right-click"
+                  style="left: 62.2%; width: 4.4%"
+                ></div>
+                <div
+                  class="segment-block click-drag"
+                  style="left: 66.7%; width: 33.3%"
+                ></div>
+              </div>
+              <div class="playback-marker" id="playbackMarker"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
