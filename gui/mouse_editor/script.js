@@ -3,430 +3,345 @@ class CurveEditor {
         this.canvas = document.getElementById('curveCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.playbackCursor = document.getElementById('playbackCursor');
-        this.clickRipple = document.getElementById('clickRipple');
-        this.playbackMarker = document.getElementById('playbackMarker');
+        this.clickAnimations = document.getElementById('clickAnimations');
         
+        // Playback state
         this.isPlaying = false;
         this.currentTime = 0;
-        this.totalTime = 4.5;
-        this.activeSegment = 0;
+        this.totalTime = 12.5; // seconds
         this.playbackSpeed = 1;
+        this.animationId = null;
         
-        this.timelineZoom = 1;
-    this.timelinePan = 0;
-    this.mouseButtonColors = {
-        'left': '#ff4444',
-        'right': '#8844ff', 
-        'middle': '#ffaa00',
-        'click': '#ff4444',
-        'rightclick': '#8844ff',
-        'middleclick': '#ffaa00'
-    };
-
-        // Sample curve data with mouse movements
-        this.curves = [
-            {
-                id: 0,
-                type: 'click',
-                startTime: 0.0,
-                endTime: 0.2,
-                points: [{ x: 100, y: 150, time: 0.0 }, { x: 100, y: 150, time: 0.2 }],
-                events: [{ type: 'click', x: 100, y: 150, time: 0.1 }]
-            },
-            {
-                id: 1,
-                type: 'drag',
-                startTime: 0.2,
-                endTime: 1.5,
-                points: this.generateCurvePoints(this.canvas, 100, 150, 300, 200, 1.3),
-                events: [
-                    { type: 'mousedown', x: 100, y: 150, time: 0.2 },
-                    { type: 'mouseup', x: 300, y: 200, time: 1.5 }
-                ]
-            },
-            {
-                id: 2,
-                type: 'move',
-                startTime: 1.5,
-                endTime: 2.8,
-                points: this.generateCurvePoints(this.canvas, 300, 200, 500, 100, 1.3),
-                events: []
-            },
-            {
-                id: 3,
-                type: 'right-click',
-                startTime: 2.8,
-                endTime: 3.0,
-                points: [{ x: 500, y: 100, time: 2.8 }, { x: 500, y: 100, time: 3.0 }],
-                events: [{ type: 'rightclick', x: 500, y: 100, time: 2.9 }]
-            },
-            {
-                id: 4,
-                type: 'click-drag',
-                startTime: 3.0,
-                endTime: 4.5,
-                points: this.generateCurvePoints(this.canvas, 500, 100, 200, 400, 1.5),
-                events: [
-                    { type: 'click', x: 500, y: 100, time: 3.0 },
-                    { type: 'mousedown', x: 500, y: 100, time: 3.1 },
-                    { type: 'mouseup', x: 200, y: 400, time: 4.4 }
-                ]
-            }
-        ];
+        // Sample curve data
+        this.curves = this.generateSampleCurves();
+        this.selectedCurve = 0;
         
         this.init();
     }
     
-    generateCurvePoints(curves, startX, startY, endX, endY, duration) {
-        const points = [];
-        const steps = Math.floor(duration * 60); // 60 FPS
-        
-        for (let i = 0; i <= steps; i++) {
-            const t = i / steps;
-            const easeT = this.easeInOutCubic(t);
-            
-            // Add some curve variation
-            const controlX = (startX + endX) / 2 + Math.sin(t * Math.PI) * 50;
-            const controlY = (startY + endY) / 2 + Math.cos(t * Math.PI * 2) * 30;
-            
-            const x = this.bezierInterpolate(startX, controlX, endX, easeT);
-            const y = this.bezierInterpolate(startY, controlY, endY, easeT);
-            
-            const time = (t * duration) + (curves.length > 0 ? curves[curves.length - 1].endTime || 0 : 0);
-            
-            points.push({ x, y, time });
-        }
-        
-        return points;
+    init() {
+        this.setupCanvas();
+        this.populateSegments();
+        this.setupEventListeners();
+        this.setupTimeMarkers();
+        this.render();
     }
     
-    easeInOutCubic(t) {
-        return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
-    }
-    
-    bezierInterpolate(start, control, end, t) {
-        return Math.pow(1 - t, 2) * start + 2 * (1 - t) * t * control + Math.pow(t, 2) * end;
-    }
-    
-init() {
-    this.setupCanvas();
-    this.setupTimeline();
-    this.bindEvents();
-    this.render();
-    this.updateUI();
-}
-
-    // Add timeline methods
-setupTimeline() {
-    this.generateTimeMarkers();
-    this.bindTimelineEvents();
-}
-generateTimeMarkers() {
-    const markersContainer = document.getElementById('timeMarkers');
-    markersContainer.innerHTML = '';
-    
-    const step = 0.5; // Every 0.5 seconds
-    for (let time = 0; time <= this.totalTime; time += step) {
-        const marker = document.createElement('div');
-        marker.className = 'time-number';
-        marker.textContent = time.toFixed(1);
-        marker.style.left = `${(time / this.totalTime) * 100}%`;
-        markersContainer.appendChild(marker);
-    }
-}
-
-bindTimelineEvents() {
-    const track = document.getElementById('timelineTrack');
-    let isPanning = false;
-    let startX = 0;
-    let startPan = 0;
-
-    // Pan functionality
-    track.addEventListener('mousedown', (e) => {
-        isPanning = true;
-        startX = e.clientX;
-        startPan = this.timelinePan;
-        track.style.cursor = 'grabbing';
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (isPanning) {
-            const deltaX = e.clientX - startX;
-            this.timelinePan = startPan + deltaX;
-            this.updateTimelineTransform();
-        }
-    });
-
-    document.addEventListener('mouseup', () => {
-        isPanning = false;
-        track.style.cursor = 'grab';
-    });
-
-    // Zoom with scroll
-    track.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-        this.timelineZoom = Math.max(0.5, Math.min(5, this.timelineZoom * zoomFactor));
-        this.updateTimelineTransform();
-    });
-}
-
-updateTimelineTransform() {
-    const content = document.getElementById('timelineContent');
-    content.style.transform = `translateX(${this.timelinePan}px) scaleX(${this.timelineZoom})`;
-    content.style.width = `${100 * this.timelineZoom}%`;
-}
-
     setupCanvas() {
         const rect = this.canvas.getBoundingClientRect();
-        this.canvas.width = rect.width * window.devicePixelRatio;
-        this.canvas.height = rect.height * window.devicePixelRatio;
-        this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        const dpr = window.devicePixelRatio || 1;
+        
+        this.canvas.width = 800 * dpr;
+        this.canvas.height = 600 * dpr;
+        this.canvas.style.width = '800px';
+        this.canvas.style.height = '600px';
+        
+        this.ctx.scale(dpr, dpr);
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
     }
     
-    bindEvents() {
-        // Segment selection
-        document.querySelectorAll('.segment-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                document.querySelectorAll('.segment-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                this.activeSegment = parseInt(item.dataset.segment);
-                this.render();
-                this.updateUI();
+    generateSampleCurves() {
+        const curves = [];
+        const centerX = 400;
+        const centerY = 300;
+        
+        // Generate 5 different curve segments
+        for (let i = 0; i < 5; i++) {
+            const startTime = i * 2.5;
+            const endTime = (i + 1) * 2.5;
+            const points = [];
+            
+            // Create curved path
+            const numPoints = 20 + Math.random() * 30;
+            for (let j = 0; j < numPoints; j++) {
+                const t = j / (numPoints - 1);
+                const angle = t * Math.PI * 2 + i * Math.PI * 0.5;
+                const radius = 80 + Math.sin(t * Math.PI * 4) * 30;
+                
+                points.push({
+                    x: centerX + Math.cos(angle) * radius + (Math.random() - 0.5) * 20,
+                    y: centerY + Math.sin(angle) * radius + (Math.random() - 0.5) * 20,
+                    time: startTime + t * (endTime - startTime)
+                });
+            }
+            
+            // Add some clicks
+            const clicks = [];
+            if (Math.random() > 0.5) {
+                clicks.push({
+                    x: points[Math.floor(points.length * 0.3)].x,
+                    y: points[Math.floor(points.length * 0.3)].y,
+                    time: startTime + (endTime - startTime) * 0.3,
+                    button: 'left'
+                });
+            }
+            if (Math.random() > 0.7) {
+                clicks.push({
+                    x: points[Math.floor(points.length * 0.7)].x,
+                    y: points[Math.floor(points.length * 0.7)].y,
+                    time: startTime + (endTime - startTime) * 0.7,
+                    button: 'right'
+                });
+            }
+            
+            curves.push({
+                id: i,
+                startTime,
+                endTime,
+                points,
+                clicks,
+                type: ['move', 'click', 'drag', 'scroll'][Math.floor(Math.random() * 4)],
+                opacity: 1 - (i * 0.1) // Fade older curves
             });
+        }
+        
+        return curves;
+    }
+    
+    populateSegments() {
+        const segmentList = document.getElementById('segmentList');
+        segmentList.innerHTML = '';
+        
+        this.curves.forEach((curve, index) => {
+            const segmentItem = document.createElement('div');
+            segmentItem.className = `segment-item ${index === this.selectedCurve ? 'active' : ''}`;
+            segmentItem.dataset.index = index;
+            
+            const duration = (curve.endTime - curve.startTime).toFixed(1);
+            
+            segmentItem.innerHTML = `
+                <div class="segment-icon ${curve.type}"></div>
+                <div class="segment-info">
+                    <div class="segment-title">Segment ${index + 1}</div>
+                    <div class="segment-meta">${duration}s • ${curve.points.length} points</div>
+                </div>
+            `;
+            
+            segmentItem.addEventListener('click', () => {
+                this.selectSegment(index);
+            });
+            
+            segmentList.appendChild(segmentItem);
+        });
+    }
+    
+    selectSegment(index) {
+        this.selectedCurve = index;
+        this.populateSegments();
+        this.render();
+    }
+    
+    setupEventListeners() {
+        // Playback controls
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        playPauseBtn.addEventListener('click', () => {
+            this.togglePlayback();
         });
         
-        // Playback controls
-        document.getElementById('playBtn').addEventListener('click', () => this.play());
-        document.getElementById('pauseBtn').addEventListener('click', () => this.pause());
-        document.getElementById('zoomIn').addEventListener('click', () => this.zoom(1.2));
-        document.getElementById('zoomOut').addEventListener('click', () => this.zoom(0.8));
+        // Speed control
+        const speedSelect = document.getElementById('playbackSpeed');
+        speedSelect.addEventListener('change', (e) => {
+            this.playbackSpeed = parseFloat(e.target.value);
+        });
         
         // Timeline interaction
-        const timelineTrack = document.getElementById('timelineTrack');
+        const timelineTrack = document.querySelector('.timeline-track');
         timelineTrack.addEventListener('click', (e) => {
             const rect = timelineTrack.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const percentage = clickX / rect.width;
-            this.currentTime = percentage * this.totalTime;
-            this.updatePlaybackPosition();
+            const x = e.clientX - rect.left;
+            const progress = x / rect.width;
+            this.currentTime = progress * this.totalTime;
+            this.updateTimeDisplay();
+            this.render();
         });
         
-        // Tool toggles
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        // Timeline dragging
+        const timelineHandle = document.getElementById('timelineHandle');
+        let isDragging = false;
+        
+        timelineHandle.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            this.pause();
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const rect = timelineTrack.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const progress = Math.max(0, Math.min(1, x / rect.width));
+            this.currentTime = progress * this.totalTime;
+            this.updateTimeDisplay();
+            this.render();
+        });
+        
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+        
+        // Tool panel controls
+        const toolBtns = document.querySelectorAll('.tool-btn');
+        toolBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                toolBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
             });
         });
         
-        document.querySelectorAll('.option-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                btn.classList.toggle('active');
-                this.render();
-            });
-        });
-        
-        // Window resize
-        window.addEventListener('resize', () => {
-            this.setupCanvas();
-            this.render();
+        // Canvas interaction
+        this.canvas.addEventListener('click', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Check if clicking on a curve point for editing
+            this.handleCanvasClick(x, y);
         });
     }
     
-    play() {
-        if (this.isPlaying) return;
+    handleCanvasClick(x, y) {
+        // Find if click is near any curve point
+        const selectedCurve = this.curves[this.selectedCurve];
+        if (!selectedCurve) return;
         
-        this.isPlaying = true;
-        document.getElementById('playBtn').style.display = 'none';
-        document.getElementById('pauseBtn').style.display = 'flex';
-        document.getElementById('pauseBtn').classList.add('active');
-        
-        this.playbackCursor.classList.add('active');
-        
-        this.playbackLoop();
-    }
-    
-    pause() {
-        this.isPlaying = false;
-        document.getElementById('playBtn').style.display = 'flex';
-        document.getElementById('pauseBtn').style.display = 'none';
-        document.getElementById('pauseBtn').classList.remove('active');
-        
-        this.playbackCursor.classList.remove('active');
-    }
-    
-    playbackLoop() {
-        if (!this.isPlaying) return;
-        
-        this.currentTime += 0.016 * this.playbackSpeed; // ~60 FPS
-        
-        if (this.currentTime >= this.totalTime) {
-            this.currentTime = 0;
-        }
-        
-        this.updatePlaybackPosition();
-        this.animatePlayback();
-        
-        requestAnimationFrame(() => this.playbackLoop());
-    }
-    
-    updatePlaybackPosition() {
-        const percentage = (this.currentTime / this.totalTime) * 100;
-        this.playbackMarker.style.left = `${percentage}%`;
-        
-        document.getElementById('currentTime').textContent = this.currentTime.toFixed(1);
-        
-        // Update active segment based on current time
-        for (let i = 0; i < this.curves.length; i++) {
-            const curve = this.curves[i];
-            if (this.currentTime >= curve.startTime && this.currentTime <= curve.endTime) {
-                if (this.activeSegment !== i) {
-                    this.activeSegment = i;
-                    this.updateActiveSegment();
-                }
+        for (let point of selectedCurve.points) {
+            const distance = Math.sqrt((x - point.x) ** 2 + (y - point.y) ** 2);
+            if (distance < 10) {
+                // Point selected - could implement editing here
+                console.log('Point selected:', point);
                 break;
             }
         }
     }
     
-    updateActiveSegment() {
-        document.querySelectorAll('.segment-item').forEach((item, index) => {
-            if (index === this.activeSegment) {
-                item.classList.add('active');
-            } else {
-                item.classList.remove('active');
-            }
-        });
-        this.updateUI();
-    }
-    
-    animatePlayback() {
-        const activeCurve = this.curves[this.activeSegment];
-        if (!activeCurve) return;
+    setupTimeMarkers() {
+        const timeMarkers = document.getElementById('timeMarkers');
+        timeMarkers.innerHTML = '';
         
-        // Find current position on the curve
-        const curveProgress = (this.currentTime - activeCurve.startTime) / (activeCurve.endTime - activeCurve.startTime);
-        
-        if (curveProgress >= 0 && curveProgress <= 1) {
-            const pointIndex = Math.floor(curveProgress * (activeCurve.points.length - 1));
-            const point = activeCurve.points[pointIndex];
-            
-            if (point) {
-                // Update cursor position
-                const rect = this.canvas.getBoundingClientRect();
-                this.playbackCursor.style.left = `${point.x}px`;
-                this.playbackCursor.style.top = `${point.y}px`;
-                
-                // Check for events at current time
-                activeCurve.events.forEach(event => {
-                    if (Math.abs(event.time - this.currentTime) < 0.05) {
-                        this.triggerClickRipple(event.x, event.y);
-                    }
-                });
-            }
+        // Add time markers every second
+        for (let i = 0; i <= this.totalTime; i++) {
+            const marker = document.createElement('div');
+            marker.className = `time-marker ${i % 5 === 0 ? 'major' : ''}`;
+            marker.style.left = `${(i / this.totalTime) * 100}%`;
+            timeMarkers.appendChild(marker);
         }
     }
     
-    triggerClickRipple(x, y) {
-        this.clickRipple.style.left = `${x}px`;
-        this.clickRipple.style.top = `${y}px`;
-        this.clickRipple.classList.remove('animate');
-        
-        // Force reflow
-        this.clickRipple.offsetHeight;
-        
-        this.clickRipple.classList.add('animate');
-        
-        setTimeout(() => {
-            this.clickRipple.classList.remove('animate');
-        }, 600);
+    togglePlayback() {
+        if (this.isPlaying) {
+            this.pause();
+        } else {
+            this.play();
+        }
     }
     
-
+    play() {
+        this.isPlaying = true;
+        document.getElementById('playPauseBtn').innerHTML = '<span class="control-icon">⏸️</span>';
+        this.playbackCursor.classList.add('active');
+        
+        const startTime = performance.now();
+        const initialTime = this.currentTime;
+        
+        const animate = (currentTimestamp) => {
+            if (!this.isPlaying) return;
+            
+            const elapsed = (currentTimestamp - startTime) / 1000 * this.playbackSpeed;
+            this.currentTime = initialTime + elapsed;
+            
+            if (this.currentTime >= this.totalTime) {
+                this.currentTime = this.totalTime;
+                this.pause();
+                return;
+            }
+            
+            this.updateTimeDisplay();
+            this.render();
+            this.animationId = requestAnimationFrame(animate);
+        };
+        
+        this.animationId = requestAnimationFrame(animate);
+    }
+    
+    pause() {
+        this.isPlaying = false;
+        document.getElementById('playPauseBtn').innerHTML = '<span class="control-icon">▶️</span>';
+        this.playbackCursor.classList.remove('active');
+        
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+    }
+    
+    updateTimeDisplay() {
+        document.getElementById('currentTime').textContent = this.currentTime.toFixed(1) + 's';
+        document.getElementById('totalTime').textContent = this.totalTime.toFixed(1) + 's';
+        
+        // Update timeline progress
+        const progress = (this.currentTime / this.totalTime) * 100;
+        document.getElementById('timelineProgress').style.width = `${progress}%`;
+        document.getElementById('timelineHandle').style.left = `${progress}%`;
+    }
     
     render() {
-        const rect = this.canvas.getBoundingClientRect();
-        this.ctx.clearRect(0, 0, rect.width, rect.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Draw grid if enabled
-        if (document.querySelector('[data-option="grid"]').classList.contains('active')) {
-            this.drawGrid();
-        }
+        // Draw grid
+        this.drawGrid();
         
         // Draw all curves
         this.curves.forEach((curve, index) => {
-            const isActive = index === this.activeSegment;
-            const opacity = isActive ? 1 : 0.3;
-            this.drawCurve(curve, opacity, isActive);
+            this.drawCurve(curve, index === this.selectedCurve);
         });
         
-        // Draw clicks if enabled
-        if (document.querySelector('[data-option="clicks"]').classList.contains('active')) {
-            this.drawClickMarkers();
-        }
+        // Draw playback cursor position
+        this.updatePlaybackCursor();
+        
+        // Check for clicks during playback
+        this.checkForClicks();
     }
     
     drawGrid() {
-        const rect = this.canvas.getBoundingClientRect();
-        const gridSize = 20;
-        
-        this.ctx.strokeStyle = 'rgba(42, 42, 53, 0.3)';
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
         this.ctx.lineWidth = 1;
         
         // Vertical lines
-        for (let x = 0; x < rect.width; x += gridSize) {
+        for (let x = 0; x <= 800; x += 40) {
             this.ctx.beginPath();
             this.ctx.moveTo(x, 0);
-            this.ctx.lineTo(x, rect.height);
+            this.ctx.lineTo(x, 600);
             this.ctx.stroke();
         }
         
         // Horizontal lines
-        for (let y = 0; y < rect.height; y += gridSize) {
+        for (let y = 0; y <= 600; y += 40) {
             this.ctx.beginPath();
             this.ctx.moveTo(0, y);
-            this.ctx.lineTo(rect.width, y);
+            this.ctx.lineTo(800, y);
             this.ctx.stroke();
         }
     }
     
-    drawCurve(curve, opacity, isActive) {
+    drawCurve(curve, isSelected) {
         if (curve.points.length < 2) return;
         
-        const colors = {
-            click: '#ff4444',
-            drag: '#ff6b35',
-            move: '#00ff88',
-            'right-click': '#8844ff',
-            'click-drag': '#ff6b35'
-        };
+        const opacity = isSelected ? 1 : curve.opacity;
         
-        // Create gradient from start to end
-        const startPoint = curve.points[0];
-        const endPoint = curve.points[curve.points.length - 1];
-        
+        // Draw curve path with gradient
         const gradient = this.ctx.createLinearGradient(
-            startPoint.x, startPoint.y,
-            endPoint.x, endPoint.y
+            curve.points[0].x, curve.points[0].y,
+            curve.points[curve.points.length - 1].x, curve.points[curve.points.length - 1].y
         );
-
-            // Calculate time-based opacity
-    const timeProgress = Math.min(1, this.currentTime / this.totalTime);
-    const curveTimeProgress = (curve.startTime + curve.endTime) / 2 / this.totalTime;
-    const timeOpacity = 0.2 + (0.8 * Math.min(1, timeProgress / Math.max(0.1, curveTimeProgress)));
-    
-    const finalOpacity = isActive ? 1 : Math.min(opacity, timeOpacity);
-
+        gradient.addColorStop(0, `rgba(74, 222, 128, ${opacity})`); // Green start
+        gradient.addColorStop(1, `rgba(59, 130, 246, ${opacity})`); // Blue end
         
-        gradient.addColorStop(0, `rgba(0, 255, 136, ${finalOpacity})`); // Green start
-        gradient.addColorStop(1, `rgba(68, 132, 255, ${finalOpacity})`); // Blue end
-        
-        // Draw curve path
-        this.ctx.strokeStyle = isActive ? colors[curve.type] || gradient : gradient;
-        this.ctx.lineWidth = isActive ? 3 : 2;
-        this.ctx.lineCap = 'round';
-        this.ctx.lineJoin = 'round';
+        this.ctx.strokeStyle = gradient;
+        this.ctx.lineWidth = isSelected ? 3 : 2;
+        this.ctx.shadowColor = isSelected ? 'rgba(255, 107, 53, 0.5)' : 'transparent';
+        this.ctx.shadowBlur = isSelected ? 10 : 0;
         
         this.ctx.beginPath();
         this.ctx.moveTo(curve.points[0].x, curve.points[0].y);
@@ -441,113 +356,314 @@ updateTimelineTransform() {
             this.ctx.quadraticCurveTo(currentPoint.x, currentPoint.y, midX, midY);
         }
         
-        // Draw to last point
+        // Final point
         const lastPoint = curve.points[curve.points.length - 1];
         this.ctx.lineTo(lastPoint.x, lastPoint.y);
         this.ctx.stroke();
         
-        // Draw control points for active curve
-        if (isActive) {
+        // Reset shadow
+        this.ctx.shadowBlur = 0;
+        
+        // Draw start and end markers
+        this.drawMarker(curve.points[0].x, curve.points[0].y, '#4ade80', opacity, 'start');
+        this.drawMarker(lastPoint.x, lastPoint.y, '#3b82f6', opacity, 'end');
+        
+        // Draw control points if selected
+        if (isSelected) {
             this.drawControlPoints(curve);
         }
         
-        // Draw start and end markers
-        this.drawStartEndMarkers(curve, opacity);
+        // Draw click markers
+        this.drawClickMarkers(curve, opacity);
+    }
+    
+    drawMarker(x, y, color, opacity, type) {
+        this.ctx.save();
+        this.ctx.globalAlpha = opacity;
+        
+        // Outer ring
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, 8, 0, Math.PI * 2);
+        this.ctx.stroke();
+        
+        // Inner dot
+        this.ctx.fillStyle = color;
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, 4, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Add arrow for direction
+        if (type === 'end') {
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.moveTo(x - 3, y - 3);
+            this.ctx.lineTo(x + 3, y);
+            this.ctx.lineTo(x - 3, y + 3);
+            this.ctx.stroke();
+        }
+        
+        this.ctx.restore();
     }
     
     drawControlPoints(curve) {
         this.ctx.fillStyle = 'rgba(255, 107, 53, 0.8)';
-        this.ctx.strokeStyle = '#ffffff';
-        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = 'rgba(255, 107, 53, 1)';
+        this.ctx.lineWidth = 1;
         
-        // Draw every 10th point to avoid clutter
-        for (let i = 0; i < curve.points.length; i += 10) {
-            const point = curve.points[i];
-            this.ctx.beginPath();
-            this.ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
-            this.ctx.fill();
-            this.ctx.stroke();
-        }
-    }
-    
-    drawStartEndMarkers(curve, opacity) {
-        const startPoint = curve.points[0];
-        const endPoint = curve.points[curve.points.length - 1];
-        
-        // Start marker (green)
-        this.ctx.fillStyle = `rgba(0, 255, 136, ${opacity})`;
-        this.ctx.beginPath();
-        this.ctx.arc(startPoint.x, startPoint.y, 6, 0, Math.PI * 2);
-        this.ctx.fill();
-        
-        // End marker (blue)
-        this.ctx.fillStyle = `rgba(68, 132, 255, ${opacity})`;
-        this.ctx.beginPath();
-        this.ctx.arc(endPoint.x, endPoint.y, 6, 0, Math.PI * 2);
-        this.ctx.fill();
-    }
-    
-drawClickMarkers() {
-    this.curves.forEach(curve => {
-        curve.events.forEach(event => {
-            if (event.type.includes('click') || event.type === 'mousedown') {
-                const color = this.mouseButtonColors[event.button] || this.mouseButtonColors[event.type] || '#ff4444';
-                
-                this.ctx.fillStyle = color;
-                this.ctx.strokeStyle = '#ffffff';
-                this.ctx.lineWidth = 2;
-                
+        curve.points.forEach((point, index) => {
+            if (index % 5 === 0) { // Show every 5th point to avoid clutter
                 this.ctx.beginPath();
-                this.ctx.arc(event.x, event.y, 8, 0, Math.PI * 2);
+                this.ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
                 this.ctx.fill();
                 this.ctx.stroke();
             }
         });
-    });
-}
-    
-updateUI() {
-    const activeCurve = this.curves[this.activeSegment];
-    if (!activeCurve) return;
-    
-    const duration = (activeCurve.endTime - activeCurve.startTime).toFixed(1);
-    const distance = this.calculateCurveDistance(activeCurve);
-    const points = activeCurve.points.length;
-    const type = this.formatCurveType(activeCurve.type);
-    
-    const statValues = document.querySelectorAll('.stat-value');
-    statValues[0].textContent = `${duration}s`;
-    statValues[1].textContent = `${distance}px`;
-    statValues[2].textContent = points;
-    statValues[3].textContent = type;
-}
-
-    
-    calculateCurveDistance(curve) {
-        let totalDistance = 0;
-        for (let i = 1; i < curve.points.length; i++) {
-            const prev = curve.points[i - 1];
-            const curr = curve.points[i];
-            const dx = curr.x - prev.x;
-            const dy = curr.y - prev.y;
-            totalDistance += Math.sqrt(dx * dx + dy * dy);
-        }
-        return Math.round(totalDistance);
     }
     
-    formatCurveType(type) {
-        const typeMap = {
-            'click': 'Mouse Click',
-            'drag': 'Drag Motion',
-            'move': 'Free Move',
-            'right-click': 'Right Click',
-            'click-drag': 'Click & Drag'
+    drawClickMarkers(curve, opacity) {
+        if (!document.getElementById('showClicks').checked) return;
+        
+        curve.clicks.forEach(click => {
+            const color = click.button === 'left' ? '#ef4444' : 
+                         click.button === 'right' ? '#f59e0b' : '#8b5cf6';
+            
+            this.ctx.save();
+            this.ctx.globalAlpha = opacity;
+            
+            // Click ring
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = 3;
+            this.ctx.beginPath();
+            this.ctx.arc(click.x, click.y, 12, 0, Math.PI * 2);
+            this.ctx.stroke();
+            
+            // Inner cross
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.moveTo(click.x - 4, click.y - 4);
+            this.ctx.lineTo(click.x + 4, click.y + 4);
+            this.ctx.moveTo(click.x + 4, click.y - 4);
+            this.ctx.lineTo(click.x - 4, click.y + 4);
+            this.ctx.stroke();
+            
+            this.ctx.restore();
+        });
+    }
+    
+    updatePlaybackCursor() {
+        if (!this.isPlaying && this.currentTime === 0) return;
+        
+        // Find current position based on time
+        const currentPosition = this.getCurrentPosition();
+        if (!currentPosition) return;
+        
+        const canvasRect = this.canvas.getBoundingClientRect();
+        const containerRect = this.canvas.parentElement.getBoundingClientRect();
+        
+        // Position cursor relative to canvas container
+        const offsetX = (canvasRect.left - containerRect.left) + currentPosition.x;
+        const offsetY = (canvasRect.top - containerRect.top) + currentPosition.y;
+        
+        this.playbackCursor.style.left = `${offsetX - 8}px`;
+        this.playbackCursor.style.top = `${offsetY - 8}px`;
+        
+        if (this.currentTime > 0) {
+            this.playbackCursor.classList.add('active');
+        }
+    }
+    
+    getCurrentPosition() {
+        // Find which curve and position we're currently at
+        for (let curve of this.curves) {
+            if (this.currentTime >= curve.startTime && this.currentTime <= curve.endTime) {
+                const curveProgress = (this.currentTime - curve.startTime) / (curve.endTime - curve.startTime);
+                const pointIndex = Math.floor(curveProgress * (curve.points.length - 1));
+                const nextIndex = Math.min(pointIndex + 1, curve.points.length - 1);
+                
+                if (pointIndex === nextIndex) {
+                    return curve.points[pointIndex];
+                }
+                
+                // Interpolate between points
+                const localProgress = (curveProgress * (curve.points.length - 1)) - pointIndex;
+                const currentPoint = curve.points[pointIndex];
+                const nextPoint = curve.points[nextIndex];
+                
+                return {
+                    x: currentPoint.x + (nextPoint.x - currentPoint.x) * localProgress,
+                    y: currentPoint.y + (nextPoint.y - currentPoint.y) * localProgress
+                };
+            }
+        }
+        return null;
+    }
+    
+    checkForClicks() {
+        if (!this.isPlaying) return;
+        
+        // Check if we should trigger click animations
+        for (let curve of this.curves) {
+            curve.clicks.forEach(click => {
+                const timeDiff = Math.abs(this.currentTime - click.time);
+                if (timeDiff < (0.1 / this.playbackSpeed)) { // Within 100ms adjusted for speed
+                    this.triggerClickAnimation(click);
+                }
+            });
+        }
+    }
+    
+    triggerClickAnimation(click) {
+        // Avoid duplicate animations
+        if (click.animated) return;
+        click.animated = true;
+        
+        setTimeout(() => {
+            click.animated = false;
+        }, 1000);
+        
+        const canvasRect = this.canvas.getBoundingClientRect();
+        const containerRect = this.clickAnimations.getBoundingClientRect();
+        
+        const offsetX = (canvasRect.left - containerRect.left) + click.x;
+        const offsetY = (canvasRect.top - containerRect.top) + click.y;
+        
+        const animation = document.createElement('div');
+        animation.className = 'click-animation';
+        animation.style.left = `${offsetX - 20}px`;
+        animation.style.top = `${offsetY - 20}px`;
+        animation.style.borderColor = click.button === 'left' ? '#ef4444' : 
+                                    click.button === 'right' ? '#f59e0b' : '#8b5cf6';
+        
+        this.clickAnimations.appendChild(animation);
+        
+        // Remove animation after completion
+        setTimeout(() => {
+            if (animation.parentNode) {
+                animation.parentNode.removeChild(animation);
+            }
+        }, 600);
+    }
+    
+    // Utility method to add new curve points (for future editing features)
+    addCurvePoint(curveIndex, x, y, insertIndex = -1) {
+        const curve = this.curves[curveIndex];
+        if (!curve) return;
+        
+        const newPoint = {
+            x: x,
+            y: y,
+            time: curve.startTime + (curve.endTime - curve.startTime) * 
+                  (insertIndex >= 0 ? insertIndex / curve.points.length : 1)
         };
-        return typeMap[type] || type;
+        
+        if (insertIndex >= 0) {
+            curve.points.splice(insertIndex, 0, newPoint);
+        } else {
+            curve.points.push(newPoint);
+        }
+        
+        this.render();
+    }
+    
+    // Method to smooth/simplify curves
+    simplifyCurve(curveIndex, tolerance = 2) {
+        const curve = this.curves[curveIndex];
+        if (!curve || curve.points.length < 3) return;
+        
+        // Simple Douglas-Peucker-like algorithm
+        const simplified = [curve.points[0]];
+        
+        for (let i = 1; i < curve.points.length - 1; i++) {
+            const prev = simplified[simplified.length - 1];
+            const current = curve.points[i];
+            const next = curve.points[i + 1];
+            
+            // Calculate distance from current point to line between prev and next
+            const distance = this.pointToLineDistance(current, prev, next);
+            
+            if (distance > tolerance) {
+                simplified.push(current);
+            }
+        }
+        
+        simplified.push(curve.points[curve.points.length - 1]);
+        curve.points = simplified;
+        
+        this.render();
+    }
+    
+    pointToLineDistance(point, lineStart, lineEnd) {
+        const A = point.x - lineStart.x;
+        const B = point.y - lineStart.y;
+        const C = lineEnd.x - lineStart.x;
+        const D = lineEnd.y - lineStart.y;
+        
+        const dot = A * C + B * D;
+        const lenSq = C * C + D * D;
+        
+        if (lenSq === 0) return Math.sqrt(A * A + B * B);
+        
+        const param = dot / lenSq;
+        
+        let xx, yy;
+        if (param < 0) {
+            xx = lineStart.x;
+            yy = lineStart.y;
+        } else if (param > 1) {
+            xx = lineEnd.x;
+            yy = lineEnd.y;
+        } else {
+            xx = lineStart.x + param * C;
+            yy = lineStart.y + param * D;
+        }
+        
+        const dx = point.x - xx;
+        const dy = point.y - yy;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 }
 
 // Initialize the editor when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    new CurveEditor();
+    const editor = new CurveEditor();
+    
+    // Make editor globally accessible for debugging
+    window.curveEditor = editor;
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        editor.setupCanvas();
+        editor.render();
+    });
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+            e.preventDefault();
+            editor.togglePlayback();
+        } else if (e.code === 'ArrowLeft') {
+            e.preventDefault();
+            editor.currentTime = Math.max(0, editor.currentTime - 0.5);
+            editor.updateTimeDisplay();
+            editor.render();
+        } else if (e.code === 'ArrowRight') {
+            e.preventDefault();
+            editor.currentTime = Math.min(editor.totalTime, editor.currentTime + 0.5);
+            editor.updateTimeDisplay();
+            editor.render();
+        } else if (e.code === 'Home') {
+            e.preventDefault();
+            editor.currentTime = 0;
+            editor.updateTimeDisplay();
+            editor.render();
+        } else if (e.code === 'End') {
+            e.preventDefault();
+            editor.currentTime = editor.totalTime;
+            editor.updateTimeDisplay();
+            editor.render();
+        }
+    });
 });
