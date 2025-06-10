@@ -16,6 +16,12 @@ class CurveEditor {
         this.curves = this.generateSampleCurves();
         this.selectedCurve = 0;
         
+        // Additional state for editing
+        this.isDragging = false;
+        this.draggedElement = null;
+        this.editMode = 'bezier'; // 'bezier', 'raw', 'draw'
+        this.hoveredElement = null;
+        
         this.init();
     }
     
@@ -43,44 +49,89 @@ class CurveEditor {
     
     generateSampleCurves() {
         const curves = [];
-        const centerX = 400;
-        const centerY = 300;
         
-        // Generate 5 different curve segments
+        // Generate 5 different realistic mouse movement segments
         for (let i = 0; i < 5; i++) {
             const startTime = i * 2.5;
             const endTime = (i + 1) * 2.5;
             const points = [];
             
-            // Create curved path
-            const numPoints = 20 + Math.random() * 30;
+            // Start from a random position
+            let currentX = 100 + Math.random() * 600;
+            let currentY = 100 + Math.random() * 400;
+            
+            // Target position for this segment
+            const targetX = 100 + Math.random() * 600;
+            const targetY = 100 + Math.random() * 400;
+            
+            // Generate realistic mouse movement
+            const numPoints = 15 + Math.random() * 20;
+            let velocity = { x: 0, y: 0 };
+            
             for (let j = 0; j < numPoints; j++) {
                 const t = j / (numPoints - 1);
-                const angle = t * Math.PI * 2 + i * Math.PI * 0.5;
-                const radius = 80 + Math.sin(t * Math.PI * 4) * 30;
+                
+                // Calculate desired direction to target
+                const dx = targetX - currentX;
+                const dy = targetY - currentY;
+                const distanceToTarget = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distanceToTarget > 5) {
+                    // Apply acceleration towards target
+                    const acceleration = 0.3;
+                    const desiredVelX = (dx / distanceToTarget) * Math.min(distanceToTarget * 0.1, 15);
+                    const desiredVelY = (dy / distanceToTarget) * Math.min(distanceToTarget * 0.1, 15);
+                    
+                    velocity.x += (desiredVelX - velocity.x) * acceleration;
+                    velocity.y += (desiredVelY - velocity.y) * acceleration;
+                }
+                
+                // Add some natural jitter and overshoot
+                const jitterX = (Math.random() - 0.5) * 3;
+                const jitterY = (Math.random() - 0.5) * 3;
+                
+                // Apply velocity with damping
+                velocity.x *= 0.95;
+                velocity.y *= 0.95;
+                
+                currentX += velocity.x + jitterX;
+                currentY += velocity.y + jitterY;
+                
+                // Add slight arc/curve tendency
+                if (j > 0 && j < numPoints - 1) {
+                    const arcInfluence = Math.sin(t * Math.PI) * 20;
+                    const perpX = -velocity.y / Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y) || 0;
+                    const perpY = velocity.x / Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y) || 0;
+                    
+                    currentX += perpX * arcInfluence * (Math.random() - 0.5);
+                    currentY += perpY * arcInfluence * (Math.random() - 0.5);
+                }
                 
                 points.push({
-                    x: centerX + Math.cos(angle) * radius + (Math.random() - 0.5) * 20,
-                    y: centerY + Math.sin(angle) * radius + (Math.random() - 0.5) * 20,
-                    time: startTime + t * (endTime - startTime)
+                    x: Math.max(50, Math.min(750, currentX)),
+                    y: Math.max(50, Math.min(550, currentY)),
+                    time: startTime + t * (endTime - startTime),
+                    isControlPoint: j % 4 === 0 // Mark every 4th point as a control point
                 });
             }
             
-            // Add some clicks
+            // Add some clicks at natural positions
             const clicks = [];
-            if (Math.random() > 0.5) {
+            if (Math.random() > 0.4) {
+                const clickIndex = Math.floor(points.length * (0.7 + Math.random() * 0.2));
                 clicks.push({
-                    x: points[Math.floor(points.length * 0.3)].x,
-                    y: points[Math.floor(points.length * 0.3)].y,
-                    time: startTime + (endTime - startTime) * 0.3,
+                    x: points[clickIndex].x,
+                    y: points[clickIndex].y,
+                    time: points[clickIndex].time,
                     button: 'left'
                 });
             }
-            if (Math.random() > 0.7) {
+            if (Math.random() > 0.8) {
+                const clickIndex = Math.floor(points.length * (0.2 + Math.random() * 0.3));
                 clicks.push({
-                    x: points[Math.floor(points.length * 0.7)].x,
-                    y: points[Math.floor(points.length * 0.7)].y,
-                    time: startTime + (endTime - startTime) * 0.7,
+                    x: points[clickIndex].x,
+                    y: points[clickIndex].y,
+                    time: points[clickIndex].time,
                     button: 'right'
                 });
             }
@@ -92,7 +143,8 @@ class CurveEditor {
                 points,
                 clicks,
                 type: ['move', 'click', 'drag', 'scroll'][Math.floor(Math.random() * 4)],
-                opacity: 1 - (i * 0.1) // Fade older curves
+                opacity: 1 - (i * 0.1), // Fade older curves
+                bezierHandles: this.generateBezierHandles(points)
             });
         }
         
@@ -187,33 +239,240 @@ class CurveEditor {
             btn.addEventListener('click', () => {
                 toolBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+                this.editMode = btn.dataset.mode;
+                this.render();
             });
         });
         
-        // Canvas interaction
-        this.canvas.addEventListener('click', (e) => {
+        // Canvas interaction for editing
+        this.canvas.addEventListener('mousedown', (e) => {
             const rect = this.canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            
-            // Check if clicking on a curve point for editing
-            this.handleCanvasClick(x, y);
+            this.handleMouseDown(x, y, e);
+        });
+        
+        this.canvas.addEventListener('mousemove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            this.handleMouseMove(x, y, e);
+        });
+        
+        this.canvas.addEventListener('mouseup', (e) => {
+            this.handleMouseUp(e);
+        });
+        
+        // Prevent context menu on canvas
+        this.canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
         });
     }
     
-    handleCanvasClick(x, y) {
-        // Find if click is near any curve point
+    generateBezierHandles(points) {
+        const handles = [];
+        
+        for (let i = 0; i < points.length; i++) {
+            if (!points[i].isControlPoint) continue;
+            
+            const current = points[i];
+            const prev = points[Math.max(0, i - 1)];
+            const next = points[Math.min(points.length - 1, i + 1)];
+            
+            // Calculate handle directions based on adjacent points
+            const prevDir = { x: current.x - prev.x, y: current.y - prev.y };
+            const nextDir = { x: next.x - current.x, y: next.y - current.y };
+            
+            // Average direction for smooth curve
+            const avgDir = {
+                x: (prevDir.x + nextDir.x) * 0.3,
+                y: (prevDir.y + nextDir.y) * 0.3
+            };
+            
+            handles.push({
+                pointIndex: i,
+                handle1: { x: current.x - avgDir.x, y: current.y - avgDir.y },
+                handle2: { x: current.x + avgDir.x, y: current.y + avgDir.y }
+            });
+        }
+        
+        return handles;
+    }
+    
+    handleMouseDown(x, y, event) {
+        if (this.isPlaying) return;
+        
         const selectedCurve = this.curves[this.selectedCurve];
         if (!selectedCurve) return;
         
-        for (let point of selectedCurve.points) {
-            const distance = Math.sqrt((x - point.x) ** 2 + (y - point.y) ** 2);
-            if (distance < 10) {
-                // Point selected - could implement editing here
-                console.log('Point selected:', point);
-                break;
+        // Check for handle dragging in Bezier mode
+        if (this.editMode === 'bezier') {
+            const handle = this.getHandleAt(x, y, selectedCurve);
+            if (handle) {
+                this.isDragging = true;
+                this.draggedElement = handle;
+                this.canvas.style.cursor = 'grabbing';
+                return;
             }
         }
+        
+        // Check for point dragging
+        const point = this.getPointAt(x, y, selectedCurve);
+        if (point) {
+            this.isDragging = true;
+            this.draggedElement = { type: 'point', ...point };
+            this.canvas.style.cursor = 'grabbing';
+            return;
+        }
+        
+        // Add new point if in draw mode
+        if (this.editMode === 'draw') {
+            this.addPointToPath(x, y, selectedCurve);
+        }
+    }
+    
+    handleMouseMove(x, y, event) {
+        if (this.isDragging && this.draggedElement) {
+            this.updateDraggedElement(x, y);
+            this.render();
+            return;
+        }
+        
+        // Update hover state
+        const selectedCurve = this.curves[this.selectedCurve];
+        if (!selectedCurve) return;
+        
+        let newHovered = null;
+        
+        if (this.editMode === 'bezier') {
+            newHovered = this.getHandleAt(x, y, selectedCurve) || this.getPointAt(x, y, selectedCurve);
+        } else {
+            newHovered = this.getPointAt(x, y, selectedCurve);
+        }
+        
+        if (newHovered !== this.hoveredElement) {
+            this.hoveredElement = newHovered;
+            this.canvas.style.cursor = newHovered ? 'grab' : 'default';
+            this.render();
+        }
+    }
+    
+    handleMouseUp(event) {
+        if (this.isDragging) {
+            this.isDragging = false;
+            this.draggedElement = null;
+            this.canvas.style.cursor = this.hoveredElement ? 'grab' : 'default';
+        }
+    }
+    
+    getPointAt(x, y, curve) {
+        const threshold = 8;
+        
+        for (let i = 0; i < curve.points.length; i++) {
+            const point = curve.points[i];
+            const distance = Math.sqrt((x - point.x) ** 2 + (y - point.y) ** 2);
+            
+            if (distance <= threshold) {
+                return { type: 'point', index: i, point: point };
+            }
+        }
+        return null;
+    }
+    
+    getHandleAt(x, y, curve) {
+        if (!curve.bezierHandles) return null;
+        
+        const threshold = 6;
+        
+        for (let handle of curve.bezierHandles) {
+            // Check handle1
+            const dist1 = Math.sqrt((x - handle.handle1.x) ** 2 + (y - handle.handle1.y) ** 2);
+            if (dist1 <= threshold) {
+                return { type: 'handle1', handle: handle };
+            }
+            
+            // Check handle2
+            const dist2 = Math.sqrt((x - handle.handle2.x) ** 2 + (y - handle.handle2.y) ** 2);
+            if (dist2 <= threshold) {
+                return { type: 'handle2', handle: handle };
+            }
+        }
+        return null;
+    }
+    
+    updateDraggedElement(x, y) {
+        const element = this.draggedElement;
+        
+        if (element.type === 'point') {
+            const curve = this.curves[this.selectedCurve];
+            curve.points[element.index].x = x;
+            curve.points[element.index].y = y;
+            
+            // Update bezier handles for this point if it's a control point
+            this.updateBezierHandlesForPoint(curve, element.index);
+            
+        } else if (element.type === 'handle1' || element.type === 'handle2') {
+            element.handle[element.type].x = x;
+            element.handle[element.type].y = y;
+        }
+    }
+    
+    updateBezierHandlesForPoint(curve, pointIndex) {
+        if (!curve.bezierHandles) return;
+        
+        const handle = curve.bezierHandles.find(h => h.pointIndex === pointIndex);
+        if (!handle) return;
+        
+        const point = curve.points[pointIndex];
+        const prev = curve.points[Math.max(0, pointIndex - 1)];
+        const next = curve.points[Math.min(curve.points.length - 1, pointIndex + 1)];
+        
+        // Recalculate handle positions
+        const prevDir = { x: point.x - prev.x, y: point.y - prev.y };
+        const nextDir = { x: next.x - point.x, y: next.y - point.y };
+        const avgDir = {
+            x: (prevDir.x + nextDir.x) * 0.3,
+            y: (prevDir.y + nextDir.y) * 0.3
+        };
+        
+        handle.handle1 = { x: point.x - avgDir.x, y: point.y - avgDir.y };
+        handle.handle2 = { x: point.x + avgDir.x, y: point.y + avgDir.y };
+    }
+    
+    addPointToPath(x, y, curve) {
+        // Find the best insertion point
+        let insertIndex = curve.points.length;
+        let minDistance = Infinity;
+        
+        for (let i = 0; i < curve.points.length - 1; i++) {
+            const p1 = curve.points[i];
+            const p2 = curve.points[i + 1];
+            const distance = this.pointToLineDistance({ x, y }, p1, p2);
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                insertIndex = i + 1;
+            }
+        }
+        
+        // Calculate time for new point
+        const prevTime = insertIndex > 0 ? curve.points[insertIndex - 1].time : curve.startTime;
+        const nextTime = insertIndex < curve.points.length ? curve.points[insertIndex].time : curve.endTime;
+        const newTime = (prevTime + nextTime) / 2;
+        
+        const newPoint = {
+            x: x,
+            y: y,
+            time: newTime,
+            isControlPoint: true
+        };
+        
+        curve.points.splice(insertIndex, 0, newPoint);
+        
+        // Regenerate bezier handles
+        curve.bezierHandles = this.generateBezierHandles(curve.points);
+        
+        this.render();
     }
     
     setupTimeMarkers() {
@@ -409,17 +668,87 @@ class CurveEditor {
     }
     
     drawControlPoints(curve) {
-        this.ctx.fillStyle = 'rgba(255, 107, 53, 0.8)';
-        this.ctx.strokeStyle = 'rgba(255, 107, 53, 1)';
-        this.ctx.lineWidth = 1;
-        
-        curve.points.forEach((point, index) => {
-            if (index % 5 === 0) { // Show every 5th point to avoid clutter
+        if (this.editMode === 'raw') {
+            // Show all points in raw mode
+            curve.points.forEach((point, index) => {
+                const isHovered = this.hoveredElement && this.hoveredElement.type === 'point' && this.hoveredElement.index === index;
+                
+                this.ctx.fillStyle = isHovered ? 'rgba(255, 107, 53, 1)' : 'rgba(255, 107, 53, 0.8)';
+                this.ctx.strokeStyle = 'rgba(255, 107, 53, 1)';
+                this.ctx.lineWidth = 1;
+                
                 this.ctx.beginPath();
-                this.ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
+                this.ctx.arc(point.x, point.y, isHovered ? 4 : 3, 0, Math.PI * 2);
                 this.ctx.fill();
                 this.ctx.stroke();
-            }
+            });
+        } else if (this.editMode === 'bezier') {
+            // Show control points and handles
+            curve.points.forEach((point, index) => {
+                if (!point.isControlPoint) return;
+                
+                const isHovered = this.hoveredElement && this.hoveredElement.type === 'point' && this.hoveredElement.index === index;
+                
+                this.ctx.fillStyle = isHovered ? 'rgba(255, 107, 53, 1)' : 'rgba(255, 107, 53, 0.8)';
+                this.ctx.strokeStyle = 'rgba(255, 107, 53, 1)';
+                this.ctx.lineWidth = 2;
+                
+                this.ctx.beginPath();
+                this.ctx.arc(point.x, point.y, isHovered ? 6 : 5, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.stroke();
+            });
+            
+            // Draw bezier handles
+            this.drawBezierHandles(curve);
+        }
+    }
+    
+    drawBezierHandles(curve) {
+        if (!curve.bezierHandles) return;
+        
+        curve.bezierHandles.forEach(handle => {
+            const point = curve.points[handle.pointIndex];
+            
+            // Draw handle lines
+            this.ctx.strokeStyle = 'rgba(255, 107, 53, 0.4)';
+            this.ctx.lineWidth = 1;
+            this.ctx.setLineDash([3, 3]);
+            
+            this.ctx.beginPath();
+            this.ctx.moveTo(point.x, point.y);
+            this.ctx.lineTo(handle.handle1.x, handle.handle1.y);
+            this.ctx.stroke();
+            
+            this.ctx.beginPath();
+            this.ctx.moveTo(point.x, point.y);
+            this.ctx.lineTo(handle.handle2.x, handle.handle2.y);
+            this.ctx.stroke();
+            
+            this.ctx.setLineDash([]);
+            
+            // Draw handle points
+            const isHandle1Hovered = this.hoveredElement && this.hoveredElement.type === 'handle1' && this.hoveredElement.handle === handle;
+            const isHandle2Hovered = this.hoveredElement && this.hoveredElement.type === 'handle2' && this.hoveredElement.handle === handle;
+            
+            // Handle 1
+            this.ctx.fillStyle = isHandle1Hovered ? 'rgba(59, 130, 246, 1)' : 'rgba(59, 130, 246, 0.8)';
+            this.ctx.strokeStyle = 'rgba(59, 130, 246, 1)';
+            this.ctx.lineWidth = 1;
+            
+            this.ctx.beginPath();
+            this.ctx.arc(handle.handle1.x, handle.handle1.y, isHandle1Hovered ? 4 : 3, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.stroke();
+            
+            // Handle 2
+            this.ctx.fillStyle = isHandle2Hovered ? 'rgba(139, 92, 246, 1)' : 'rgba(139, 92, 246, 0.8)';
+            this.ctx.strokeStyle = 'rgba(139, 92, 246, 1)';
+            
+            this.ctx.beginPath();
+            this.ctx.arc(handle.handle2.x, handle.handle2.y, isHandle2Hovered ? 4 : 3, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.stroke();
         });
     }
     
