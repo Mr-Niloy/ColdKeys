@@ -18,35 +18,35 @@
       <div class="app-title nav-item">
         <h1>ColdKeys</h1>
       </div>
-<div class="profile-selector nav-item">
-  <div class="profile-circle" id="profile-circle">
-    <span class="profile-initial" id="profile-initial">D</span>
-  </div>
-  
-  <!-- Hover popup -->
-  <div class="profile-popup" id="profile-popup">
-    <div class="profile-grid">
-      <div class="profile-option add-new" data-value="custom">
-        <div class="profile-mini-circle">
-          <i class="fas fa-plus"></i>
+      <div class="profile-selector nav-item">
+        <div class="profile-circle" id="profile-circle">
+          <span class="profile-initial" id="profile-initial">D</span>
         </div>
-        <span class="profile-name">New Profile</span>
+
+        <!-- Hover popup -->
+        <div class="profile-popup" id="profile-popup">
+          <div class="profile-grid">
+            <div class="profile-option add-new" data-value="custom">
+              <div class="profile-mini-circle">
+                <i class="fas fa-plus"></i>
+              </div>
+              <span class="profile-name">New Profile</span>
+            </div>
+            <div class="profile-option" data-value="default">
+              <div class="profile-mini-circle">D</div>
+              <span class="profile-name">Default Profile</span>
+            </div>
+            <div class="profile-option" data-value="gaming">
+              <div class="profile-mini-circle">G</div>
+              <span class="profile-name">Gaming</span>
+            </div>
+            <div class="profile-option" data-value="gaming">
+              <div class="profile-mini-circle">G</div>
+              <span class="profile-name">Gaming</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="profile-option" data-value="default">
-        <div class="profile-mini-circle">D</div>
-        <span class="profile-name">Default Profile</span>
-      </div>
-      <div class="profile-option" data-value="gaming">
-        <div class="profile-mini-circle">G</div>
-        <span class="profile-name">Gaming</span>
-      </div>
-      <div class="profile-option" data-value="gaming">
-        <div class="profile-mini-circle">G</div>
-        <span class="profile-name">Gaming</span>
-      </div>
-    </div>
-  </div>
-</div>
       <div class="search-box nav-item">
         <i class="fas fa-search"></i>
         <input
@@ -86,8 +86,8 @@
             <a href="#assign-macros-panel" class="active" data-mode="assign">
               <i class="fas fa-keyboard"></i> Assign Macros
             </a>
-            <a href="#view-actions-panel" data-mode="view">
-              <i class="fas fa-list"></i> View Actions
+            <a href="#view-info-panel" data-mode="view">
+              <i class="fas fa-list"></i> View Device
             </a>
             <a href="#device-settings-panel" data-mode="settings">
               <i class="fas fa-sliders-h"></i> Device Settings
@@ -132,7 +132,565 @@
         </section>
 
         <!-- View Actions Panel (initially hidden) -->
-        <section id="view-actions-panel" class="panel hidden">
+        <section id="view-info-panel" class="panel hidden">
+          <div class="panel-header">
+            <h1 class="panel-title">🖥️ Input Device Detection</h1>
+            <p class="panel-subtitle">
+              Comprehensive analysis of connected keyboards, mice, and input
+              devices
+            </p>
+          </div>
+
+          <div class="action-filters">
+            <button class="filter-button active" data-filter="all">
+              All Devices
+            </button>
+            <button class="filter-button" data-filter="mouse">Mice</button>
+            <button class="filter-button" data-filter="keyboard">
+              Keyboards
+            </button>
+            <button class="filter-button" data-filter="system">System</button>
+            <button class="filter-button" data-filter="connected">
+              Connected
+            </button>
+          </div>
+
+          <!-- Mice Section -->
+          <h2 class="action-category-title">
+            <i class="fas fa-mouse category-icon"></i>
+            Mouse Devices
+          </h2>
+          <div class="actions-grid">
+            <!-- 3-Button Mouse -->
+            <div class="action-card" data-category="mouse">
+              <div class="device-status"></div>
+              <div class="action-card-header">
+                <div class="action-card-icon">
+                  <i class="fas fa-mouse"></i>
+                </div>
+                <h3 class="action-card-title">Standard Mouse</h3>
+              </div>
+              <p class="action-card-description">
+                Basic 3-button optical mouse with scroll wheel functionality.
+              </p>
+
+              <div class="device-visual">
+                <svg
+                  class="device-svg"
+                  viewBox="0 0 100 120"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <!-- Mouse Body -->
+                  <path
+                    d="M20 40 C20 20, 80 20, 80 40 L80 90 C80 110, 20 110, 20 90 Z"
+                    fill="#2d2d2d"
+                    stroke="#00bfff"
+                    stroke-width="1"
+                  />
+
+                  <!-- Left Button -->
+                  <path
+                    d="M20 40 C20 20, 50 20, 50 40 L50 55 L20 55 Z"
+                    fill="#3a3a3a"
+                    stroke="#00bfff"
+                    stroke-width="0.5"
+                    class="mouse-button"
+                    data-button="left"
+                  />
+
+                  <!-- Right Button -->
+                  <path
+                    d="M50 40 C50 20, 80 20, 80 40 L80 55 L50 55 Z"
+                    fill="#3a3a3a"
+                    stroke="#00bfff"
+                    stroke-width="0.5"
+                    class="mouse-button"
+                    data-button="right"
+                  />
+
+                  <!-- Scroll Wheel -->
+                  <rect
+                    x="47"
+                    y="35"
+                    width="6"
+                    height="15"
+                    rx="3"
+                    fill="#00bfff"
+                    opacity="0.8"
+                    class="mouse-button"
+                    data-button="middle"
+                  />
+
+                  <!-- Sensor -->
+                  <circle cx="50" cy="100" r="3" fill="#ff4444" opacity="0.7" />
+                </svg>
+              </div>
+
+              <div class="device-specs">
+                <div class="spec-row">
+                  <span class="spec-label">Button Count:</span>
+                  <span class="spec-value accent">3 Buttons</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Device Type:</span>
+                  <span class="spec-value">Standard Mouse</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Connection:</span>
+                  <span class="spec-value success">USB Connected</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Driver:</span>
+                  <span class="spec-value">Generic HID</span>
+                </div>
+              </div>
+
+              <div class="feature-tags">
+                <span class="feature-tag success">Scroll Wheel</span>
+                <span class="feature-tag">Optical Sensor</span>
+                <span class="feature-tag">Plug & Play</span>
+              </div>
+            </div>
+
+            <!-- Gaming Mouse -->
+            <div class="action-card" data-category="mouse">
+              <div class="device-status"></div>
+              <div class="action-card-header">
+                <div class="action-card-icon">
+                  <i class="fas fa-gamepad"></i>
+                </div>
+                <h3 class="action-card-title">Gaming Mouse</h3>
+              </div>
+              <p class="action-card-description">
+                High-precision gaming mouse with 5 buttons and programmable
+                features.
+              </p>
+
+              <div class="device-visual">
+                <svg
+                  class="device-svg"
+                  viewBox="0 0 100 120"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <!-- Mouse Body -->
+                  <path
+                    d="M20 40 C20 20, 80 20, 80 40 L80 90 C80 110, 20 110, 20 90 Z"
+                    fill="#2d2d2d"
+                    stroke="#00bfff"
+                    stroke-width="1"
+                  />
+
+                  <!-- Left Button -->
+                  <path
+                    d="M20 40 C20 20, 50 20, 50 40 L50 55 L20 55 Z"
+                    fill="#3a3a3a"
+                    stroke="#00bfff"
+                    stroke-width="0.5"
+                  />
+
+                  <!-- Right Button -->
+                  <path
+                    d="M50 40 C50 20, 80 20, 80 40 L80 55 L50 55 Z"
+                    fill="#3a3a3a"
+                    stroke="#00bfff"
+                    stroke-width="0.5"
+                  />
+
+                  <!-- Scroll Wheel -->
+                  <rect
+                    x="47"
+                    y="35"
+                    width="6"
+                    height="15"
+                    rx="3"
+                    fill="#00bfff"
+                    opacity="0.8"
+                  />
+
+                  <!-- Side Buttons -->
+                  <rect
+                    x="15"
+                    y="60"
+                    width="8"
+                    height="6"
+                    rx="2"
+                    fill="#ffaa00"
+                    opacity="0.8"
+                  />
+                  <rect
+                    x="15"
+                    y="68"
+                    width="8"
+                    height="6"
+                    rx="2"
+                    fill="#ffaa00"
+                    opacity="0.8"
+                  />
+
+                  <!-- Gaming Sensor -->
+                  <circle cx="50" cy="100" r="4" fill="#00ff88" opacity="0.9" />
+
+                  <!-- RGB Accent -->
+                  <rect
+                    x="45"
+                    y="25"
+                    width="10"
+                    height="2"
+                    rx="1"
+                    fill="#ff00ff"
+                    opacity="0.6"
+                  />
+                </svg>
+              </div>
+
+              <div class="device-specs">
+                <div class="spec-row">
+                  <span class="spec-label">Button Count:</span>
+                  <span class="spec-value accent">5 Buttons</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">DPI Range:</span>
+                  <span class="spec-value">800-16000</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Polling Rate:</span>
+                  <span class="spec-value success">1000 Hz</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Extra Features:</span>
+                  <span class="spec-value warning">Firmware-only</span>
+                </div>
+              </div>
+
+              <div class="button-layout">
+                <div class="button-indicator active">L</div>
+                <div class="button-indicator active">M</div>
+                <div class="button-indicator active">R</div>
+                <div class="button-indicator active">S1</div>
+                <div class="button-indicator active">S2</div>
+                <div class="button-indicator">DPI</div>
+              </div>
+
+              <div class="feature-tags">
+                <span class="feature-tag success">High DPI</span>
+                <span class="feature-tag success">Side Buttons</span>
+                <span class="feature-tag warning">RGB Lighting</span>
+                <span class="feature-tag">Macro Support</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Keyboards Section -->
+          <h2 class="action-category-title">
+            <i class="fas fa-keyboard category-icon"></i>
+            Keyboard Devices
+          </h2>
+          <div class="actions-grid">
+            <!-- Full Size Keyboard -->
+            <div class="action-card" data-category="keyboard">
+              <div class="device-status"></div>
+              <div class="action-card-header">
+                <div class="action-card-icon">
+                  <i class="fas fa-keyboard"></i>
+                </div>
+                <h3 class="action-card-title">Full-Size Keyboard</h3>
+              </div>
+              <p class="action-card-description">
+                Complete 104-key layout with numpad, function keys, and media
+                controls.
+              </p>
+
+              <div class="device-visual">
+                <svg
+                  class="device-svg"
+                  viewBox="0 0 160 60"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <!-- Keyboard Base -->
+                  <rect
+                    x="5"
+                    y="15"
+                    width="150"
+                    height="40"
+                    rx="4"
+                    fill="#2d2d2d"
+                    stroke="#00bfff"
+                    stroke-width="1"
+                  />
+
+                  <!-- Main Key Area -->
+                  <rect
+                    x="10"
+                    y="20"
+                    width="95"
+                    height="30"
+                    rx="2"
+                    fill="#3a3a3a"
+                    stroke="#00bfff"
+                    stroke-width="0.5"
+                    opacity="0.7"
+                  />
+
+                  <!-- Numpad -->
+                  <rect
+                    x="110"
+                    y="20"
+                    width="40"
+                    height="30"
+                    rx="2"
+                    fill="#3a3a3a"
+                    stroke="#00bfff"
+                    stroke-width="0.5"
+                    opacity="0.7"
+                  />
+
+                  <!-- Function Keys -->
+                  <rect
+                    x="10"
+                    y="8"
+                    width="95"
+                    height="8"
+                    rx="1"
+                    fill="#404040"
+                    stroke="#00bfff"
+                    stroke-width="0.3"
+                    opacity="0.5"
+                  />
+
+                  <!-- Key Indicators -->
+                  <circle
+                    cx="25"
+                    cy="35"
+                    r="1.5"
+                    fill="#00bfff"
+                    opacity="0.6"
+                  />
+                  <circle
+                    cx="35"
+                    cy="35"
+                    r="1.5"
+                    fill="#00bfff"
+                    opacity="0.6"
+                  />
+                  <circle
+                    cx="45"
+                    cy="35"
+                    r="1.5"
+                    fill="#00bfff"
+                    opacity="0.6"
+                  />
+                  <circle
+                    cx="125"
+                    cy="35"
+                    r="1.5"
+                    fill="#ffaa00"
+                    opacity="0.6"
+                  />
+                </svg>
+              </div>
+
+              <div class="device-specs">
+                <div class="spec-row">
+                  <span class="spec-label">Layout:</span>
+                  <span class="spec-value accent">Full-Size (104 keys)</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Sub-Devices:</span>
+                  <span class="spec-value">3 (Primary, Media, System)</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Switch Type:</span>
+                  <span class="spec-value">Membrane</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Connection:</span>
+                  <span class="spec-value success">USB Connected</span>
+                </div>
+              </div>
+
+              <div class="feature-tags">
+                <span class="feature-tag success">Numpad</span>
+                <span class="feature-tag success">F-Keys</span>
+                <span class="feature-tag success">Arrow Keys</span>
+                <span class="feature-tag">Media Keys</span>
+                <span class="feature-tag">System Keys</span>
+              </div>
+            </div>
+
+            <!-- TKL Keyboard -->
+            <div class="action-card" data-category="keyboard">
+              <div class="device-status"></div>
+              <div class="action-card-header">
+                <div class="action-card-icon">
+                  <i class="fas fa-keyboard"></i>
+                </div>
+                <h3 class="action-card-title">TKL Keyboard</h3>
+              </div>
+              <p class="action-card-description">
+                Compact 87-key tenkeyless layout, perfect for gaming and desk
+                space.
+              </p>
+
+              <div class="device-visual">
+                <svg
+                  class="device-svg"
+                  viewBox="0 0 130 60"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <!-- Keyboard Base -->
+                  <rect
+                    x="5"
+                    y="15"
+                    width="120"
+                    height="40"
+                    rx="4"
+                    fill="#2d2d2d"
+                    stroke="#00bfff"
+                    stroke-width="1"
+                  />
+
+                  <!-- Main Key Area -->
+                  <rect
+                    x="10"
+                    y="20"
+                    width="80"
+                    height="30"
+                    rx="2"
+                    fill="#3a3a3a"
+                    stroke="#00bfff"
+                    stroke-width="0.5"
+                    opacity="0.7"
+                  />
+
+                  <!-- Navigation Block -->
+                  <rect
+                    x="95"
+                    y="20"
+                    width="25"
+                    height="30"
+                    rx="2"
+                    fill="#3a3a3a"
+                    stroke="#00bfff"
+                    stroke-width="0.5"
+                    opacity="0.7"
+                  />
+
+                  <!-- Function Keys -->
+                  <rect
+                    x="10"
+                    y="8"
+                    width="110"
+                    height="8"
+                    rx="1"
+                    fill="#404040"
+                    stroke="#00bfff"
+                    stroke-width="0.3"
+                    opacity="0.5"
+                  />
+
+                  <!-- Key Indicators -->
+                  <circle
+                    cx="25"
+                    cy="35"
+                    r="1.5"
+                    fill="#00bfff"
+                    opacity="0.6"
+                  />
+                  <circle
+                    cx="35"
+                    cy="35"
+                    r="1.5"
+                    fill="#00bfff"
+                    opacity="0.6"
+                  />
+                  <circle
+                    cx="45"
+                    cy="35"
+                    r="1.5"
+                    fill="#00bfff"
+                    opacity="0.6"
+                  />
+                  <circle
+                    cx="107"
+                    cy="35"
+                    r="1.5"
+                    fill="#00ff88"
+                    opacity="0.6"
+                  />
+                </svg>
+              </div>
+
+              <div class="device-specs">
+                <div class="spec-row">
+                  <span class="spec-label">Layout:</span>
+                  <span class="spec-value accent">TKL (87 keys)</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Form Factor:</span>
+                  <span class="spec-value">Tenkeyless</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Switch Type:</span>
+                  <span class="spec-value success">Mechanical</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Backlight:</span>
+                  <span class="spec-value warning">RGB</span>
+                </div>
+              </div>
+
+              <div class="feature-tags">
+                <span class="feature-tag success">Compact</span>
+                <span class="feature-tag success">F-Keys</span>
+                <span class="feature-tag success">Arrow Keys</span>
+                <span class="feature-tag warning">No Numpad</span>
+                <span class="feature-tag">Gaming</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Devices Section -->
+          <h2 class="action-category-title">
+            <i class="fas fa-microchip category-icon"></i>
+            System Control Devices
+          </h2>
+          <div class="actions-grid">
+            <!-- Media Control Device -->
+            <div class="action-card" data-category="system">
+              <div class="device-status"></div>
+              <div class="action-card-header">
+                <div class="action-card-icon">
+                  <i class="fas fa-volume-up"></i>
+                </div>
+                <h3 class="action-card-title">Media Controls</h3>
+              </div>
+              <p class="action-card-description">
+                Dedicated media keys for volume, playback, and system functions.
+              </p>
+
+              <div class="device-specs">
+                <div class="spec-row">
+                  <span class="spec-label">Device Type:</span>
+                  <span class="spec-value accent">Consumer Control</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Key Count:</span>
+                  <span class="spec-value">8 Media Keys</span>
+                </div>
+                <div class="spec-row">
+                  <span class="spec-label">Parent Device:</span>
+                  <span class="spec-value">Full-Size Keyboard</span>
+                </div>
+              </div>
+
+              <div class="feature-tags">
+                <span class="feature-tag success">Volume Control</span>
+                <span class="feature-tag success">Playback</span>
+                <span class="feature-tag">Brightness</span>
+                <span class="feature-tag">Power</span>
+              </div>
+            </div>
+          </div>
           <div class="action-filters">
             <button class="filter-button active" data-filter="all">All</button>
             <button class="filter-button" data-filter="system">System</button>
@@ -730,53 +1288,65 @@
     </div>
 
     <!-- New Profile Creation Popup -->
-<div class="new-profile-overlay" id="new-profile-overlay">
-  <div class="new-profile-popup">
-    <button class="close-button" onclick="togglePopupSettings()">
-      <i class="fas fa-times"></i>
-    </button>
-    
-    <div class="popup-header">
-      <h3>Create New Profile</h3>
-      <p>Set up your new profile with a name and avatar</p>
-    </div>
-    
-    <div class="popup-content">
-      <!-- Profile Preview -->
-      <div class="profile-preview-section">
-        <div class="profile-preview-circle" id="profile-preview">
-          <span class="preview-initial" id="preview-initial">N</span>
-          <img class="preview-image" id="preview-image" style="display: none;" alt="Profile">
+    <div class="new-profile-overlay" id="new-profile-overlay">
+      <div class="new-profile-popup">
+        <button class="close-button" onclick="togglePopupSettings()">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <div class="popup-header">
+          <h3>Create New Profile</h3>
+          <p>Set up your new profile with a name and avatar</p>
         </div>
-        <label class="image-upload-label">
-          <input type="file" id="profile-image-input" accept="image/*" style="display: none;">
-          <i class="fas fa-camera"></i>
-          <span>Upload Image</span>
-        </label>
-      </div>
-      
-      <!-- Profile Name Input -->
-      <div class="form-group">
-        <label for="profile-name-input">Profile Name</label>
-        <input 
-          type="text" 
-          id="profile-name-input" 
-          placeholder="Enter profile name..."
-          maxlength="20"
-        >
-        <div class="char-counter">
-          <span id="char-count">0</span>/20
+
+        <div class="popup-content">
+          <!-- Profile Preview -->
+          <div class="profile-preview-section">
+            <div class="profile-preview-circle" id="profile-preview">
+              <span class="preview-initial" id="preview-initial">N</span>
+              <img
+                class="preview-image"
+                id="preview-image"
+                style="display: none"
+                alt="Profile"
+              />
+            </div>
+            <label class="image-upload-label">
+              <input
+                type="file"
+                id="profile-image-input"
+                accept="image/*"
+                style="display: none"
+              />
+              <i class="fas fa-camera"></i>
+              <span>Upload Image</span>
+            </label>
+          </div>
+
+          <!-- Profile Name Input -->
+          <div class="form-group">
+            <label for="profile-name-input">Profile Name</label>
+            <input
+              type="text"
+              id="profile-name-input"
+              placeholder="Enter profile name..."
+              maxlength="20"
+            />
+            <div class="char-counter"><span id="char-count">0</span>/20</div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="popup-actions">
+            <button class="btn-cancel" onclick="togglePopupSettings()">
+              Cancel
+            </button>
+            <button class="btn-create" id="create-profile-btn" disabled>
+              Create Profile
+            </button>
+          </div>
         </div>
       </div>
-      
-      <!-- Action Buttons -->
-      <div class="popup-actions">
-        <button class="btn-cancel" onclick="togglePopupSettings()">Cancel</button>
-        <button class="btn-create" id="create-profile-btn" disabled>Create Profile</button>
-      </div>
     </div>
-  </div>
-</div>
 
     <script src="maper.js"></script>
   </body>

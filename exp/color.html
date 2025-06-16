@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Color Palette System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Default theme variables will be set by JavaScript */
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.15s ease;
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+            --spacing-xs: 8px;
+            --spacing-sm: 16px;
+            --spacing-md: 24px;
+            --spacing-lg: 32px;
+            --spacing-xl: 48px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--cl-bg-prime);
+            color: var(--cl-tex-prime);
+            line-height: 1.6;
+            transition: var(--transition-smooth);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        /* Header */
+        .header {
+            background: var(--lg-bg-prime);
+            border: 1px solid var(--cl-br-prime);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--fl-shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--rg-bg-prime);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(45deg, var(--cl-elm-prime), var(--cl-elm-secon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            text-align: center;
+            color: var(--cl-tex-secon);
+            font-size: 1.1rem;
+        }
+
+        /* Theme Switcher */
+        .theme-switcher {
+            background: var(--cl-bg-secon);
+            border: 1px solid var(--cl-br-secon);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--fl-shadow-soft);
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-sm);
+        }
+
+        .theme-button {
+            background: var(--lg-bg-secon);
+            border: 2px solid var(--cl-br-prime);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-sm);
+            color: var(--cl-tex-prime);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--lg-br-flow);
+            transition: var(--transition-smooth);
+        }
+
+        .theme-button:hover::before {
+            left: 100%;
+        }
+
+        .theme-button:hover {
+            border-color: var(--cl-elm-prime);
+            box-shadow: var(--fl-shadow-hard);
+            transform: translateY(-2px);
+        }
+
+        .theme-button.active {
+            background: var(--cl-elm-prime);
+            border-color: var(--cl-elm-secon);
+            box-shadow: var(--fl-shadow-hard);
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr 280px;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--cl-bg-secon);
+            border: 1px solid var(--cl-br-prime);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-md);
+            box-shadow: var(--fl-shadow-soft);
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            color: var(--cl-elm-prime);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 700;
+        }
+
+        .nav-item {
+            background: var(--cl-bg-third);
+            border: 1px solid var(--cl-br-secon);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-sm);
+            margin-bottom: var(--spacing-xs);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--cl-ho-elm-prime);
+            border-color: var(--cl-elm-prime);
+            color: var(--cl-ho-tex-prime);
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: var(--cl-av-elm-prime);
+            border-color: var(--cl-elm-secon);
+            color: var(--cl-av-tex-prime);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .content-card {
+            background: var(--lg-bg-prime);
+            border: 1px solid var(--cl-br-prime);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--fl-shadow-soft);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--lg-br-glow);
+        }
+
+        .content-card:hover {
+            box-shadow: var(--fl-shadow-hard);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card-title {
+            color: var(--cl-elm-prime);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .card-badge {
+            background: var(--cl-elm-secon);
+            color: var(--cl-tex-prime);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-label {
+            display: block;
+            color: var(--cl-tex-secon);
+            margin-bottom: var(--spacing-xs);
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--cl-bg-third);
+            border: 2px solid var(--cl-br-secon);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-sm);
+            color: var(--cl-tex-prime);
+            transition: var(--transition-smooth);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--cl-elm-prime);
+            box-shadow: 0 0 0 3px var(--cl-elm-prime)33;
+        }
+
+        .btn {
+            background: var(--cl-elm-prime);
+            color: var(--cl-tex-prime);
+            border: 2px solid var(--cl-elm-prime);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-sm) var(--spacing-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--cl-ho-elm-prime);
+            border-radius: 50%;
+            transition: var(--transition-smooth);
+            transform: translate(-50%, -50%);
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            color: var(--cl-ho-tex-prime);
+            box-shadow: var(--fl-shadow-hard);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--cl-elm-secon);
+            border-color: var(--cl-elm-secon);
+        }
+
+        .btn-secondary:hover {
+            background: var(--cl-elm-secon);
+            color: var(--cl-tex-prime);
+        }
+
+        /* Right Panel */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .widget {
+            background: var(--rg-bg-secon);
+            border: 1px solid var(--cl-br-prime);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-md);
+            box-shadow: var(--fl-shadow-soft);
+        }
+
+        .widget h4 {
+            color: var(--cl-elm-secon);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 700;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-xs) 0;
+            border-bottom: 1px solid var(--cl-br-secon);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-value {
+            color: var(--cl-elm-prime);
+            font-weight: 700;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            background: var(--cl-bg-forth);
+            border-radius: var(--border-radius);
+            height: 8px;
+            overflow: hidden;
+            margin: var(--spacing-xs) 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--cl-elm-prime), var(--cl-elm-secon));
+            height: 100%;
+            border-radius: var(--border-radius);
+            transition: var(--transition-smooth);
+        }
+
+        /* Notification */
+        .notification {
+            background: var(--cl-bg-forth);
+            border: 1px solid var(--cl-br-rim);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--cl-elm-prime);
+        }
+
+        .notification.success::before {
+            background: var(--cl-success);
+        }
+
+        .notification.warning::before {
+            background: var(--cl-warning);
+        }
+
+        .notification.error::before {
+            background: var(--cl-error);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--lg-bg-secon);
+            border: 1px solid var(--cl-br-secon);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+            color: var(--cl-tex-third);
+            margin-top: var(--spacing-xl);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 250px 1fr;
+            }
+            
+            .right-panel {
+                grid-column: 1 / -1;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .theme-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <div class="header-content">
+                <h1>🎨 Advanced Color System</h1>
+                <p>Comprehensive showcase of structured color palettes with dynamic theming</p>
+            </div>
+        </header>
+
+        <!-- Theme Switcher -->
+        <section class="theme-switcher fade-in">
+            <div class="theme-grid">
+                <button class="theme-button active" data-theme="0">🌌 Cosmic Purple</button>
+                <button class="theme-button" data-theme="1">🌊 Ocean Depths</button>
+                <button class="theme-button" data-theme="2">🔥 Ember Glow</button>
+                <button class="theme-button" data-theme="3">💎 Diamond Ice</button>
+                <button class="theme-button" data-theme="4">🌲 Forest Night</button>
+                <button class="theme-button" data-theme="5">🌅 Sunset Dream</button>
+                <button class="theme-button" data-theme="6">⚡ Electric Storm</button>
+                <button class="theme-button" data-theme="7">🌸 Cherry Blossom</button>
+            </div>
+        </section>
+
+        <!-- Main Layout -->
+        <main class="main-layout fade-in">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <h3>Navigation</h3>
+                <div class="nav-item active">Dashboard</div>
+                <div class="nav-item">Analytics</div>
+                <div class="nav-item">Projects</div>
+                <div class="nav-item">Team</div>
+                <div class="nav-item">Settings</div>
+                
+                <h3 style="margin-top: 24px;">Categories</h3>
+                <div class="nav-item">Design</div>
+                <div class="nav-item">Development</div>
+                <div class="nav-item">Marketing</div>
+            </aside>
+
+            <!-- Main Content -->
+            <section class="main-content">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Project Overview</h2>
+                        <span class="card-badge">Active</span>
+                    </div>
+                    <p style="color: var(--cl-tex-secon); margin-bottom: 24px;">
+                        This comprehensive showcase demonstrates the structured color system with multiple UI elements
+                        and interactive components. Each theme maintains consistency across all elements.
+                    </p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Project Name</label>
+                        <input type="text" class="form-input" placeholder="Enter project name..." value="Color System Demo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-input" rows="3" placeholder="Project description...">Advanced color palette system with structured variables and dynamic theming capabilities.</textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button class="btn">Save Changes</button>
+                        <button class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Notifications</h2>
+                        <span class="card-badge pulse">3 New</span>
+                    </div>
+                    
+                    <div class="notification success">
+                        <strong>Success!</strong> Theme system loaded successfully.
+                    </div>
+                    
+                    <div class="notification warning">
+                        <strong>Warning:</strong> Some legacy colors may need updating.
+                    </div>
+                    
+                    <div class="notification error">
+                        <strong>Error:</strong> Failed to load external theme resources.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel -->
+            <aside class="right-panel">
+                <div class="widget">
+                    <h4>Statistics</h4>
+                    <div class="stat-item">
+                        <span>Total Themes</span>
+                        <span class="stat-value">8</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Color Variables</span>
+                        <span class="stat-value">32</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>UI Elements</span>
+                        <span class="stat-value">15+</span>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <h4>Progress Tracking</h4>
+                    <div style="margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span>Theme Completion</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span>Testing Coverage</span>
+                            <span>92%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span>Documentation</span>
+                            <span>78%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 78%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget">
+                    <h4>Quick Actions</h4>
+                    <button class="btn" style="width: 100%; margin-bottom: 8px;">Export Theme</button>
+                    <button class="btn btn-secondary" style="width: 100%; margin-bottom: 8px;">Import Theme</button>
+                    <button class="btn btn-secondary" style="width: 100%;">Reset to Default</button>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer fade-in">
+            <p>🚀 Advanced Color Palette System - Structured, Dynamic, Beautiful</p>
+            <p style="margin-top: 8px; font-size: 0.9rem;">
+                Built with structured CSS variables and dynamic theming capabilities
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Color Palettes with your structured system
+        const colorPalettes = [
+            {
+                name: "Cosmic Purple",
+                colors: {
+                    // Main colors
+                    "--cl-bg-prime": "#0a0612",
+                    "--cl-bg-secon": "#1a0f2e",
+                    "--cl-bg-third": "#2e1a4a",
+                    "--cl-bg-forth": "#1f1235",
+                    
+                    // Linear gradients
+                    "--lg-bg-prime": "linear-gradient(135deg, #1a0f2e 0%, #0a0612 50%, #2e1a4a 100%)",
+                    "--lg-bg-secon": "linear-gradient(135deg, #2e1a4a 0%, #1f1235 100%)",
+                    
+                    // Radial gradients
+                    "--rg-bg-prime": "radial-gradient(circle at 30% 30%, #1e2a35 0%, #0f1419 70%)",
+                    "--rg-bg-secon": "radial-gradient(circle at 70% 70%, #2d4052 0%, #243240 70%)",
+                    
+                    "--cl-elm-prime": "#64b5f6",
+                    "--cl-elm-secon": "#81c784",
+                    "--cl-elm-third": "#aed581",
+                    
+                    "--cl-ho-elm-prime": "#90caf9",
+                    "--cl-ho-elm-secon": "#a5d6a7",
+                    "--cl-av-elm-prime": "#42a5f5",
+                    "--cl-av-elm-secon": "#66bb6a",
+                    
+                    "--cl-tex-prime": "#eceff1",
+                    "--cl-tex-secon": "#cfd8dc",
+                    "--cl-tex-third": "#b0bec5",
+                    
+                    "--cl-ho-tex-prime": "#f8f9fa",
+                    "--cl-av-tex-prime": "#e1e8ed",
+                    
+                    "--fl-shadow-hard": "0 10px 30px rgba(100, 181, 246, 0.3)",
+                    "--fl-shadow-soft": "0 4px 20px rgba(100, 181, 246, 0.15)",
+                    "--cl-br-prime": "#455a64",
+                    "--cl-br-secon": "#607d8b",
+                    "--cl-br-rim": "#64b5f6",
+                    
+                    "--lg-br-glow": "linear-gradient(90deg, transparent, #64b5f6, transparent)",
+                    "--lg-br-flow": "linear-gradient(90deg, transparent, rgba(100, 181, 246, 0.5), transparent)",
+                    
+                    "--cl-error": "#ef5350",
+                    "--cl-warning": "#ffca28",
+                    "--cl-success": "#66bb6a"
+                }
+            },
+            {
+                name: "Forest Night",
+                colors: {
+                    "--cl-bg-prime": "#0d1b0d",
+                    "--cl-bg-secon": "#1a2e1a",
+                    "--cl-bg-third": "#2d4a2d",
+                    "--cl-bg-forth": "#1f3a1f",
+                    
+                    "--lg-bg-prime": "linear-gradient(135deg, #1a2e1a 0%, #0d1b0d 50%, #2d4a2d 100%)",
+                    "--lg-bg-secon": "linear-gradient(135deg, #2d4a2d 0%, #1f3a1f 100%)",
+                    
+                    "--rg-bg-prime": "radial-gradient(circle at 30% 30%, #1a2e1a 0%, #0d1b0d 70%)",
+                    "--rg-bg-secon": "radial-gradient(circle at 70% 70%, #2d4a2d 0%, #1f3a1f 70%)",
+                    
+                    "--cl-elm-prime": "#4caf50",
+                    "--cl-elm-secon": "#66bb6a",
+                    "--cl-elm-third": "#81c784",
+                    
+                    "--cl-ho-elm-prime": "#81c784",
+                    "--cl-ho-elm-secon": "#a5d6a7",
+                    "--cl-av-elm-prime": "#388e3c",
+                    "--cl-av-elm-secon": "#4caf50",
+                    
+                    "--cl-tex-prime": "#e8f5e8",
+                    "--cl-tex-secon": "#c8e6c9",
+                    "--cl-tex-third": "#a5d6a7",
+                    
+                    "--cl-ho-tex-prime": "#f1f8e9",
+                    "--cl-av-tex-prime": "#dcedc8",
+                    
+                    "--fl-shadow-hard": "0 10px 30px rgba(76, 175, 80, 0.3)",
+                    "--fl-shadow-soft": "0 4px 20px rgba(76, 175, 80, 0.15)",
+                    "--cl-br-prime": "#2e7d32",
+                    "--cl-br-secon": "#43a047",
+                    "--cl-br-rim": "#4caf50",
+                    
+                    "--lg-br-glow": "linear-gradient(90deg, transparent, #4caf50, transparent)",
+                    "--lg-br-flow": "linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.5), transparent)",
+                    
+                    "--cl-error": "#f44336",
+                    "--cl-warning": "#ff9800",
+                    "--cl-success": "#8bc34a"
+                }
+            },
+            {
+                name: "Sunset Dream",
+                colors: {
+                    "--cl-bg-prime": "#1a0e0a",
+                    "--cl-bg-secon": "#2d1b15",
+                    "--cl-bg-third": "#4a2c20",
+                    "--cl-bg-forth": "#36201a",
+                    
+                    "--lg-bg-prime": "linear-gradient(135deg, #2d1b15 0%, #1a0e0a 50%, #4a2c20 100%)",
+                    "--lg-bg-secon": "linear-gradient(135deg, #4a2c20 0%, #36201a 100%)",
+                    
+                    "--rg-bg-prime": "radial-gradient(circle at 30% 30%, #2d1b15 0%, #1a0e0a 70%)",
+                    "--rg-bg-secon": "radial-gradient(circle at 70% 70%, #4a2c20 0%, #36201a 70%)",
+                    
+                    "--cl-elm-prime": "#ff9500",
+                    "--cl-elm-secon": "#ffb74d",
+                    "--cl-elm-third": "#ffcc80",
+                    
+                    "--cl-ho-elm-prime": "#ffcc80",
+                    "--cl-ho-elm-secon": "#ffe0b2",
+                    "--cl-av-elm-prime": "#f57c00",
+                    "--cl-av-elm-secon": "#ff9500",
+                    
+                    "--cl-tex-prime": "#fff3e0",
+                    "--cl-tex-secon": "#ffe0b2",
+                    "--cl-tex-third": "#ffcc80",
+                    
+                    "--cl-ho-tex-prime": "#fff8f0",
+                    "--cl-av-tex-prime": "#ffecb3",
+                    
+                    "--fl-shadow-hard": "0 10px 30px rgba(255, 149, 0, 0.3)",
+                    "--fl-shadow-soft": "0 4px 20px rgba(255, 149, 0, 0.15)",
+                    "--cl-br-prime": "#bf360c",
+                    "--cl-br-secon": "#d84315",
+                    "--cl-br-rim": "#ff9500",
+                    
+                    "--lg-br-glow": "linear-gradient(90deg, transparent, #ff9500, transparent)",
+                    "--lg-br-flow": "linear-gradient(90deg, transparent, rgba(255, 149, 0, 0.5), transparent)",
+                    
+                    "--cl-error": "#d32f2f",
+                    "--cl-warning": "#ffa000",
+                    "--cl-success": "#689f38"
+                }
+            },
+            {
+                name: "Electric Storm",
+                colors: {
+                    "--cl-bg-prime": "#0a0a1a",
+                    "--cl-bg-secon": "#1a1a2e",
+                    "--cl-bg-third": "#2e2e4a",
+                    "--cl-bg-forth": "#1f1f35",
+                    
+                    "--lg-bg-prime": "linear-gradient(135deg, #1a1a2e 0%, #0a0a1a 50%, #2e2e4a 100%)",
+                    "--lg-bg-secon": "linear-gradient(135deg, #2e2e4a 0%, #1f1f35 100%)",
+                    
+                    "--rg-bg-prime": "radial-gradient(circle at 30% 30%, #1a1a2e 0%, #0a0a1a 70%)",
+                    "--rg-bg-secon": "radial-gradient(circle at 70% 70%, #2e2e4a 0%, #1f1f35 70%)",
+                    
+                    "--cl-elm-prime": "#00e5ff",
+                    "--cl-elm-secon": "#40c4ff",
+                    "--cl-elm-third": "#80d8ff",
+                    
+                    "--cl-ho-elm-prime": "#80d8ff",
+                    "--cl-ho-elm-secon": "#b3e5fc",
+                    "--cl-av-elm-prime": "#00b0ff",
+                    "--cl-av-elm-secon": "#00e5ff",
+                    
+                    "--cl-tex-prime": "#e1f5fe",
+                    "--cl-tex-secon": "#b3e5fc",
+                    "--cl-tex-third": "#81d4fa",
+                    
+                    "--cl-ho-tex-prime": "#f0f8ff",
+                    "--cl-av-tex-prime": "#e0f2f1",
+                    
+                    "--fl-shadow-hard": "0 10px 30px rgba(0, 229, 255, 0.3)",
+                    "--fl-shadow-soft": "0 4px 20px rgba(0, 229, 255, 0.15)",
+                    "--cl-br-prime": "#0277bd",
+                    "--cl-br-secon": "#0288d1",
+                    "--cl-br-rim": "#00e5ff",
+                    
+                    "--lg-br-glow": "linear-gradient(90deg, transparent, #00e5ff, transparent)",
+                    "--lg-br-flow": "linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.5), transparent)",
+                    
+                    "--cl-error": "#ff1744",
+                    "--cl-warning": "#ffab00",
+                    "--cl-success": "#00e676"
+                }
+            },
+            {
+                name: "Cherry Blossom",
+                colors: {
+                    "--cl-bg-prime": "#1a0f14",
+                    "--cl-bg-secon": "#2e1f26",
+                    "--cl-bg-third": "#4a2f3a",
+                    "--cl-bg-forth": "#35252d",
+                    
+                    "--lg-bg-prime": "linear-gradient(135deg, #2e1f26 0%, #1a0f14 50%, #4a2f3a 100%)",
+                    "--lg-bg-secon": "linear-gradient(135deg, #4a2f3a 0%, #35252d 100%)",
+                    
+                    "--rg-bg-prime": "radial-gradient(circle at 30% 30%, #2e1f26 0%, #1a0f14 70%)",
+                    "--rg-bg-secon": "radial-gradient(circle at 70% 70%, #4a2f3a 0%, #35252d 70%)",
+                    
+                    "--cl-elm-prime": "#f48fb1",
+                    "--cl-elm-secon": "#f8bbd9",
+                    "--cl-elm-third": "#fce4ec",
+                    
+                    "--cl-ho-elm-prime": "#f8bbd9",
+                    "--cl-ho-elm-secon": "#fce4ec",
+                    "--cl-av-elm-prime": "#ec407a",
+                    "--cl-av-elm-secon": "#f48fb1",
+                    
+                    "--cl-tex-prime": "#fce4ec",
+                    "--cl-tex-secon": "#f8bbd9",
+                    "--cl-tex-third": "#f48fb1",
+                    
+                    "--cl-ho-tex-prime": "#fff0f5",
+                    "--cl-av-tex-prime": "#fce4ec",
+                    
+                    "--fl-shadow-hard": "0 10px 30px rgba(244, 143, 177, 0.3)",
+                    "--fl-shadow-soft": "0 4px 20px rgba(244, 143, 177, 0.15)",
+                    "--cl-br-prime": "#ad1457",
+                    "--cl-br-secon": "#c2185b",
+                    "--cl-br-rim": "#f48fb1",
+                    
+                    "--lg-br-glow": "linear-gradient(90deg, transparent, #f48fb1, transparent)",
+                    "--lg-br-flow": "linear-gradient(90deg, transparent, rgba(244, 143, 177, 0.5), transparent)",
+                    
+                    "--cl-error": "#e91e63",
+                    "--cl-warning": "#ff8a65",
+                    "--cl-success": "#a5d6a7"
+                }
+            },
+            {
+                name: "Ocean Depths",
+                colors: {
+                    "--cl-bg-prime": "#051018",
+                    "--cl-bg-secon": "#0d1b2a",
+                    "--cl-bg-third": "#1e3a5f",
+                    "--cl-bg-forth": "#142638",
+                    
+                    "--lg-bg-prime": "linear-gradient(135deg, #0d1b2a 0%, #051018 50%, #1e3a5f 100%)",
+                    "--lg-bg-secon": "linear-gradient(135deg, #1e3a5f 0%, #142638 100%)",
+                    
+                    "--rg-bg-prime": "radial-gradient(circle at 30% 30%, #0d1b2a 0%, #051018 70%)",
+                    "--rg-bg-secon": "radial-gradient(circle at 70% 70%, #1e3a5f 0%, #142638 70%)",
+                    
+                    "--cl-elm-prime": "#0096c7",
+                    "--cl-elm-secon": "#00b4d8",
+                    "--cl-elm-third": "#48cae4",
+                    
+                    "--cl-ho-elm-prime": "#48cae4",
+                    "--cl-ho-elm-secon": "#90e0ef",
+                    "--cl-av-elm-prime": "#0077b6",
+                    "--cl-av-elm-secon": "#0096c7",
+                    
+                    "--cl-tex-prime": "#caf0f8",
+                    "--cl-tex-secon": "#90e0ef",
+                    "--cl-tex-third": "#a8dadc",
+                    
+                    "--cl-ho-tex-prime": "#e6fdff",
+                    "--cl-av-tex-prime": "#b8f2ff",
+                    
+                    "--fl-shadow-hard": "0 10px 30px rgba(0, 150, 199, 0.3)",
+                    "--fl-shadow-soft": "0 4px 20px rgba(0, 150, 199, 0.15)",
+                    "--cl-br-prime": "#2a5490",
+                    "--cl-br-secon": "#3d6db0",
+                    "--cl-br-rim": "#0096c7",
+                    
+                    "--lg-br-glow": "linear-gradient(90deg, transparent, #0096c7, transparent)",
+                    "--lg-br-flow": "linear-gradient(90deg, transparent, rgba(0, 150, 199, 0.5), transparent)",
+                    
+                    "--cl-error": "#ff6b6b",
+                    "--cl-warning": "#ffd93d",
+                    "--cl-success": "#06ffa5"
+                }
+            },
+            {
+                name: "Ember Glow",
+                colors: {
+                    "--cl-bg-prime": "#1a0a0a",
+                    "--cl-bg-secon": "#2d1b1b",
+                    "--cl-bg-third": "#4a2c2c",
+                    "--cl-bg-forth": "#362020",
+                    
+                    "--lg-bg-prime": "linear-gradient(135deg, #2d1b1b 0%, #1a0a0a 50%, #4a2c2c 100%)",
+                    "--lg-bg-secon": "linear-gradient(135deg, #4a2c2c 0%, #362020 100%)",
+                    
+                    "--rg-bg-prime": "radial-gradient(circle at 30% 30%, #2d1b1b 0%, #1a0a0a 70%)",
+                    "--rg-bg-secon": "radial-gradient(circle at 70% 70%, #4a2c2c 0%, #362020 70%)",
+                    
+                    "--cl-elm-prime": "#ff4757",
+                    "--cl-elm-secon": "#ff6b7a",
+                    "--cl-elm-third": "#ff8fa3",
+                    
+                    "--cl-ho-elm-prime": "#ff8fa3",
+                    "--cl-ho-elm-secon": "#ffb3c6",
+                    "--cl-av-elm-prime": "#e63946",
+                    "--cl-av-elm-secon": "#ff4757",
+                    
+                    "--cl-tex-prime": "#ffe8e8",
+                    "--cl-tex-secon": "#ffcccb",
+                    "--cl-tex-third": "#ffb3b3",
+                    
+                    "--cl-ho-tex-prime": "#fff5f5",
+                    "--cl-av-tex-prime": "#ffe0e0",
+                    
+                    "--fl-shadow-hard": "0 10px 30px rgba(255, 71, 87, 0.3)",
+                    "--fl-shadow-soft": "0 4px 20px rgba(255, 71, 87, 0.15)",
+                    "--cl-br-prime": "#8b2635",
+                    "--cl-br-secon": "#a63c4a",
+                    "--cl-br-rim": "#ff4757",
+                    
+                    "--lg-br-glow": "linear-gradient(90deg, transparent, #ff4757, transparent)",
+                    "--lg-br-flow": "linear-gradient(90deg, transparent, rgba(255, 71, 87, 0.5), transparent)",
+                    
+                    "--cl-error": "#ff3838",
+                    "--cl-warning": "#ffb347",
+                    "--cl-success": "#7bed9f"
+                }
+            },
+        ];
+
+        let currentTheme = 0;
+
+        function applyTheme(themeIndex) {
+            const theme = colorPalettes[themeIndex];
+            const root = document.documentElement;
+            
+            // Apply all color variables
+            Object.entries(theme.colors).forEach(([property, value]) => {
+                root.style.setProperty(property, value);
+            });
+            
+            // Update active button
+            document.querySelectorAll('.theme-button').forEach((btn, index) => {
+                btn.classList.toggle('active', index === themeIndex);
+            });
+            
+            currentTheme = themeIndex;
+            
+            // Add fade effect to body
+            document.body.style.opacity = '0.8';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 150);
+        }
+
+        // Initialize with first theme
+        applyTheme(0);
+
+        // Theme switcher event listeners
+        document.querySelectorAll('.theme-button').forEach((button, index) => {
+            button.addEventListener('click', () => {
+                applyTheme(index);
+            });
+        });
+
+        // Interactive elements
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Form interactions
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', () => {
+                input.style.transform = 'scale(1)';
+            });
+        });
+
+        // Button interactions
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Create ripple effect
+                const ripple = document.createElement('span');
+                const rect = btn.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                `;
+                
+                btn.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Add ripple animation
+        const rippleStyle = document.createElement('style');
+        rippleStyle.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(rippleStyle);
+
+        // Random progress bar animation
+        function animateProgressBars() {
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                const currentWidth = parseInt(bar.style.width);
+                const variation = Math.random() * 10 - 5; // ±5%
+                const newWidth = Math.max(0, Math.min(100, currentWidth + variation));
+                bar.style.width = newWidth + '%';
+            });
+        }
+
+        // Animate progress bars every 3 seconds
+        setInterval(animateProgressBars, 3000);
+
+        // Keyboard shortcuts for theme switching
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '1' && e.key <= '8') {
+                const themeIndex = parseInt(e.key) - 1;
+                if (themeIndex < colorPalettes.length) {
+                    applyTheme(themeIndex);
+                }
+            }
+        });
+
+        // Copy theme to clipboard function
+        function copyThemeToClipboard(themeIndex) {
+            const theme = colorPalettes[themeIndex];
+            let cssText = `:root {\n`;
+            
+            Object.entries(theme.colors).forEach(([property, value]) => {
+                cssText += `  ${property}: ${value};\n`;
+            });
+            
+            cssText += `}`;
+            
+            navigator.clipboard.writeText(cssText).then(() => {
+                showNotification(`✅ ${theme.name} theme copied to clipboard!`);
+            }).catch(err => {
+                console.error('Failed to copy theme:', err);
+                showNotification('❌ Failed to copy theme');
+            });
+        }
+
+        // Add copy buttons to theme switcher
+        document.querySelectorAll('.theme-button').forEach((button, index) => {
+            button.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                copyThemeToClipboard(index);
+            });
+            
+            // Add tooltip
+            if (colorPalettes[index]) {
+                button.title = `Left click to apply, right click to copy ${colorPalettes[index].name} theme`;
+            }
+        });
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--cl-elm-prime);
+                color: var(--cl-tex-prime);
+                padding: 16px 24px;
+                border-radius: var(--border-radius);
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: var(--fl-shadow-hard);
+                animation: slideInRight 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add notification animations
+        const notificationStyle = document.createElement('style');
+        notificationStyle.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(notificationStyle);
+
+        // Add theme cycling with arrow keys
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                const nextTheme = (currentTheme + 1) % colorPalettes.length;
+                applyTheme(nextTheme);
+            } else if (e.key === 'ArrowLeft') {
+                const prevTheme = (currentTheme - 1 + colorPalettes.length) % colorPalettes.length;
+                applyTheme(prevTheme);
+            }
+        });
+
+        console.log('🎨 Advanced Color System Loaded!');
+        console.log('💡 Tips:');
+        console.log('• Use number keys 1-8 to switch themes');
+        console.log('• Use arrow keys to cycle through themes');
+        console.log('• Right-click theme buttons to copy CSS');
+        console.log('• All themes use your structured color system!');
+    </script>
+</body>
+</html> 
